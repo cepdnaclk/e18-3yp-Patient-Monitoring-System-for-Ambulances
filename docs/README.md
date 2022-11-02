@@ -85,7 +85,7 @@ Currently, there’s no system for real-time patient monitoring and updating the
 
 ## Links
 
-- [Project Repository](https://github.com/cepdnaclk/{{ page.repository-name }}){:target="_blank"}
+- [Project Repository](https://github.com/cepdnaclk/e18-3yp-Patient-Monitoring-System-for-Ambulances)
 - [Project Page](https://cepdnaclk.github.io/{{ page.repository-name}}){:target="_blank"}
 - [Department of Computer Engineering](http://www.ce.pdn.ac.lk/)
 - [University of Peradeniya](https://eng.pdn.ac.lk/)
