@@ -55,3 +55,55 @@ Once you filled this _index.json_ file, please verify the syntax is correct. (Yo
 ### Page Theme
 
 A custom theme integrated with this GitHub Page, which is based on [github.com/cepdnaclk/eYY-project-theme](https://github.com/cepdnaclk/eYY-project-theme). If you like to remove this default theme, you can remove the file, _docs/\_config.yml_ and use HTML based website.
+
+
+### PROBLEM
+
+What can happen if ambulance arrives late at the emergency case ?
+
+What can we do while Ambulance is carrying the Patient ?
+
+No system for real-time patient monitoring and updating
+
+No location tracking or time prediction system
+
+### EXISTING METHOD
+
+Currently there are number of health monitoring systems available for ICU patients which can be used only when patient is on bed
+
+System is wired
+
+Huge in size
+
+Monitoring particular disease only
+
+### INTRODUCTION
+
+Three main functions of the device
+
+Patient health monitoring
+
+Location tracking
+
+Sending real time data to the hospital
+
+### SOLUTION ARCHITECTURE
+![SolutionArchitecture drawio (1)](https://user-images.githubusercontent.com/99112218/199411429-e50e5d45-6558-448d-8f7f-db9e2456b6d2.png)
+
+
+
+### Hardware Components
+
+Arduino UNO ATMega328P
+
+GPS Modem (NEO6MV2)
+
+ESP8266 Wifi Module
+
+### Sensors
+
+Pulse Rate Heartbeat Sensor Module
+
+Temperature Sensor Module
+
+Blood Pressure Sensor - GSR V1.1
