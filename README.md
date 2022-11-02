@@ -57,53 +57,54 @@ Once you filled this _index.json_ file, please verify the syntax is correct. (Yo
 A custom theme integrated with this GitHub Page, which is based on [github.com/cepdnaclk/eYY-project-theme](https://github.com/cepdnaclk/eYY-project-theme). If you like to remove this default theme, you can remove the file, _docs/\_config.yml_ and use HTML based website.
 
 
-### PROBLEM
+## Introduction
 
-What can happen if ambulance arrives late at the emergency case ?
+There’s no existing system to monitor the patients while they are taken to the hospital by emergency vehicles in Sri Lanka. In some scenarios, due to the lack of facilities and resources, patients are transferred from one hospital to another hospital. This can be inconvenient for both parties; the patient and the hospital. It might be a risk to the patient’s life as well. Even after admitting to the hospital, it may take some time to arrange things for the patient and check the status of the patient. Other than the test results, the Status and the condition of the patient are normally conveyed by a guardian of the patient and there can be reliability issues in such information. 
 
-What can we do while Ambulance is carrying the Patient ?
-
-No system for real-time patient monitoring and updating
-
-No location tracking or time prediction system
-
-### EXISTING METHOD
-
-Currently there are number of health monitoring systems available for ICU patients which can be used only when patient is on bed
-
-System is wired
-
-Huge in size
-
-Monitoring particular disease only
-
-### INTRODUCTION
-
-Three main functions of the device
-
-Patient health monitoring
-
-Location tracking
-
-Sending real time data to the hospital
-
-### SOLUTION ARCHITECTURE
-![SolutionArchitecture drawio (1)](https://user-images.githubusercontent.com/99112218/199411429-e50e5d45-6558-448d-8f7f-db9e2456b6d2.png)
+These problems can be addressed separately by a real-time monitoring device for checking the status of the patient and a location tracking system for the ambulance which is connected to a cloud such that hospitals can get information and take decisions. As an example, they can monitor the real-time status of the patient (pulse rate, heart rate etc.) together with a summary report of the patient, and can get the predictions at which time a particular ambulance reaches their hospital. So that hospital staff will get enough time to do the necessary arrangements for that patient and allocate their staff appropriately. Not only that, when considering the emergency vehicle service side(ambulance) they can track the nearest available hospitals for this particular patient after submitting his/her pre-conditions. So, they can directly take patients to the appropriate hospitals without wasting the time. 
 
 
+## Solution Architecture
 
-### Hardware Components
+![SolutionArchitecture drawio (1)](https://user-images.githubusercontent.com/99112218/199412680-61d7b28e-3bda-467c-bb43-d6518cc63e34.png)
 
-Arduino UNO ATMega328P
+## Hardware and Software Designs
 
-GPS Modem (NEO6MV2)
+Arduino UNO ATMega328P\
+![arduino](https://user-images.githubusercontent.com/73444543/199441943-80e0843f-52c1-4531-886e-3c497bfedf9d.jpg)
 
-ESP8266 Wifi Module
+ESP8266 Wifi Module\
+ ![wifi](https://user-images.githubusercontent.com/73444543/199441973-f2b57172-b4e1-4b0e-ba53-34a7d887132b.jpg)
 
-### Sensors
+GPS Modem (NEO6MV2)\
+ ![gps](https://user-images.githubusercontent.com/73444543/199442004-74162ede-0182-4212-aa7d-c7a19581b212.jpg)
 
-Pulse Rate Heartbeat Sensor Module
+Pulse Rate Heartbeat Sensor Module\
+ ![heart](https://user-images.githubusercontent.com/73444543/199442031-8538eeda-180f-4f4a-8c4d-e06a6420a5a5.jpg)
 
-Temperature Sensor Module
+Temperature Sensor Module - DS18B20\
+![temp](https://user-images.githubusercontent.com/73444543/199442056-3605ccba-edb2-4250-b456-cc2aacf86f1b.jpg)
 
-Blood Pressure Sensor - GSR V1.1
+Blood Pressure Sensor -GSR V1.1\
+![bp](https://user-images.githubusercontent.com/73444543/199442127-4407d716-b530-41c2-932e-04edda5111b5.jpg)
+
+## Testing
+
+
+Considering one device :
+
+Data inputs : 
+
+       pulse rate , heart rate , blood pressure - from a real person   
+       GPS cordinates :  executing  a given script of GPS cordinates
+       
+Checking them via Web interface
+
+
+## Detailed budget
+
+![budget](https://user-images.githubusercontent.com/73444543/199421449-65e84ab8-a726-4def-80e9-6605ce814a81.png)
+
+## Conclusion
+
+Currently, there’s no system for real-time patient monitoring and updating the hospital from the ambulance exists. Normally medical officers/nurses in there will contact hospitals via mobile calls in critical situations which are not that reliable. And there’s no location tracking or time prediction system for ambulances that exists. Also, in case of finding a suitable hospital, ambulances prefer the nearest hospital or general hospital without considering the conditions or facilities available at the moment which will be caused previously mentioned issues. Considering the current situation regarding this matter, this project will be able to highly contribute to rebuilding this system.
