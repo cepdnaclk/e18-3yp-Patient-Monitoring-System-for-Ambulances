@@ -9,20 +9,14 @@ title: Project Template
 
 [comment]: # "This is the standard layout for the project, but you can clean this and use your own template"
 
-# Project Title
+# Patient Monitoring System for Ambulances
 
 ---
 
 ## Team
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
-
-<!-- Image (photo/drawing of the final hardware) should be here -->
-
-<!-- This is a sample image, to show how to add images to your page. To learn more options, please refer [this](https://projects.ce.pdn.ac.lk/docs/faq/how-to-add-an-image/) -->
-
-<!-- ![Sample Image](./images/sample.png) -->
+-  e18022, D.I. Amarasinghe, [e18022@eng.pdn.ac.lk](mailto:name@email.com)
+-  e18318, S.A.P. Sandunika, [e18318@eng.pdn.ac.lk](mailto:name@email.com)
+-  e18354, K.K.D.R. Tharaka, [e18354@eng.pdn.ac.lk](mailto:name@email.com)
 
 #### Table of Contents
 1. [Introduction](#introduction)
@@ -35,12 +29,12 @@ title: Project Template
 
 ## Introduction
 
-Description of the real world problem and solution, impact
+
 
 
 ## Solution Architecture
 
-High level diagram + description
+![SolutionArchitecture drawio (1)](https://user-images.githubusercontent.com/99112218/199412680-61d7b28e-3bda-467c-bb43-d6518cc63e34.png)
 
 ## Hardware and Software Designs
 
