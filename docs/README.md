@@ -70,8 +70,15 @@ All items and costs
 
 | Item          | Quantity  | Unit Cost  | Total  |
 | ------------- |:---------:|:----------:|-------:|
-| Sample item   | 5         | 10 LKR     | 50 LKR |
-
+| Pulse Rate Heartbeat Sensor Module for Arduino (MD0199)   | 1         | 700 LKR     | 700 LKR |
+| LM35 Temperature Sensor(IC0140)          | 1  | 165 LKR  | 165 LKR  |
+| GPS Modem (NEO6MV2)          | 1  | 1790 LKR  | 1790 LKR  |
+| 16 Bit Analog to digital converter 4 channel Module (ADC) I2C ADS1115         | 1  | 600 LKR  | 600 LKR  |
+| 128x64 Dots Graphic Blue Backlight LCD Display          | 1  | 3600 LKR  | 3600 LKR  |
+| ESP-01 ESP8266 Wifi Module          | 1  | 610 LKR  | 610 LKR  |
+| Arduino UNO  ATmega328P 32Mb Memory          | 1  | 3950 LKR  | 3950 LKR  |
+| Other components + cover          | 1  | 2000 LKR  | 2000 LKR  |
+| Total (Estimated)          | 1  | 11835 LKR  | 11835 LKR  |
 ## Conclusion
 
 Currently, there’s no system for real-time patient monitoring and updating the hospital from the ambulance exists. Normally medical officers/nurses in there will contact hospitals via mobile calls in critical situations which are not that reliable. And there’s no location tracking or time prediction system for ambulances that exists. Also, in case of finding a suitable hospital, ambulances prefer the nearest hospital or general hospital without considering the conditions or facilities available at the moment which will be caused previously mentioned issues. Considering the current situation regarding this matter, this project will be able to highly contribute to rebuilding this system.
