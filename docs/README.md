@@ -40,19 +40,26 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 ## Hardware and Software Designs
 
-Arduino UNO ATMega328P
+Arduino UNO ATMega328P\
+![arduino](https://user-images.githubusercontent.com/73444543/199441943-80e0843f-52c1-4531-886e-3c497bfedf9d.jpg)
 
-ESP8266 Wifi Module
- 
-GPS Modem (NEO6MV2)
- 
-Pulse Rate Heartbeat Sensor Module
- 
-Temperature Sensor Module - DS18B20
+ESP8266 Wifi Module\
+ ![wifi](https://user-images.githubusercontent.com/73444543/199441973-f2b57172-b4e1-4b0e-ba53-34a7d887132b.jpg)
 
-Blood Pressure Sensor -GSR V1.1
+GPS Modem (NEO6MV2)\
+ ![gps](https://user-images.githubusercontent.com/73444543/199442004-74162ede-0182-4212-aa7d-c7a19581b212.jpg)
+
+Pulse Rate Heartbeat Sensor Module\
+ ![heart](https://user-images.githubusercontent.com/73444543/199442031-8538eeda-180f-4f4a-8c4d-e06a6420a5a5.jpg)
+
+Temperature Sensor Module - DS18B20\
+![temp](https://user-images.githubusercontent.com/73444543/199442056-3605ccba-edb2-4250-b456-cc2aacf86f1b.jpg)
+
+Blood Pressure Sensor -GSR V1.1\
+![bp](https://user-images.githubusercontent.com/73444543/199442127-4407d716-b530-41c2-932e-04edda5111b5.jpg)
 
 ## Testing
+
 
 Considering one device :
 
