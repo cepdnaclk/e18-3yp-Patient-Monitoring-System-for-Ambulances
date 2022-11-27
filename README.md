@@ -72,6 +72,7 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 Arduino UNO ATMega328P\
 ![arduino](https://user-images.githubusercontent.com/73444543/199441943-80e0843f-52c1-4531-886e-3c497bfedf9d.jpg)
+Microcontroller is like brain of the system because it communicates with inputs and outputs and controls the entire operation of the system. Here we are using  Arduino UNO ATMega328P as the Microcontroller. Reading longitude and latitude from GPS modem, reading health parameters of the patient, desplaying them on a user interfaces and send these data to the hospitals are the various functions of the Microcontroller
 
 ESP8266 Wifi Module\
  ![wifi](https://user-images.githubusercontent.com/73444543/199441973-f2b57172-b4e1-4b0e-ba53-34a7d887132b.jpg)
