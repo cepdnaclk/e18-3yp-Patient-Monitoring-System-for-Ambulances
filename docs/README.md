@@ -47,18 +47,28 @@ Microcontroller is like brain of the system because it communicates with inputs 
 
 ESP8266 Wifi Module\
  ![wifi](https://user-images.githubusercontent.com/73444543/199441973-f2b57172-b4e1-4b0e-ba53-34a7d887132b.jpg)
+ 
+The ESP8266 WiFi Module is a self contained SOC with integrated TCP/IP protocol stack that can give any microcontroller access to your WiFi network. The ESP8266 is capable of either hosting an application or offloading all WiFi networking functions from another application processor.
 
 GPS Modem (NEO6MV2)\
  ![gps](https://user-images.githubusercontent.com/73444543/199442004-74162ede-0182-4212-aa7d-c7a19581b212.jpg)
+ 
+ Main function of GPS modem is provide longitude and latitude of the ambulance to the Microcontroller. It receives data from satellite and transfer them into Microcontroller through serial communication. As ambulance moves along the way from patient’s home to hospital, the co- ordinates of ambulance location will change and these variations are given to Microcontroller.  
 
 Pulse Rate Heartbeat Sensor Module\
  ![heart](https://user-images.githubusercontent.com/73444543/199442031-8538eeda-180f-4f4a-8c4d-e06a6420a5a5.jpg)
 
+Heart beat sensor consits of LDR and RED LED. if someone placed his/her finger between these two components red light will be reflected from finger to LDR. Because of blood pumping light intensity is fluctuate time to time. Heart beat sensor used in this project works on the above principle. It gives out high pulses with every heartbeat.
+
 Temperature Sensor Module - DS18B20\
 ![temp](https://user-images.githubusercontent.com/73444543/199442056-3605ccba-edb2-4250-b456-cc2aacf86f1b.jpg)
 
+DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
+
 Blood Pressure Sensor -GSR V1.1\
 ![bp](https://user-images.githubusercontent.com/73444543/199442127-4407d716-b530-41c2-932e-04edda5111b5.jpg)
+
+The sensing system reads the cuff pressure (CP) and extracts the pulses for analysis and determination of systolic and diastolic pressure.
 
 ## Testing
 
