@@ -37,9 +37,23 @@ Temperature Sensor Module - DS18B20\
 
 DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
 
+## Circuit Diagram
+![cicuit diagram](https://user-images.githubusercontent.com/73444543/204421503-0e8982d4-ff6d-4d79-807e-af54e95d36df.png)
+
+## UI Design 
+### Mobile Application
+![1](https://user-images.githubusercontent.com/73444543/204421741-097ead06-a8a0-42b7-9909-e57f2a42749c.jpeg) ![2](https://user-images.githubusercontent.com/73444543/204421756-5044ca8f-5539-4fd2-b548-d2fb9653f210.jpeg) ![3](https://user-images.githubusercontent.com/73444543/204421865-6246a490-6792-408c-a3ea-ab60dfa75b5d.jpeg) ![4](https://user-images.githubusercontent.com/73444543/204421896-f72edcda-189b-4d0e-97a7-b8929cb37fd3.jpeg) ![5](https://user-images.githubusercontent.com/73444543/204421907-ea42e1c7-7321-4937-9499-7467ccd4c7ee.jpeg) ![6](https://user-images.githubusercontent.com/73444543/204422174-d54a3402-d738-479d-ab6f-304f281294c5.jpeg)
+
+### Web Site
+![11](https://user-images.githubusercontent.com/73444543/204422296-5a30311c-bf57-4a55-996f-d5d61a02d51a.jpeg)
+ ![12](https://user-images.githubusercontent.com/73444543/204422309-84cb99e1-f864-49a1-9c4f-e5c02b12adcd.jpeg) \
+![13](https://user-images.githubusercontent.com/73444543/204422321-a20edf16-2f6c-4c07-8dac-eb6b77541fa5.jpeg)
+ ![14](https://user-images.githubusercontent.com/73444543/204422332-05087242-e46a-4c22-b2f7-2df2d15c888b.jpeg)
+
 ## Testing
 
-
+![test](https://user-images.githubusercontent.com/73444543/204421340-10ca4bd6-b77f-43df-8702-fe169283b12f.png)
+     
 Considering one device :
 
 Data inputs : 
