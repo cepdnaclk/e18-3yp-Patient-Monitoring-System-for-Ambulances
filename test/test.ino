@@ -26,8 +26,27 @@ DallasTemperature ds18b20(&oneWire);
 PulseOximeter pox;
 */
 
+/*
+// Choose two Arduino pins to use for software serial
+int RXPin = 2;
+int TXPin = 3;
+
+int GPSBaud = 9600;
+
+// Create a TinyGPS++ object
+TinyGPSPlus gps;
+
+// Create a software serial port called "gpsSerial"
+SoftwareSerial gpsSerial(RXPin, TXPin);
+*/
+/*
 const char* ssid = "Dialog 4G 769";
-const char* password = "583BbFe3";
+const char* password = "583BbFe3";*/
+const char* ssid = "Dialog 4G 517";
+const char* password = "576E5Fc3";
+String deviceID = "001";
+String outTopic;
+String inTopic = "Device_"+deviceID;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP,"pool.ntp.org");
@@ -38,20 +57,25 @@ void callback(char* topic, byte* payload, unsigned int length){
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  String newHospital = "";
   for(int i=0;i<length;i++){
-    Serial.print((char)payload[i]);  
+    Serial.print((char)payload[i]);
+    newHospital = newHospital + (char)payload[i];
   }
+  changeHospital(newHospital);
   Serial.println();
 }
 
 WiFiClientSecure espClient;
 PubSubClient client(AWS_endpoint,8883,callback,espClient);
 long lastMsg = 0;
-char msg[100];
+char msg[200];
 float temperature;
 float heart_rate;
 float spo2;
-float value4 = 45.6;
+float lattitude;
+float longitude;
+float Altitude;
 
 void setup_wifi(){
   delay(10);
@@ -80,13 +104,17 @@ void setup_wifi(){
   
 }
 
+void changeHospital(String hospital){
+  outTopic = "/AmbulanceProject/"+hospital+"/"+deviceID;
+}
+
 void reconnect(){
   while(!client.connected()){
     Serial.print("Attempting to MQTT connection");
     if(client.connect("ESPthing")){
       Serial.println("Connected");
-      client.publish("outTopic","Hello World");
-      client.subscribe("inTopic");
+//      client.publish("outTopic","Hello World");
+      client.subscribe((char*)(inTopic.c_str()));
     }else{
       Serial.print("failed,rc=");
       Serial.print(client.state());
@@ -106,6 +134,11 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.setDebugOutput(true);
+
+  /*
+  // Start the software serial port at the GPS's default baud
+  gpsSerial.begin(GPSBaud);
+  */
   pinMode(LED_BUILTIN,OUTPUT);
   setup_wifi();
   delay(1000);
@@ -181,8 +214,10 @@ void setup() {
 
   // Configure sensor to use 7.6mA for LED drive
   pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);*/
+
+  changeHospital("Kalutara");
 }
-int a = 0;
+
 void loop() {
   // put your main code here, to run repeatedly:
   if(!client.connected()){
@@ -203,18 +238,19 @@ void loop() {
     pox.update();
     heart_rate = pox.getHeartRate();
     spo2 = pox.getSpO2();*/
+
+    /*// Read from the max30100 sensor
+    gpsSerial.read();
+    lattitude = gps.location.lat();
+    longitude = gps.location.lng();
+    Altitude = gps.location.meters();*/
     
-    value4 = value4 + 0.1;
-    snprintf(msg,100,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Pulse rate\": %ld}",temperature,heart_rate,spo2,value4);
+    //snprintf(msg,200,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Lattitude\": %ld, \"Longitude\": %ld, \"Altitude\": %ld}",temperature,heart_rate,spo2,lattitude,longitude,Altitude);
+    
     Serial.print("Publish message: ");
+    Serial.print(outTopic);
     Serial.println(msg);
-    if(a==0){
-      client.publish("outTopic1",msg);
-      a=1; 
-    }else{
-      client.publish("outTopic2",msg);
-      a=0;
-    }
+    client.publish((char*)(outTopic.c_str()),"abcdef");
     Serial.print("Heap: ");
     Serial.println(ESP.getFreeHeap());
   }
