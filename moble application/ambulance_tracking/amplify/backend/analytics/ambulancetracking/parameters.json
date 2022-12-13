@@ -1,0 +1,21 @@
+{
+    "appName": "ambulancetracking",
+    "roleName": "pinpointLambdaRole5665051f",
+    "cloudformationPolicyName": "cloudformationPolicy5665051f",
+    "cloudWatchPolicyName": "cloudWatchPolicy5665051f",
+    "pinpointPolicyName": "pinpointPolicy5665051f",
+    "authPolicyName": "pinpoint_amplify_5665051f",
+    "unauthPolicyName": "pinpoint_amplify_5665051f",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}
