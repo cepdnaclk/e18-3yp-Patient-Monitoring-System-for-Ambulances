@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:ambulance_tracking/pages/Patient.dart';
-import 'package:ambulance_tracking/pages/PatinetDetails.dart';
+import 'package:ambulance_tracking/pages/PatientDetails.dart';
 
 
 final MqttServerClient client = MqttServerClient('a3rwyladencomq-ats.iot.ap-northeast-1.amazonaws.com', '');

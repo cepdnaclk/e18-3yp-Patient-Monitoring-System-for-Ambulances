@@ -40,10 +40,13 @@ dependencies:
   amplify_flutter: ^0.6.10
   amplify_auth_cognito: ^0.6.10
   amplify_analytics_pinpoint: ^0.6.10
+  grouped_list: ^5.1.2
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+#  test: ^1.22.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -66,6 +69,7 @@ flutter:
     - asserts/certs/AmazonRootCA1.pem
     - asserts/certs/2.crt
     - asserts/certs/1.key
+    - asserts/files/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

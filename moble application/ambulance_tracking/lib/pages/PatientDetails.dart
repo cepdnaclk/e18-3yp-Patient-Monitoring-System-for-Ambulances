@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:ambulance_tracking/pages/Connect.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:ambulance_tracking/pages/Patient.dart';
+import 'package:ambulance_tracking/pages/Chat.dart';
+import 'package:ambulance_tracking/pages/Conn.dart';
+// import 'package:ambulance_tracking/pages/MessageList.dart';
+import 'package:ambulance_tracking/pages/Message.dart';
+import 'package:path_provider/path_provider.dart';
 String ss = '';
 class ViewDetails extends StatefulWidget {
   const ViewDetails({Key? key}) : super(key: key);
-
   @override
   State<ViewDetails> createState() => _ViewDetailsState();
 }
@@ -25,8 +27,9 @@ class _ViewDetailsState extends State<ViewDetails> {
   TextEditingController conditionController = TextEditingController();
   final MqttServerClient client = MqttServerClient('a3rwyladencomq-ats.iot.ap-northeast-1.amazonaws.com', '');
   late Patient patient;
-  String str = '';
+
   late String deviceID;
+  late String hospitalID;
   late int age;
   late String name;
   late String condition;
@@ -34,11 +37,16 @@ class _ViewDetailsState extends State<ViewDetails> {
   late bool isNameChanged;
   late bool isAgeChanged;
   late bool isConditionChanged;
+  late int msgCount;
+
 
   Map<String, String> menuItems = {"Hospital1":"001", "Hospital2":"002", "Hospital3":"003"};
   //late List<String> hospitalList = [];
   late String selectedVal;
 
+  late bool inChat;
+
+  List<Message> messageFromHospital = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -47,6 +55,7 @@ class _ViewDetailsState extends State<ViewDetails> {
 
     patient = Patient.empty();
     deviceID = '';
+    hospitalID = '';
     firstClick = true;
     isNameChanged = false;
     isAgeChanged = false;
@@ -59,102 +68,62 @@ class _ViewDetailsState extends State<ViewDetails> {
     selectedVal = menuItems.keys.toList()[0];
     //print(menuItems['Hospital1']);
     print(selectedVal);
+    msgCount = 0;
+    inChat = false;
+    messageFromHospital.add(Message('initial', DateTime.now(), true));
 
     //print(hospitalList);
     //selectedVal = hospitalList[0];
   }
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
 
-  // Future<void> getMessage() async{
-  //   client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-  //     final recMess = c![0].payload as MqttPublishMessage;
-  //     final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-  //     print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-  //     setState(() {
-  //       str = pt;
-  //     });
-  //     print("heloooooooo   $str");
-  //   });
-  // }
-
-  void onConnected(){
-    log("connection successful");
-  }
-  void onDisconnected(){
-    log("client disconnected");
+    return directory.path;
   }
 
-  void pong(){
-    log("ping invoked");
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/counter.txt');
   }
 
-  _connect(){
 
-  }
-  _disconnect(){
-    client.disconnect();
-  }
-  void mqttConnect() async{
-    log("Connecting");
+  Connection conn = Connection();
+  //late Chat chat = Chat(conn);
 
-    ByteData rootCA = await rootBundle.load('asserts/certs/AmazonRootCA1.pem');
-    ByteData deviceCert = await rootBundle.load('asserts/certs/2.crt');
-    ByteData privateKey = await rootBundle.load('asserts/certs/1.key');
-
-    SecurityContext context = SecurityContext.defaultContext;
-    context.setClientAuthoritiesBytes(rootCA.buffer.asInt8List());
-    context.useCertificateChainBytes(deviceCert.buffer.asInt8List());
-    context.usePrivateKeyBytes(privateKey.buffer.asInt8List());
-
-    client.securityContext = context;
-    client.logging(on: true);
-    client.keepAlivePeriod = 20;
-    client.port = 8883;
-    client.secure = true;
-    client.onConnected = onConnected;
-    client.onDisconnected = onDisconnected;
-    client.pongCallback = pong;
-
-    final MqttConnectMessage connMess = MqttConnectMessage().withClientIdentifier('android').startClean();
-    client.connectionMessage = connMess;
-
-    await client.connect();
-
-    if(client.connectionStatus!.state == MqttConnectionState.connected){
-      log("Connected to AWS");
-    }else{
-      _disconnect();
-    }
-
-    String topic = 'Device_$deviceID';
-    String pubTopic = '/AmbulanceProject/Hospital_${menuItems[selectedVal]}/$deviceID';
-    const hosTopic = 'hospital/data';
-
-    client.subscribe(pubTopic, MqttQos.atMostOnce);
-    client.subscribe(hosTopic, MqttQos.atMostOnce);
-    //client.subscribe(pubTopic, MqttQos.atMostOnce);
-
-    final builder = MqttClientPayloadBuilder();
-    builder.addString('start:${menuItems[selectedVal]}');
-    client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-
-    client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+  void setupUpdatesListener() {
+    conn
+        .getMessagesStream()!
+        .listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
       final pt =
-      MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-      setState(() {
-        str = pt.toString();
-        // Map<String, dynamic> json = jsonDecode(pt);
-        //patient.fromJson(jsonDecode(pt));
-        patient = Patient.fromJson(jsonDecode(pt));
-        log(patient.toString());
-      });
-      print(
-          'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-      print('');
-    });
-    //print(str);
+      MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+          setState(() {
+            //str = pt.toString();
+            // Map<String, dynamic> json = jsonDecode(pt);
+            //patient.fromJson(jsonDecode(pt));
+            if(c[0].topic == '/AmbulanceProject/Hospital_$hospitalID/$deviceID'){
+              patient = Patient.fromJson(jsonDecode(pt));
+              //return;
+            }else if(c[0].topic == 'chat/receive/data'){
+              messageFromHospital.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false));
+              msgCount++;
+                  //message.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false);
 
+            }
+            //log(patient.toString());
+          });
+      print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
+    });
   }
+
+
+
+
+
+
+
+
+
 
   Widget cardTemplate(String parameterName, double parameterValue, double maxValue){
     return Card(
@@ -297,29 +266,27 @@ class _ViewDetailsState extends State<ViewDetails> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: ElevatedButton(
-                            onPressed: (){
-                              // setState(() {
-                              //   clickCount += 1;
-                              // });
+                            onPressed: () async {
                               log('clicked=$firstClick');
                               if(_formKey.currentState!.validate() && firstClick){
                                 setState(() {
                                   firstClick = false;
                                 });
                                 deviceID = deviceIDController.text;
-                                mqttConnect();
+                                hospitalID = menuItems[selectedVal].toString();
+
+                                await conn.mqttConnect();
+
+                                conn.subscribeTopic('/AmbulanceProject/Hospital_$hospitalID/$deviceID');
+                                conn.publishMsg('Device_$deviceID', 'start:$hospitalID');
+                                conn.subscribeTopic('chat/receive/data');
+
                               }
-                              log('condition added:$isConditionChanged');
-                              // setState(() {
-                              //   name = nameController.text == ''? 'none' : nameController.text;
-                              //   age = age == 0? age : int.parse(ageController.text);
-                              //   //condition = isConditionChanged ? conditionController.text : 'none';
-                              //   log(name);
-                              //   log(condition);
-                              //   log(age.toString());
-                              //   log(deviceID.toString());
-                              //   log(patient.toString());
-                              // });
+
+                              if(!firstClick){
+                                setupUpdatesListener();
+                              }
+
                               patient.name = name;
                               patient.age = age;
                               patient.condition = condition;
@@ -361,7 +328,56 @@ class _ViewDetailsState extends State<ViewDetails> {
                       cardTemplate("Oxygen Sat.", patient.oxygenSaturation, 20.0)
                     ],
                   ),
-                )
+                ),
+
+                Container(
+                  // color: Colors.deepOrange,
+                  decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))
+                  ),
+                  padding: EdgeInsets.all(2.0),
+                  height: 70,
+                  width: 70,
+                  child: Stack(
+                    children: <Widget>[
+                      //Text('1'),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: msgCount == 0 ? const Text('') : Text("$msgCount",
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: IconButton(
+                            icon: const Icon(Icons.message, size: 40),
+                            //iconSize: 40.0,
+                            color: Colors.blueAccent,
+                            padding: EdgeInsets.all(0),
+                            style: IconButton.styleFrom(
+                              foregroundColor: Colors.grey,
+                              elevation: 10,
+                              //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                            ),
+                            onPressed: (){
+                              setState(() {
+                                msgCount = 0;
+                              });
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Chat(conn, messageFromHospital, msgCount)));
+
+
+
+                            },
+                            //child: const Text('chat'),
+                          ),
+                        ),
+                      ),
+                    ]
+                    ),
+                  )
 
               ],
             ),
