@@ -6,28 +6,26 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 
 ## Solution Architecture
-![SolutionArchitecture drawio (3)](https://user-images.githubusercontent.com/73444543/204417087-dc541348-8a63-48ff-ae67-7f2a7f0a0d86.png)
-
+![new solution arc](https://user-images.githubusercontent.com/73444543/208265720-25ee0ba3-8126-4050-be56-db9e08c26552.png)
 
 ## Hardware and Software Designs
 ### Hardware Components
-ATMega328P\
-![atmega](https://user-images.githubusercontent.com/73444543/204417187-1f38e246-e0ea-4cc5-a818-8c29cbd5d98b.jpg)
+NodeMCU ESP8266\
+![nodemcu](https://user-images.githubusercontent.com/73444543/208266752-962d3ed1-1adb-4f89-8e55-7af7f72bf5d0.jpg)
 
-
-Microcontroller is like brain of the system because it communicates with inputs and outputs and controls the entire operation of the system. Here we are using ATMega328P as the Microcontroller. Reading longitude and latitude from GPS modem, reading health parameters of the patient, desplaying them on a user interfaces and send these data to the cloud are the various functions of the Microcontroller.
-
-ESP8266 Wifi Module\
- ![wifi](https://user-images.githubusercontent.com/73444543/199441973-f2b57172-b4e1-4b0e-ba53-34a7d887132b.jpg)
-
-The ESP8266 WiFi Module is a self contained SOC with integrated TCP/IP protocol stack that can give any microcontroller access to your WiFi network. The ESP8266 is capable of either hosting an application or offloading all WiFi networking functions from another application processor.
-
+Microcontroller is like brain of the system because it communicates with inputs and outputs and controls the entire operation of the system. Here we are using NodeMCU ESP8266 as the Microcontroller.It consists of inbuilt WIFI module. Reading longitude and latitude from GPS modem, reading health parameters of the patient from the sensors, desplaying them on a user interfaces and send these data to the cloud are the various functions of the Microcontroller.</p>
+</kbd>
 GPS Modem (NEO6MV2)\
  ![gps](https://user-images.githubusercontent.com/73444543/199442004-74162ede-0182-4212-aa7d-c7a19581b212.jpg)
 
 Main function of GPS modem is provide longitude and latitude of the ambulance to the Microcontroller. It receives data from satellite and transfer them into Microcontroller through serial communication. As ambulance moves along the way from patient’s home to hospital, the co- ordinates of ambulance location will change and these variations are given to Microcontroller.
 
-Heart Rate Oxygen Pulse Sensor Module\
+GSM Module - SIM800L\
+![GSM](https://user-images.githubusercontent.com/73444543/208266015-cd79e4e7-68e1-4424-9f42-155554595a0f.jpg)
+
+The SIM800L GSM/GPRS module is a miniature GSM modem can be used for normal cell phones to send SMS messages, make phone calls, connect to the Internet via GPRS etc.
+
+Heart Rate Oxygen Pulse Sensor Module - MAX30100\
 ![bpm](https://user-images.githubusercontent.com/73444543/204417296-e6cda821-8f3d-4506-a4fd-d3d5342bab45.jpg)
 
 MAX30100 is a multipurpose sensor used for multiple applications. It is a heart rate monitoring sensor along with a pulse oximeter. The sensor comprises two Light Emitting Diodes, a photodetector, and a series of low noise signal processing devices to detect heart rate and to perform pulse oximetry.
@@ -49,6 +47,22 @@ DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM t
  ![12](https://user-images.githubusercontent.com/73444543/204422309-84cb99e1-f864-49a1-9c4f-e5c02b12adcd.jpeg) \
 ![13](https://user-images.githubusercontent.com/73444543/204422321-a20edf16-2f6c-4c07-8dac-eb6b77541fa5.jpeg)
  ![14](https://user-images.githubusercontent.com/73444543/204422332-05087242-e46a-4c22-b2f7-2df2d15c888b.jpeg)
+ 
+## DataBase
+Stored Information 
+-User Credential details
+-Hospital Information
+
+Useful AWS Services 
+
+AWS Lambda\
+![lambda](https://user-images.githubusercontent.com/73444543/208267083-d9dab665-57b0-40a7-b8e2-d419366a0e64.png)
+
+Amazon DynamoDB\
+![dynamodb](https://user-images.githubusercontent.com/73444543/208267120-5a4ede32-1d2f-44ba-90c1-380c6b18b202.png)
+
+Amazon API GAteway\
+![gateway](https://user-images.githubusercontent.com/73444543/208267122-5f6769af-9dc9-43fc-bdc1-9fc36c321e1a.png)
 
 ## Testing
 
