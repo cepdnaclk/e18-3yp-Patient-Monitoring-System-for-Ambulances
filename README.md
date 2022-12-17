@@ -50,8 +50,8 @@ DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM t
  
 ## DataBase
 Stored Information 
--User Credential details
--Hospital Information
+- User Credential details
+- Hospital Information
 
 Useful AWS Services 
 
@@ -66,8 +66,24 @@ Amazon API GAteway\
 
 ## Testing
 
-![test](https://user-images.githubusercontent.com/73444543/204421340-10ca4bd6-b77f-43df-8702-fe169283b12f.png)
-     
+Software Testing - Web application
+|Testing Type | Functionlities to be checked | Software used|
+|-------------|------------------------------|--------------|
+|Hardware Testing| Input data from sensors | Platform.io ![platformio](https://user-images.githubusercontent.com/73444543/208268165-b5c0ded8-0424-4fca-b804-30b91765a0a7.png)|
+|Web-Application Testing|Login validation | Selenium ![selenium](https://user-images.githubusercontent.com/73444543/208268252-3481923c-5e93-462f-8007-66c98a183359.png) |
+|Mobile Application Testing | Login validation | Appium ![appium](https://user-images.githubusercontent.com/73444543/208268362-b6bc9f2e-da5e-4784-b59e-ba37290f0b22.png) |
+| API Testing | GET ,DELETE ,PUT requests about users and hospitals| Postman ![postman](https://user-images.githubusercontent.com/73444543/208268493-e550219f-5ca8-47c0-a08b-8120ec53b8fa.png) |
+
+## Security Aspects
+
+- User credentials for both the end users (hospitals, medical officers)
+- Connection to the app is authorized by the device
+- MQTT - Authentication - AWS certificates
+- MQTT - Authorization - AWS Policies
+- HTTP - Authentication - AWS certificates
+- HTTP - Authorization - AWS Roles
+- Both are end-to-end encrypted
+
 Considering one device :
 
 Data inputs : 
@@ -75,7 +91,7 @@ Data inputs :
        pulse rate , heart rate , oxygen saturation - from a real person   
        GPS cordinates :  executing  a given script of GPS cordinates
        
-Checking them via Web interface
+Checking them via Web interface 
 
 
 ## Detailed budget
