@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 // import 'dart:html';
@@ -55,28 +56,49 @@ class _ChatState extends State<Chat> {
 
     // message.addAll(widget.mess);
     // widget.mess.clear();
-    isFirstClick = true;
-    widget.msgCount = 0;
-  }
-  void setupUpdatesListenerForChat() {
-    //final File file = File('asserts/files/test.json');
+    // isFirstClick = true;
 
-    widget.connect
-        .getStream()!
-        .listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-      final recMess = c![0].payload as MqttPublishMessage;
-      final pt =
-      MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+    //updateMsg();
+    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
       }
-      setState((){
-        widget.mess.removeLast();
-        widget.mess.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false));
+      setState(() {
+        widget.msgCount = 0;
+        //widget.mess.add(Message('test', DateTime.now(), true));
       });
-      print('Chat: <${c[0].topic}> is $pt\n');
     });
   }
+  // void setupUpdatesListenerForChat() {
+  //   //final File file = File('asserts/files/test.json');
+  //
+  //   widget.connect
+  //       .getStream()!
+  //       .listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+  //     final recMess = c![0].payload as MqttPublishMessage;
+  //     final pt =
+  //     MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+  //     if (!mounted) {
+  //       return;
+  //     }
+  //     setState((){
+  //       widget.mess;
+  //       //widget.mess.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false));
+  //     });
+  //     print('Chat: <${c[0].topic}> is $pt\n');
+  //   });
+  // }
+
+  // Future<void> updateMsg() async{
+  //   setState((){
+  //     widget.mess.add(Message('test', DateTime.now(), true));
+  //   });
+  // }
+  //@override
+  // void setState(VoidCallback fn) {
+  //   // TODO: implement setState
+  //   widget.mess.add(Message('test', DateTime.now(), true));
+  // }
   // Future<void> readJson() async {
   //   final String response = await rootBundle.loadString('asserts/files/test.json');
   //   final data = await json.decode(response);
@@ -111,6 +133,8 @@ class _ChatState extends State<Chat> {
 
 
 
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -118,69 +142,71 @@ class _ChatState extends State<Chat> {
       appBar: AppBar(
         title: const Text('Chat')
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-                child: GroupedListView<Message, DateTime>(
-                  padding: const EdgeInsets.all(8),
-                  elements: widget.mess,
-                  groupBy: (message) => DateTime(2022),
-                  groupHeaderBuilder: (Message message) => SizedBox(),
-                  itemBuilder: (context, Message message) => Align(
-                    alignment: message.isSentByMe? Alignment.centerRight:Alignment.centerLeft,
-                    child: Card(
-                      elevation: 8,
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Text(message.text),
-                      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+              child: GroupedListView<Message, DateTime>(
+                padding: const EdgeInsets.all(8),
+                elements: widget.mess,
+                groupBy: (message) => DateTime(2022),
+                groupHeaderBuilder: (Message message) => const SizedBox(),
+                itemBuilder: (context, Message message) => Align(
+                  alignment: message.isSentByMe? Alignment.centerRight:Alignment.centerLeft,
+                  child: Card(
+                    elevation: 8,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(message.text),
                     ),
                   ),
-                )
-            ),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              // color: Colors.grey,
-              child:Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 310,
-                      child: TextFormField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30.0))
-                          ),
-                        contentPadding: EdgeInsets.all(15),
-                        hintText: 'type msg'
-                      ),
-
-                      controller: messageController,
-
-
-
-                      // onSubmitted: (text){
-                      //   // setupUpdatesListenerForChat();
-                      //   final msg = Message(text, DateTime.now(), true);
-                      //   setState(() {
-                      //     message.add(msg);
-                      //     widget.connect.publishMsg('chat/send/data', msg.text);
-                      //   });
-                      // },
-                      ),
+                ),
+              )
+          ),
+          Container(
+            padding: const EdgeInsets.all(5.0),
+            // color: Colors.grey,
+            child:Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 315,
+                    child: TextFormField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30.0))
+                        ),
+                      contentPadding: EdgeInsets.all(15),
+                      hintText: 'Text Message'
                     ),
-                    const SizedBox(width: 10),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 6),
+
+                    controller: messageController,
+
+
+
+                    // onSubmitted: (text){
+                    //   // setupUpdatesListenerForChat();
+                    //   final msg = Message(text, DateTime.now(), true);
+                    //   setState(() {
+                    //     message.add(msg);
+                    //     widget.connect.publishMsg('chat/send/data', msg.text);
+                    //   });
+                    // },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    // color: Colors.red,
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 0),
                       child: IconButton(
                           color: Colors.blueAccent,
                           icon: const Icon(Icons.send, size: 45),
                         //padding: EdgeInsets.all(10),
                         onPressed: (){
                           final msg = Message(messageController.text, DateTime.now(), true);
-                          if(isFirstClick){
-                            setupUpdatesListenerForChat();
-                          }
+                          // if(isFirstClick){
+                          //   setupUpdatesListenerForChat();
+                          // }
                           setState(() {
                             isFirstClick = false;
                             widget.mess.add(msg);
@@ -188,29 +214,29 @@ class _ChatState extends State<Chat> {
                           });
                         },
                       ),
-                    )
+                    ),
+                  )
 
 
-                ]
-              ),
+              ]
             ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(vertical: 16.0),
-            //   child: ElevatedButton(
-            //
-            //     onPressed: () async{
-            //         //await connect.mqttConnect('001', '001');
-            //       // widget.connect.subscribeTopic('chat/receive/data');
-            //       setupUpdatesListenerForChat();
-            //       // widget.connect.publishMsg('chat/send/data', 'hloo');
-            //       //readJson();
-            //       }, child: null,
-            //
-            //   ),
-            // ),
-            // Text(str)
-          ],
-        ),
+          ),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(vertical: 16.0),
+          //   child: ElevatedButton(
+          //
+          //     onPressed: () async{
+          //         //await connect.mqttConnect('001', '001');
+          //       // widget.connect.subscribeTopic('chat/receive/data');
+          //       setupUpdatesListenerForChat();
+          //       // widget.connect.publishMsg('chat/send/data', 'hloo');
+          //       //readJson();
+          //       }, child: null,
+          //
+          //   ),
+          // ),
+          // Text(str)
+        ],
       ),
     );
   }

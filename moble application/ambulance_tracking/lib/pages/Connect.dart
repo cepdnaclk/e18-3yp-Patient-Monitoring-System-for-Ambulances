@@ -15,7 +15,7 @@ import 'package:ambulance_tracking/pages/PatientDetails.dart';
 
 
 final MqttServerClient client = MqttServerClient('a3rwyladencomq-ats.iot.ap-northeast-1.amazonaws.com', '');
-String s = '';
+//String s = '';
 
 void onConnected(){
   log("connection successful");
@@ -86,7 +86,7 @@ void mqttConnect() async{
     final recMess = c![0].payload as MqttPublishMessage;
     final pt =
     MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-    ss = pt;
+    //ss = pt;
     print(
         'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
     print('');
