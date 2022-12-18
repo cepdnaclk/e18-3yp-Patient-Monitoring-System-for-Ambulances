@@ -42,19 +42,29 @@ SoftwareSerial gpsSerial(RXPin, TXPin);
 /*
 const char* ssid = "Dialog 4G 769";
 const char* password = "583BbFe3";*/
-
+/*
 const char* ssid = "Dialog 4G 517";
 const char* password = "576E5Fc3";
+*/
 /*
 const char* ssid = "Eng-Student";
 const char* password = "3nG5tuDt";
 */
-String deviceID = "001";
+
+const char* ssid = "ACES_Coders";
+const char* password = "Coders@2022";
+
+/*
+const char* ssid = "Gimhara Wi~Fi";
+const char* password = "hachcha@1122";
+*/
+
+String const deviceID = "001";
 String const hospitalID = "001";
 String outTopic;
 String inTopic = "Device_"+deviceID;
 
-boolean rideFLAG = 0;
+boolean rideFLAG = false;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP,"pool.ntp.org");
@@ -145,14 +155,15 @@ void changeHospital(String hospital){
 
 void startRide(String newHospital){
   /*This function starts a new ride*/
-  rideFLAG = true;  
   changeHospital(newHospital);
+  client.publish((char*)(outTopic.c_str()),"Active");
+  rideFLAG = true;
 }
 
 void stopRide(){
   /*This function stops an existing ride*/
-  rideFLAG = false;  
   changeHospital(hospitalID);
+  rideFLAG = false;  
 }
 
 void reconnect(){
@@ -250,8 +261,9 @@ void setup() {
   }
   Serial.print("Heap: ");
   Serial.println(ESP.getFreeHeap());
-  /*//max30100
-  // Initialize max30100 sensor
+  /*
+  //max30100
+  //Initialize max30100 sensor
   if (!pox.begin()) {
     Serial.println("FAILED");
       for(;;);
@@ -261,11 +273,13 @@ void setup() {
 
   // Configure sensor to use 7.6mA for LED drive
   pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
-*/
-  
-  //outTopic = "patient/data";  //to connect with app
+  */
 }
-float value = 0;
+float value1 = 42;
+float value2 = 61;
+float value3 = 58;
+float value4 = 83;
+
 void loop() {
   // put your main code here, to run repeatedly:
   if(!client.connected()){
@@ -276,6 +290,7 @@ void loop() {
 
   if(rideFLAG){
     long now = millis();
+    //pox.update();
     if(now-lastMsg>2000){
       lastMsg = now;
   
@@ -284,10 +299,10 @@ void loop() {
       temperature = ds18b20.getTempCByIndex(0);*/ 
       /*
       // Read from the max30100 sensor
-      pox.update();
       heart_rate = pox.getHeartRate();
       spo2 = pox.getSpO2();
-  */
+      Serial.print(heart_rate);
+      Serial.print(spo2);*/
       /*// Read from the max30100 sensor
       gpsSerial.read();
       lattitude = gps.location.lat();
@@ -296,8 +311,12 @@ void loop() {
       
       //snprintf(msg,200,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Lattitude\": %ld, \"Longitude\": %ld, \"Altitude\": %ld}",temperature,heart_rate,spo2,lattitude,longitude,Altitude);
       //snprintf(msg,200,"{\"Heart rate\": %ld, \"Oxygen sat. level\": %ld}",heart_rate,spo2);
-      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value+0.2454,value+1.1545,value+1.64545,value+1.9946);
-      value++;
+      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value1,value2,value3,value4);
+      value1=value1+0.243;
+      value2=value2+0.3578;
+      value3=value3+0.1259;
+      value4=value4+0.5346;
+      
       Serial.print("Publish message: ");
       Serial.print(outTopic);
       Serial.println(msg);
