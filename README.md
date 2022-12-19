@@ -1,4 +1,4 @@
-## Introduction
+## Project Overview
 
 There’s no existing system to monitor the patients while they are taken to the hospital by emergency vehicles in Sri Lanka. In some scenarios, due to the lack of facilities and resources, patients are transferred from one hospital to another hospital. This can be inconvenient for both parties; the patient and the hospital. It might be a risk to the patient’s life as well. Even after admitting to the hospital, it may take some time to arrange things for the patient and check the status of the patient. Other than the test results, the Status and the condition of the patient are normally conveyed by a guardian of the patient and there can be reliability issues in such information. 
 
@@ -50,20 +50,25 @@ The technologies we used for build up our system is as follows.
 ![techstack](https://user-images.githubusercontent.com/73444543/208270790-d2a1e0a0-7d49-4aeb-9ad7-38f038d42e62.jpg)
 
 ## DataBase
-Stored Information 
-- User Credential details
-- Hospital Information
+In this system two main information has to be stored.
+- ***User Credential details*** which are usefull when login to the web application and the mobile application.
+- ***Information about Hospitals*** which areuseful when suggesting nearest hospitals and connecting with them.
 
-Useful AWS Services 
+***User Credential Details***
+| <ins>Device ID</ins> | Password |
+|---------|--------|
 
-**AWS Lambda**\
-![lambda](https://user-images.githubusercontent.com/73444543/208267083-d9dab665-57b0-40a7-b8e2-d419366a0e64.png)
+***Hopitals details***
+| <ins>Hospital ID</ins> | Contact No | Hospital Name | Lattitude | Longitude |
+|----------------------|----------|-------------|---------|--------|
 
-**Amazon DynamoDB**\
-![dynamodb](https://user-images.githubusercontent.com/73444543/208267120-5a4ede32-1d2f-44ba-90c1-380c6b18b202.png)
+Mainly 3 AWS services are useful in the data retrieving & storing process in the database.
+- For the Database ***Amazon Dynamo DB*** which is fully managed, serverless, key-value NoSQL databasehas been used. It consists of built-in security, continuous backups, automated multi-Region replication, in-memory caching, and data import and export tools.
+- Functions to aceess the database are implemented inside ***AWS Lambda*** which lets to run code for virtually any type of application or backend service without managing a server.
+- To create and  RESTful APIs which enables real-time two-way communication applications ***Amazon API Gateway*** is used.
+(Here REST APIs act as the front door for applications to access data, business logic, or functionality from the backend services)
 
-**Amazon API GAteway**\
-![gateway](https://user-images.githubusercontent.com/73444543/208267122-5f6769af-9dc9-43fc-bdc1-9fc36c321e1a.png)
+![lambda](https://user-images.githubusercontent.com/73444543/208267083-d9dab665-57b0-40a7-b8e2-d419366a0e64.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![db](https://user-images.githubusercontent.com/73444543/208336664-b201ac26-5692-4275-b22a-7baaf43c4f17.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![gateway](https://user-images.githubusercontent.com/73444543/208334345-2bbf3fb7-1fe6-446e-89a5-0c800eb428da.png)
 
 ## UI Design 
 ### Mobile Application
