@@ -82,13 +82,12 @@ Mainly 3 AWS services are useful in the data retrieving & storing process in the
  
 ## Testing
 
-Software Testing - Web application
 |**Testing Type** | **Functionlities to be checked** | **Software used** |
 |-------------|------------------------------|--------------|
-|Hardware Testing| Input data from sensors | Platform.io ![platformio](https://user-images.githubusercontent.com/73444543/208268165-b5c0ded8-0424-4fca-b804-30b91765a0a7.png)|
+|[Hardware Testing | Input data from sensors | Platform.io ![platformio](https://user-images.githubusercontent.com/73444543/208268165-b5c0ded8-0424-4fca-b804-30b91765a0a7.png)|
 |Web-Application Testing|Login validation | Selenium ![selenium](https://user-images.githubusercontent.com/73444543/208268252-3481923c-5e93-462f-8007-66c98a183359.png) |
 |Mobile Application Testing | Login validation | Appium ![appium](https://user-images.githubusercontent.com/73444543/208268362-b6bc9f2e-da5e-4784-b59e-ba37290f0b22.png) |
-| API Testing | GET ,DELETE ,PUT requests about users and hospitals| Postman ![postman](https://user-images.githubusercontent.com/73444543/208268493-e550219f-5ca8-47c0-a08b-8120ec53b8fa.png) |
+|API Testing | GET ,DELETE ,PUT requests about users and hospitals| Postman ![postman](https://user-images.githubusercontent.com/73444543/208268493-e550219f-5ca8-47c0-a08b-8120ec53b8fa.png) |
 
 ## Security Aspects
 
@@ -103,28 +102,22 @@ Software Testing - Web application
 ## Detailed Budget
 |**Item** | **Quantity** | **Price (LKR)** |
 |-----|----------|------|
-|NodeMCU ESP8266 CP2102 | 1 |From Department|
+|NodeMCU ESP8266 CP2102 | 1 |2000|
 |Temperature Sensor DS18B20 | 1 | 480 |
 |Heart rate & Oxygen sat. level sensor MAX30100 | 1 | 900 |
 |GPS Modem NEO6MV2| 1 | 1700 |
 |GSM sensor SIM800L | 1 | 2250 |
-|128*64 Oled mini display 0.96 inch | 1 | 870 |
+|128 x 64 Oled mini display 0.96 inch | 1 | 870 |
 |Female to female jumper wires(40pcs) | 1 | 220 |
 |Push button, Switch | 1 | 80 |
-|Copper board (5cm*7cm) | 1 | 250 |
+|Copper board (5cm x 7cm) | 1 | 250 |
 |4.7k Ohm resistor, LED strips | 2 | 250 |
 |Outer cover & Other | - | 3000 |
+|Total ||<ins><ins>12000</ins></ins>|
 
 
+##Demonstration Plan
 
-Considering one device :
-
-Data inputs : 
-
-       pulse rate , heart rate , oxygen saturation - from a real person   
-       GPS cordinates :  executing  a given script of GPS cordinates
-       
-Checking them via Web interface 
 
 
 
