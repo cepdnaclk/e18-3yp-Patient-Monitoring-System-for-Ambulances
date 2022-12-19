@@ -51,8 +51,9 @@
           <li><a href="#featured-services">Features</a></li>
           <li><a href="#about">Solution Architecture</a></li>
           <li><a href="#service">Hardware</a></li>
+          <li><a href="#testing">Testing</a></li>
           <li><a href="#pricing">Budget</a></li>
-          <li><a href="#testimonials">Contact Us</a></li>
+          <li><a href="#testimonials">Team</a></li>
           
         </ul>
       </nav><!-- .navbar -->
@@ -169,59 +170,109 @@
       </div>
     </section><!-- End Featured Services Section -->
 
-    <!-- ======= About Us Section ======= -->
+   
     <section id="about" class="about pt-0">
       <div class="container" data-aos="fade-up">
       
           <br><br></br></br>
-        <div class="row gy-4">
-          <div class="col-lg-6 position-relative align-self-start order-lg-last order-first">
-            <!-- <img src="assets/img/about.jpg" class="img-fluid" alt=""> -->
-            <!-- <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox play-btn"></a> -->
-            <!-- <video class="embed-responsive-item" controls="" width="640" height="480">
-              <source src="assets/img/project_video.mp4" type="video/mp4">
-              <p>Your browser does not support HTML5 video.</p>
-            </video> -->
-          </div>
-          <div class="content order-last  order-lg-first" style="background-color:azure;">
-            <div class="section-header">
+        
+            <div class="container" data-aos="fade-up">
+            <div class="section-header" style="background-color:rgb(213, 229, 245)">
               <span>SOLUTION ARCHITECTURE</span>
               <h2>SOLUTION ARCHITECTURE</h2>
+              <div class="card-img">
+                <img src="assets/images/newSol.png" alt="" class="img-fluid">
+              </div>
     
             </div>
-            <div class="card-img">
-              <img src="assets/images/newSol.png" alt="" style="align-items: center; height: 500px;width: 662px;" class="img-fluid">
             </div>
-            <!-- <p> -->
-                          <br><br></br></br>
-              <!-- <ul>
-              <li data-aos="fade-up" data-aos-delay="100">
-                <i class="bi bi-diagram-3"></i>
-                <div>
-                  <h5>Ullamco laboris nisi ut aliquip consequat</h5>
-                  <p>Magni facilis facilis repellendus cum excepturi quaerat praesentium libre trade</p>
-                </div>
-              </li>
-              <li data-aos="fade-up" data-aos-delay="200">
-                <i class="bi bi-fullscreen-exit"></i>
-                <div>
-                  <h5>Magnam soluta odio exercitationem reprehenderi</h5>
-                  <p>Quo totam dolorum at pariatur aut distinctio dolorum laudantium illo direna pasata redi</p>
-                </div>
-              </li>
-              <li data-aos="fade-up" data-aos-delay="300">
-                <i class="bi bi-broadcast"></i>
-                <div>
-                  <h5>Voluptatem et qui exercitationem</h5>
-                  <p>Et velit et eos maiores est tempora et quos dolorem autem tempora incidunt maxime veniam</p>
-                </div>
-              </li>
-            </ul> -->
-          </div>
-        </div>
+            
 
       </div>
     </section><!-- End About Us Section -->
+
+    <section id="call-to-action" class="call-to-action">
+      <div class="container" data-aos="zoom-out">
+
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <div class="section-header">
+              <span>TECHNOLOGY STACK</span>
+              <h2>TECHNOLOGY STACK</h2>
+              <div style="background-color: rgb(225, 250, 242);">
+                <ul style="text-align: left;">The technologies we used for build up our system is as follows.<br></br>
+                  <li>For the cloud server system <b>AWS IoT Core</b> has been used which allows clients to publish and subscribe messages related to different topics.</li>
+                  <li>There're main 3 categories as the clients. namely; Hardware device which programmed using <b>Arduino IDE & C++</b>, Web application and Mobile Application which are created using <b>Flutter</b>.</li>
+                  <li>All these 3 clients use <b>MQTT protocol</b> to communicate with the thing in IoT core and in there these messages are handled by <b>MQTT message broker</b></li>
+                  <li>Web application and mobile application retrieve data from database which created using <b>Amazon DynamoDB</b> through two gateways which implemented using <b>Amazon API Gateway</b> which consists of a collection of <b>REST APIs</b></li>
+                  <li><b>HTTP protocol</b> is used in this process and relevant functions are implemented inside <b>AWS Lambda</b> to retrieve data from Amazon Dynamo DB</li>
+                </ul>
+              </div>
+              <div class="card-img">
+                <img src="assets/images/techstack.jpg" alt="" class="img-fluid">
+              </div>
+              <br></br>
+              <div>
+                <h4 style="text-align: left;">Database</h4>
+              
+                <ol style="text-align: left;">In this system two main information has to be stored.<br></br>
+                  <li>User Credential details which are usefull when login to the web application and the mobile application.</li>
+                  <li>Information about Hospitals which are useful when suggesting nearest hospitals and connecting with them.</li>
+                </ol>
+              </div>
+              <div>
+                <ul style="text-align: left;">Mainly 3 AWS services are useful in the data retrieving & storing process in the database.<br></br>
+                  <li>
+                    For the Database <b>Amazon Dynamo DB</b> which is fully managed, serverless, key-value NoSQL databasehas been used. It consists of built-in security, continuous backups, automated multi-Region replication, in-memory caching, and data import and export tools.
+                  </li>
+                  <li>
+                    Functions to aceess the database are implemented inside <b>AWS Lambda</b> which lets to run code for virtually any type of application or backend service without managing a server.
+                  </li>
+                  <li>
+                    To create and RESTful APIs which enables real-time two-way communication applications <b>Amazon API Gateway</b> is used. (Here REST APIs act as the front door for applications to access data, business logic, or functionality from the backend services)
+                  </li>
+                </ul>
+              </div>
+              
+
+
+
+             </div> 
+            </div>
+
+            <div class="section-header">
+              <span>SECURITY CONSIDERATION</span>
+              <h2>SECURITY CONSIDERATION</h2>
+              <div class="row row-cols-2">
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                  <img src="assets/images/security.jpg">
+                </div>
+                <div class="col-lg-4" data-aos-delay="110">
+                  <ul style="text-align: left;">
+                    <li>User credentials for both the end users (hospitals, medical officers)</li>
+                    <li>Connection to the app is authorized by the device</li>
+                    <li>MQTT - Authentication - AWS certificates</li>
+                    <li>MQTT - Authorization - AWS Policies</li>
+                    <li>HTTP - Authentication - AWS certificates</li>
+                    <li>HTTP - Authorization - AWS Roles</li>
+                    <li>Both are end-to-end encrypted</li>
+
+
+                    </li>
+                  </ul>>
+                </div>
+
+
+              </div>
+
+          </div>
+        </div>
+
+        
+
+      </div>
+    </section><!-- End Call To Action Section -->
 
     <!-- ======= HArdware Section ======= -->
     <section id="service" class="services pt-0">
@@ -292,16 +343,6 @@
           </div>
           <!-- End Card Item -->
 
-          <!-- <div class="col-sm" data-aos="fade-up" data-aos-delay="600">
-            <div class="card">
-              <div class="card-img">
-                <img src="assets/img/warehousing-service.jpg" alt="" class="img-fluid">
-              </div>
-              <h3><a href="service-details.html" class="stretched-link">Warehousing</a></h3>
-              <p>Quas assumenda non occaecati molestiae. In aut earum sed natus eatae in vero. Ab modi quisquam aut nostrum unde et qui est non quo nulla</p> -->
-            <!-- </div>
-          </div> -->
-          <!-- End Card Item -->
 
         </div>
         <br></br>
@@ -314,32 +355,22 @@
 
         </div>
 
+        <!-- <div class="row gy-4"> -->
+          <div class="section-header">
+            <span>CAD MODEL</span>
+            <h2>CAD MODEL</h2>
+            <video class="embed-responsive-item" controls="" width="960" height="560">
+              <source src="assets/img/CAD_video.mp4" type="video/mp4">
+              <p>Your browser does not support HTML5 video.</p>
+            </video>
+          </div>
+        <!-- </div> -->
+
       </div>
     </section><!-- End Services Section -->
 
     <!-- ======= Call To Action Section ======= -->
-    <section id="call-to-action" class="call-to-action">
-      <div class="container" data-aos="zoom-out">
-
-        <div class="row justify-content-center">
-          <div class="col-lg-8 text-center">
-            <div class="section-header">
-              <span>TECHNOLOGY STACK</span>
-              <h2>TECHNOLOGY STACK</h2>
-              <div class="card-img">
-                <img src="assets/images/techstack.jpg" alt="" class="img-fluid">
-              </div>
     
-            </div>
-
-          </div>
-        </div>
-
-        
-
-      </div>
-    </section><!-- End Call To Action Section -->
-
    
 
     <section id="service" class="services pt-0">
@@ -457,7 +488,49 @@
        
 
       </div>
-    </section><!-- End Services Section -->
+<br></br>
+      <section id="testing" class="about pt-0">
+        <div class="container" data-aos="fade-up" style="background-color: rgb(196, 199, 220); padding-bottom: 60px;">
+        
+            
+      
+              <div class="container" data-aos="fade-up">
+              <div class="section-header" >
+                <span>TESTING</span>
+                <h2>TESTING</h2>
+              </div>
+
+              <table class="table table-striped" style="align-items: center;">
+                <thead>
+                  <tr>
+                    
+                    <th scope="col">What was tested ? </th>
+                    <th scope="col">How was it tested? </th>
+                    <th scope="col">Test Results </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                   
+                    <td>REST APIs</td>
+                    <td>Responses for GET, PUT, DELETE requests to the end point APIs were tested</td>
+                    <td><i class="fas fa-check fa-lg"></i></td>
+                  </tr>
+                  
+                    </tbody>
+                    </table>
+              <a class="btn btn-primary" href="testing.html" target="_blank" role="button">More details about testing <i class="bi bi-arrow-down"></i></a>
+              
+        
+              </div>
+         
+              
+  
+        </div>
+      </section>
+
+      <br><br></br></br>
+    
     <!-- ======= Pricing Section ======= -->
     <section id="pricing" class="pricing pt-0">
       <div class="container" data-aos="fade-up">
