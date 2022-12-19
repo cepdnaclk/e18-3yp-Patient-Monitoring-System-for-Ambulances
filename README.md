@@ -39,6 +39,14 @@ DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM t
 ![cicuit diagram](https://user-images.githubusercontent.com/73444543/204421503-0e8982d4-ff6d-4d79-807e-af54e95d36df.png)
 
 ## Technology Stack
+The technologies we used for build up our system is as follows.
+
+- For the cloud server system ***AWS IoT Core*** has been used which allows clients to publish and subscribe messages related to different topics.
+- There're main 3 categories as the clients. namely; Hardware device which programmed using ***Arduino IDE*** & ***C++***, Web application and Mobiles Application which are creted usig ***Flutter***.
+- All these 3 clients use ***MQTT*** protocol to communicate with the thing in IoT core and in there these messages are handled by ***MQTT message broker*** 
+- Web application and mobile application retrieve data from database which created using ***Amazon DynamoDB*** through two gateways which implemented using ***Amazon API Gateway*** which consists of a collection of ***REST APIs***
+- ***HTTP*** protocol is used in this process and relevant functions are implemented inside ***AWS Lambda*** to retrieve data from ***Amazon Dynamo DB***
+
 ![techstack](https://user-images.githubusercontent.com/73444543/208270790-d2a1e0a0-7d49-4aeb-9ad7-38f038d42e62.jpg)
 
 ## DataBase
