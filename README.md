@@ -32,7 +32,6 @@ MAX30100 is a multipurpose sensor used for multiple applications. It is a heart 
 
 **Temperature Sensor Module - DS18B20**\
 ![ds18b20resized](https://user-images.githubusercontent.com/99112218/208659438-76b42ed4-c910-433f-9a26-5005fc724ff0.jpg)
-
 DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
 
 ## Circuit Diagram
