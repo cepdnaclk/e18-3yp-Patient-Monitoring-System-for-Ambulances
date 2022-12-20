@@ -31,9 +31,9 @@ The SIM800L GSM/GPRS module is a miniature GSM modem can be used for normal cell
 MAX30100 is a multipurpose sensor used for multiple applications. It is a heart rate monitoring sensor along with a pulse oximeter. The sensor comprises two Light Emitting Diodes, a photodetector, and a series of low noise signal processing devices to detect heart rate and to perform pulse oximetry.
 
 **Temperature Sensor Module - DS18B20**\
-![temp](https://user-images.githubusercontent.com/73444543/199442056-3605ccba-edb2-4250-b456-cc2aacf86f1b.jpg)
+DS18B20 digital ![ds18b20resized](https://user-images.githubusercontent.com/99112218/208659438-76b42ed4-c910-433f-9a26-5005fc724ff0.jpg)
 
-DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
+temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
 
 ## Circuit Diagram
 ![nodehardware](https://user-images.githubusercontent.com/73444543/208601030-ceebcf0f-fd17-4c0f-80cf-86411f2623f3.png)
