@@ -42,18 +42,18 @@ SoftwareSerial gpsSerial(RXPin, TXPin);
 /*
 const char* ssid = "Dialog 4G 769";
 const char* password = "583BbFe3";*/
-/*
+
 const char* ssid = "Dialog 4G 517";
 const char* password = "576E5Fc3";
-*/
+
 /*
 const char* ssid = "Eng-Student";
 const char* password = "3nG5tuDt";
 */
-
+/*
 const char* ssid = "ACES_Coders";
 const char* password = "Coders@2022";
-
+*/
 /*
 const char* ssid = "Gimhara Wi~Fi";
 const char* password = "hachcha@1122";
