@@ -6,15 +6,19 @@ import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 class Chat extends StatefulWidget {
-  final List<Message> mess;
-  final Connection connect;
-  const Chat(this.mess, this.connect);
+  List<Message> mess;
+  Connection connect;
+  Chat({super.key, required this.mess, required this.connect});
 
   @override
-  State<Chat> createState() => _ChatState();
+  State<Chat> createState() => _ChatState(mess, connect);
 }
 
 class _ChatState extends State<Chat> {
+  List<Message> mess;
+  Connection connect;
+  _ChatState(this.mess, this.connect);
+
   TextEditingController messageController = TextEditingController();
   @override
   void initState() {
@@ -53,7 +57,7 @@ class _ChatState extends State<Chat> {
         Expanded(
             child: GroupedListView<Message, DateTime>(
           padding: const EdgeInsets.all(8),
-          elements: widget.mess,
+          elements: mess,
           groupBy: (message) => DateTime(2022),
           groupHeaderBuilder: (Message message) => const SizedBox(),
           itemBuilder: (context, Message message) => Align(
@@ -86,8 +90,8 @@ class _ChatState extends State<Chat> {
                 final msg =
                     Message(messageController.text, DateTime.now(), true);
                 setState(() {
-                  widget.mess.add(msg);
-                  widget.connect.publishMsg('chat/send/data', msg.text);
+                  mess.add(msg);
+                  connect.publishMsg('chat/send/data', msg.text);
                 });
               },
             ),

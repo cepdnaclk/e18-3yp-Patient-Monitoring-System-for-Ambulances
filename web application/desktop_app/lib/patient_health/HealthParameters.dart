@@ -1,15 +1,38 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
 
 class ViewParameters extends StatefulWidget {
-  final Patient patient;
-  const ViewParameters(this.patient);
+  List<Patient> patients;
+  int patientIndex;
+  ViewParameters(
+      {super.key, required this.patientIndex, required this.patients});
 
   @override
-  State<ViewParameters> createState() => _ViewParametersState();
+  State<ViewParameters> createState() =>
+      _ViewParametersState(patientIndex, patients);
 }
 
 class _ViewParametersState extends State<ViewParameters> {
+  int patientIndex;
+  List<Patient> patients;
+  _ViewParametersState(this.patientIndex, this.patients);
+  // late Patient pa;
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        log('from parameters $patients');
+      });
+    });
+  }
+
   Widget parameterTemplate(
       margin, String parameterName, double parameterValue) {
     return Expanded(
@@ -66,11 +89,11 @@ class _ViewParametersState extends State<ViewParameters> {
             parameterTemplate(
                 const EdgeInsets.only(top: 20, left: 20, right: 10, bottom: 10),
                 'Temperature',
-                widget.patient.temperature),
+                patients[patientIndex].temperature),
             parameterTemplate(
                 const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
                 'Heart Rate',
-                widget.patient.heartRate)
+                patients[patientIndex].heartRate)
           ],
         ),
         Row(
@@ -78,11 +101,11 @@ class _ViewParametersState extends State<ViewParameters> {
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
                 'Pulse Rate',
-                widget.patient.pulseRate),
+                patients[patientIndex].pulseRate),
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 10),
                 'Oxygen Saturation',
-                widget.patient.oxygenSaturation)
+                patients[patientIndex].oxygenSaturation)
           ],
         )
       ],

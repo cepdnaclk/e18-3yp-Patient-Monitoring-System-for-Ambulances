@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
 import 'package:desktop_app/chat/Message.dart';
@@ -7,20 +10,51 @@ import 'package:desktop_app/patient_health/HealthParameters.dart';
 import 'package:desktop_app/maps/Map.dart';
 
 class PatientData extends StatefulWidget {
-  final Patient patient;
-  final List<Message> messages;
-  final Connection connect;
-  const PatientData(this.patient, this.messages, this.connect);
+  List<Patient> patients;
+  int patientIndex;
+  List<Message> messages;
+  Connection connect;
+  double lat, long;
+  PatientData(
+      {super.key,
+      required this.patientIndex,
+      required this.messages,
+      required this.connect,
+      required this.lat,
+      required this.long,
+      required this.patients});
 
   @override
-  State<PatientData> createState() => _PatientDataState();
+  State<PatientData> createState() =>
+      _PatientDataState(patientIndex, messages, connect, lat, long, patients);
 }
 
 class _PatientDataState extends State<PatientData> {
+  List<Patient> patients;
+  int patientIndex;
+  List<Message> messages;
+  Connection connect;
+  double lat, long;
+  _PatientDataState(this.patientIndex, this.messages, this.connect, this.lat,
+      this.long, this.patients);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        log('from patient data $patients');
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.patient.name)),
+      appBar: AppBar(title: Text(patients[patientIndex].name)),
       body: Center(
         child: Container(
           // color: Color.fromARGB(155, 0, 140, 254),
@@ -51,7 +85,8 @@ class _PatientDataState extends State<PatientData> {
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 margin: const EdgeInsets.all(10),
-                child: ViewParameters(widget.patient),
+                child: ViewParameters(
+                    patientIndex: patientIndex, patients: patients),
               ),
             ),
             Expanded(
@@ -79,7 +114,7 @@ class _PatientDataState extends State<PatientData> {
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 margin: const EdgeInsets.all(10),
-                child: Chat(widget.messages, widget.connect),
+                child: Chat(mess: messages, connect: connect),
               ),
             )
           ]),

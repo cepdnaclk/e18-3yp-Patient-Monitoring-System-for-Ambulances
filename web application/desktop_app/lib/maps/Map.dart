@@ -1,4 +1,6 @@
 // import 'dart:async';
+import 'dart:async';
+
 import 'package:latlng/latlng.dart';
 import 'package:latlong2/latlong.dart' as latLng;
 // import 'package:flutter_map/flutter_map.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_map/flutter_map.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Map extends StatefulWidget {
+  //final double lat, long;
   const Map({super.key});
 
   @override
@@ -27,24 +30,37 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
+  late double lat;
+  late double long;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    lat = 6.927079;
+    long = 79.861244;
+    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        lat += 0.0001;
+        long += 0.0001;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
           // color: Colors.blue,
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       child: FlutterMap(
         options: MapOptions(
-          center: latLng.LatLng(6.927079, 79.861244),
+          center: latLng.LatLng(lat, long),
           zoom: 9.2,
         ),
-        // nonRotatedChildren: [
-        //   // AttributionWidget.defaultWidget(
-        //   //   source: '',
-        //   //   onSourceTapped: null,
-        //   // ),
-        // ],
         children: [
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -53,7 +69,7 @@ class _MapState extends State<Map> {
           MarkerLayer(
             markers: [
               Marker(
-                point: latLng.LatLng(6.927079, 79.861244),
+                point: latLng.LatLng(lat, long),
                 width: 80,
                 height: 80,
                 builder: (context) => const Icon(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -21,13 +22,27 @@ class _HomeState extends State<Home> {
   Connection mqttConnection = Connection();
   List<Patient> patients = [];
   List<Message> messages = [];
+  double lat = 6.927079;
+  double long = 79.861244;
   late int patientCount;
+  late Patient p;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     patientCount = 0;
+    lat = 6.927079;
+    long = 79.861244;
+    p = Patient('none', 0, 'none', 0.0, 0.0, 0.0, 0.0);
+    // Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+    //   if (!mounted) {
+    //     return;
+    //   }
+    //   setState(() {
+    //     PatientData(patient, messages, mqttConnection, lat, long);
+    //   });
+    // });
   }
 
   int rowCount() {
@@ -52,20 +67,31 @@ class _HomeState extends State<Home> {
           if (pt == 'Active') {
             return;
           }
-          patients.add(Patient.fromJson(jsonDecode(pt)));
+          //patients.add(Patient.fromJson(jsonDecode(pt)));
           patientCount++;
+          if (patientCount == 1) {
+            p = Patient.fromJson(jsonDecode(pt));
+            patients.add(p);
+          } else {
+            p = Patient.fromJson(jsonDecode(pt));
+            patients[0] = p;
+          }
           print('#############################################$patients');
         } else if (c[0].topic == 'chat/send/data') {
           print('#############################################$messages');
           messages.add(Message.fromJson(jsonDecode(pt),
               DateTime.now().subtract(const Duration(minutes: 1)), false));
+        } else if (c[0].topic == 'map/data') {
+          lat += 0.01;
+          long += 0.01;
         }
       });
       print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
     });
   }
 
-  Widget cardTemplate(Patient patient, int patientNumber, List<Message> msgs) {
+  Widget cardTemplate(int patientIndex, int patientNumber, List<Message> msgs,
+      double lat, double long, List<Patient> patients) {
     //final Patient patient1 = Patient('name', 2, 'condition', 1, 1, 1, 1);
     return InkWell(
       onTap: () {
@@ -73,8 +99,13 @@ class _HomeState extends State<Home> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    PatientData(patient, msgs, mqttConnection)));
+                builder: (context) => PatientData(
+                    patientIndex: patientIndex,
+                    messages: msgs,
+                    connect: mqttConnection,
+                    lat: lat,
+                    long: long,
+                    patients: patients)));
       },
       child: Card(
         clipBehavior: Clip.antiAlias,
@@ -97,8 +128,8 @@ class _HomeState extends State<Home> {
                           MediaQuery.of(context).size.width < 1400 ? 20 : 30,
                       fontWeight: FontWeight.bold)),
             ),
-            Text(patient.name),
-            Text(patient.condition)
+            // Text(patient.name),
+            // Text(patient.condition)
           ]),
         ),
       ),
@@ -142,7 +173,12 @@ class _HomeState extends State<Home> {
                 childAspectRatio: 2 / 1,
                 children: patients
                     .map((patient) => cardTemplate(
-                        patient, patients.indexOf(patient) + 1, messages))
+                        patients.indexOf(patient),
+                        patients.indexOf(patient) + 1,
+                        messages,
+                        lat,
+                        long,
+                        patients))
                     .toList(),
                 // cardTemplate(context),
                 // cardTemplate(context),
@@ -168,6 +204,7 @@ class _HomeState extends State<Home> {
               await mqttConnection.mqttConnect();
               mqttConnection.subscribeTopic('/AmbulanceProject/Hospital_001/+');
               mqttConnection.subscribeTopic('chat/send/data');
+              mqttConnection.subscribeTopic('map/data');
               setupUpdatesListener();
             },
             child: const Text('Connect'),

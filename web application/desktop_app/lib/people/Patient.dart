@@ -1,11 +1,11 @@
 class Patient {
-  final String name;
-  final int age;
-  final double temperature;
-  final double heartRate;
-  final double pulseRate;
-  final double oxygenSaturation;
-  final String condition;
+  String name;
+  int age;
+  double temperature;
+  double heartRate;
+  double pulseRate;
+  double oxygenSaturation;
+  String condition;
 
   Patient(this.name, this.age, this.condition, this.temperature, this.heartRate,
       this.pulseRate, this.oxygenSaturation);
