@@ -2,8 +2,8 @@
 #include <SoftwareSerial.h>
 
 // Choose two Arduino pins to use for software serial
-int RXPin = 4;  //D1
-int TXPin = 5;  //D2
+int RXPin = 13;  //connect to the tx (use the table in the doc)
+int TXPin = 15;  //connect to the rx (use the table in the doc) 
 
 int GPSBaud = 9600;
 
