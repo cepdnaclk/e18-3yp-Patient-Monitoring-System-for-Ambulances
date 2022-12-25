@@ -117,10 +117,6 @@ Mainly 3 AWS services are useful in the data retrieving & storing process in the
 |Total ||<ins><ins>12000</ins></ins>|
 
 
-##Demonstration Plan
-
-
-
 
 ## Conclusion
 
