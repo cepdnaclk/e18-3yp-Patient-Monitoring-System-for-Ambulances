@@ -15,29 +15,28 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 Microcontroller is like brain of the system because it communicates with inputs and outputs and controls the entire operation of the system. Here we are using NodeMCU ESP8266 as the Microcontroller.It consists of inbuilt WIFI module. Reading longitude and latitude from GPS modem, reading health parameters of the patient from the sensors, desplaying them on a user interfaces and send these data to the cloud are the various functions of the Microcontroller.</p>
 </kbd>
-**GPS Modem (NEO6MV2)**\
+**GPS Modem NEO6MV2**\
  ![gps](https://user-images.githubusercontent.com/73444543/199442004-74162ede-0182-4212-aa7d-c7a19581b212.jpg)
 
 Main function of GPS modem is provide longitude and latitude of the ambulance to the Microcontroller. It receives data from satellite and transfer them into Microcontroller through serial communication. As ambulance moves along the way from patient’s home to hospital, the co- ordinates of ambulance location will change and these variations are given to Microcontroller.
 
-**GSM Module - SIM800L**\
+**GSM Module SIM800L**\
 ![GSM](https://user-images.githubusercontent.com/73444543/208266015-cd79e4e7-68e1-4424-9f42-155554595a0f.jpg)
 
 The SIM800L GSM/GPRS module is a miniature GSM modem can be used for normal cell phones to send SMS messages, make phone calls, connect to the Internet via GPRS etc.
 
-**Heart Rate Oxygen Pulse Sensor Module - MAX30100**\
+**Heart Rate Oxygen Pulse Sensor Module MAX30100**\
 ![bpm](https://user-images.githubusercontent.com/73444543/204417296-e6cda821-8f3d-4506-a4fd-d3d5342bab45.jpg)
 
 MAX30100 is a multipurpose sensor used for multiple applications. It is a heart rate monitoring sensor along with a pulse oximeter. The sensor comprises two Light Emitting Diodes, a photodetector, and a series of low noise signal processing devices to detect heart rate and to perform pulse oximetry.
 
-**Temperature Sensor Module - DS18B20**\
+**Temperature Sensor Module DS18B20**\
 ![ds18b20resized](https://user-images.githubusercontent.com/99112218/208659438-76b42ed4-c910-433f-9a26-5005fc724ff0.jpg)
 
 DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
 
-## Circuit Diagram
-![nodehardware](https://user-images.githubusercontent.com/73444543/209472834-588f21c1-4a9c-4e0f-a605-076e27bbb7d0.png)
-
+## Circuit Diagram & Pin Configuration
+![nodehardware](https://user-images.githubusercontent.com/73444543/209472907-06af3e3c-1704-4212-a0d9-338ad916ce59.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![PinConfiguration](https://user-images.githubusercontent.com/73444543/209473048-afaa685d-eba4-4748-a5e4-08146cbe0fc9.png)
 
 ## Technology Stack
 The technologies we used for build up our system is as follows.
