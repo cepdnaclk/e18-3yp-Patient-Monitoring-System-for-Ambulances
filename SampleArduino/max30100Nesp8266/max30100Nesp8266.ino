@@ -3,42 +3,61 @@
 #include <PubSubClient.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-//#include <OneWire.h>
-//#include <DallasTemperature.h>
-//#include <Wire.h>
-#include <TinyGPS++.h>
-#include <SoftwareSerial.h>
-//#include "MAX30100_PulseOximeter.h"
+#include <Wire.h>
+#include "MAX30100_PulseOximeter.h"
 
-/*
-// Data wire of DS18B20 is plugged into digital pin 2 on the Arduino
-#define ONE_WIRE_BUS 2
 
-// Setup a oneWire instance to communicate with any OneWire device
-OneWire oneWire(ONE_WIRE_BUS);
-
-// Pass oneWire reference to DallasTemperature library
-DallasTemperature ds18b20(&oneWire);
-*/
-
-/*
 // Create a PulseOximeter object
 PulseOximeter pox;
-*/
-/*
 
-// Choose two Arduino pins to use for software serial
-int RXPin = 13;   //D7
-int TXPin = 15;   //D8
+//parameters;
+float heart_rate=0;
+float spo2=0;
 
-int GPSBaud = 9600;
+//Variables used to calculate average values
+float hrConcat = 0;
+int hrCount = 0;
+float oxConcat = 0;
+int oxCount = 0;
+int beatCount = 0;
 
-// Create a TinyGPS++ object
-TinyGPSPlus gps;
+void onBeatDetected() { //Here it is checked whether reading is valid or not
+    ++beatCount;
+    Serial.println("Beat!");
+    float hrTemp = pox.getHeartRate();
+    float oxTemp = pox.getSpO2();
+    
+    hrConcat += hrTemp;
+    if(hrTemp!=0.0){
+      ++hrCount;  
+    }
+    oxConcat += oxTemp;
+    if(oxTemp!=0.0){
+      ++oxCount;  
+    }
+    pox.update();
+}
 
-// Create a software serial port called "gpsSerial"
-SoftwareSerial gpsSerial(RXPin, TXPin);
-*/
+void calcMAX30100(){  //Calculated the average values
+    if(beatCount!=0){
+      if(hrCount==0){
+        heart_rate = 0.0;  
+      }else{
+        heart_rate = hrConcat/hrCount;  
+      }
+      if(oxCount==0){
+        spo2 = 0.0;  
+      }else{
+        spo2 = oxConcat/oxCount;  
+      }
+    }
+    hrConcat = 0;
+    hrCount = 0;
+    oxConcat = 0;
+    oxCount = 0;
+    beatCount=0;
+}
+
 /*
 const char* ssid = "Dialog 4G 769";
 const char* password = "583BbFe3";*/
@@ -97,12 +116,7 @@ WiFiClientSecure espClient;
 PubSubClient client(AWS_endpoint,8883,callback,espClient);
 long lastMsg = 0;
 char msg[200];
-float temperature;
-float heart_rate;
-float spo2;
-float lattitude;
-float longitude;
-float Altitude;
+
 
 void setup_wifi(){
   delay(10);
@@ -151,12 +165,26 @@ void checkMsg(String msgType,String MSG){
 void changeHospital(String hospital){
   /*This function changes the destination hospital*/
   outTopic = "/AmbulanceProject/Hospital_"+hospital+"/"+deviceID;
+  if (!pox.begin()) {
+    Serial.println("FAILED");
+    for(;;);
+  }else{
+    Serial.println("SUCCESS");
+  }
 }
 
 void startRide(String newHospital){
   /*This function starts a new ride*/
   changeHospital(newHospital);
   client.publish((char*)(outTopic.c_str()),"Active");
+  if (!pox.begin()) {
+    Serial.println("FAILED");
+    for(;;);
+  }else{
+    Serial.println("SUCCESS");
+  }
+  pox.update();
+  Serial.printf("%d  --8\n",millis()); //timeeeeeeeeeeeeeeeeeeeeeeeee             8
   rideFLAG = true;
 }
 
@@ -190,13 +218,9 @@ void reconnect(){
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.setDebugOutput(true);
 
-  /*
-  // Start the software serial port at the GPS's default baud
-  gpsSerial.begin(GPSBaud);
-  */
   pinMode(LED_BUILTIN,OUTPUT);
   setup_wifi();
   delay(1000);
@@ -261,7 +285,7 @@ void setup() {
   }
   Serial.print("Heap: ");
   Serial.println(ESP.getFreeHeap());
-  /*
+  
   //max30100
   //Initialize max30100 sensor
   if (!pox.begin()) {
@@ -272,61 +296,35 @@ void setup() {
   }
 
   // Configure sensor to use 7.6mA for LED drive
-  pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
-  */
+  pox.setIRLedCurrent(MAX30100_LED_CURR_37MA);
+
+  //Set the callback function on a beat
+  pox.setOnBeatDetectedCallback(onBeatDetected);
+  
 }
 float value1 = 42;
-float value2 = 61;
 float value3 = 58;
-float value4 = 83;
 
 void loop() {
+  pox.update(); 
+
   // put your main code here, to run repeatedly:
   if(!client.connected()){
     reconnect();  
-    
   }
   client.loop();
-
   if(rideFLAG){
+    pox.update();
     long now = millis();
-    //pox.update();
     if(now-lastMsg>2000){
+      pox.update();
       lastMsg = now;
-  
-      /*//Read from the ds18b20 sensor
-      ds18b20.requestTemperatures();
-      temperature = ds18b20.getTempCByIndex(0);*/ 
-      /*
-      // Read from the max30100 sensor
-      heart_rate = pox.getHeartRate();
-      spo2 = pox.getSpO2();
-      Serial.print(heart_rate);
-      Serial.print(spo2);*/
-      /*// Read from the max30100 sensor
-      gpsSerial.read();
-      lattitude = gps.location.lat();
-      longitude = gps.location.lng();
-      Altitude = gps.location.meters();*/
-      
-      //snprintf(msg,200,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Lattitude\": %ld, \"Longitude\": %ld, \"Altitude\": %ld}",temperature,heart_rate,spo2,lattitude,longitude,Altitude);
-      //snprintf(msg,200,"{\"Heart rate\": %ld, \"Oxygen sat. level\": %ld}",heart_rate,spo2);
-      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value1,value2,value3,value4);
-      value1=value1+0.243;
-      value2=value2+0.3578;
-      value3=value3+0.1259;
-      value4=value4+0.5346;
-      
-      Serial.print("Publish message: ");
-      Serial.print(outTopic);
-      Serial.println(msg);
+      calcMAX30100();
+      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value1,heart_rate,value3,spo2);
       client.publish((char*)(outTopic.c_str()),msg);
+      pox.begin();
       Serial.print("Heap: ");
       Serial.println(ESP.getFreeHeap());
     }
   }
-  digitalWrite(LED_BUILTIN,HIGH);
-  delay(100);
-  digitalWrite(LED_BUILTIN,LOW);
-  delay(100);
 } 

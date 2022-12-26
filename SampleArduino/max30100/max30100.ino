@@ -1,11 +1,10 @@
 #include <Wire.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "MAX30100_PulseOximeter.h"
-
 /*
+D0 - INT
 D1 - SCL
 D2 - SDA
-D0 - INT
 */
 
 #define REPORTING_PERIOD_MS     1000
@@ -34,17 +33,17 @@ void setup() {
         Serial.println("SUCCESS");
     }
 
-  // Configure sensor to use 7.6mA for LED drive
-  pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
+    ulang.setInterval(5L, takeReadings);
+
+    // Configure sensor to use 7.6mA for LED drive
+    pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
 
     // Register a callback routine
     pox.setOnBeatDetectedCallback(onBeatDetected);
 }
 
 void loop() {
-    // Read from the sensor
     pox.update();
-
     // Grab the updated heart rate and SpO2 levels
     if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
         Serial.print("Heart rate:");

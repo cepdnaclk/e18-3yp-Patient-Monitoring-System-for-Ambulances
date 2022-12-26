@@ -25,7 +25,7 @@ DallasTemperature ds18b20(&oneWire);
 // Create a PulseOximeter object
 PulseOximeter pox;
 */
-/*
+
 
 // Choose two Arduino pins to use for software serial
 int RXPin = 13;   //D7
@@ -38,7 +38,7 @@ TinyGPSPlus gps;
 
 // Create a software serial port called "gpsSerial"
 SoftwareSerial gpsSerial(RXPin, TXPin);
-*/
+
 /*
 const char* ssid = "Dialog 4G 769";
 const char* password = "583BbFe3";*/
@@ -96,7 +96,7 @@ void callback(char* topic, byte* payload, unsigned int length){
 WiFiClientSecure espClient;
 PubSubClient client(AWS_endpoint,8883,callback,espClient);
 long lastMsg = 0;
-char msg[200];
+char msg[300];
 float temperature;
 float heart_rate;
 float spo2;
@@ -190,13 +190,13 @@ void reconnect(){
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.setDebugOutput(true);
 
-  /*
+  
   // Start the software serial port at the GPS's default baud
   gpsSerial.begin(GPSBaud);
-  */
+  
   pinMode(LED_BUILTIN,OUTPUT);
   setup_wifi();
   delay(1000);
@@ -279,6 +279,9 @@ float value1 = 42;
 float value2 = 61;
 float value3 = 58;
 float value4 = 83;
+float value5 = 61;
+float value6 = 58;
+float value7 = 83;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -291,9 +294,21 @@ void loop() {
   if(rideFLAG){
     long now = millis();
     //pox.update();
+
+    //location updating
+    if(gpsSerial.available() > 0){
+      if(gps.encode(gpsSerial.read())){
+        if(gps.location.isValid()){
+          value5 = gps.location.lat();
+          value6 = gps.location.lng();
+          value7 = gps.altitude.meters();
+        }
+      }
+    }
+    
     if(now-lastMsg>2000){
       lastMsg = now;
-  
+
       /*//Read from the ds18b20 sensor
       ds18b20.requestTemperatures();
       temperature = ds18b20.getTempCByIndex(0);*/ 
@@ -311,7 +326,7 @@ void loop() {
       
       //snprintf(msg,200,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Lattitude\": %ld, \"Longitude\": %ld, \"Altitude\": %ld}",temperature,heart_rate,spo2,lattitude,longitude,Altitude);
       //snprintf(msg,200,"{\"Heart rate\": %ld, \"Oxygen sat. level\": %ld}",heart_rate,spo2);
-      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value1,value2,value3,value4);
+      snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lattitude\": %f, \"longitude\": %f, \"altitude\": %f}",value1,value2,value3,value4,value5,value6,value7);
       value1=value1+0.243;
       value2=value2+0.3578;
       value3=value3+0.1259;
@@ -326,7 +341,7 @@ void loop() {
     }
   }
   digitalWrite(LED_BUILTIN,HIGH);
-  delay(100);
+  //delay(100);
   digitalWrite(LED_BUILTIN,LOW);
-  delay(100);
+  //delay(100);
 } 
