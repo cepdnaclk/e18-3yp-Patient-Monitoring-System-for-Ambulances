@@ -7,36 +7,44 @@ import 'package:desktop_app/chat/Message.dart';
 import 'package:desktop_app/chat/ChatWidget.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:desktop_app/patient_health/HealthParameters.dart';
-import 'package:desktop_app/maps/Map.dart';
+import 'package:desktop_app/maps/Location.dart';
 
 class PatientData extends StatefulWidget {
-  List<Patient> patients;
-  int patientIndex;
-  List<Message> messages;
+  //List<Patient> patients;
+  //int patientIndex;
+  Map<String, List<Message>> messages;
   Connection connect;
   double lat, long;
+  Map<String, Patient> map;
+  String deviceID;
+  String hospitalID;
+
   PatientData(
       {super.key,
-      required this.patientIndex,
+      required this.hospitalID,
+      required this.deviceID,
       required this.messages,
       required this.connect,
       required this.lat,
       required this.long,
-      required this.patients});
+      required this.map});
 
   @override
-  State<PatientData> createState() =>
-      _PatientDataState(patientIndex, messages, connect, lat, long, patients);
+  State<PatientData> createState() => _PatientDataState(
+      hospitalID, deviceID, messages, connect, lat, long, map);
 }
 
 class _PatientDataState extends State<PatientData> {
-  List<Patient> patients;
-  int patientIndex;
-  List<Message> messages;
+  // List<Patient> patients;
+  // int patientIndex;
+  Map<String, Patient> map;
+  String hospitalID;
+  String deviceID;
+  Map<String, List<Message>> messages;
   Connection connect;
   double lat, long;
-  _PatientDataState(this.patientIndex, this.messages, this.connect, this.lat,
-      this.long, this.patients);
+  _PatientDataState(this.hospitalID, this.deviceID, this.messages, this.connect,
+      this.lat, this.long, this.map);
   @override
   void initState() {
     // TODO: implement initState
@@ -46,7 +54,9 @@ class _PatientDataState extends State<PatientData> {
         return;
       }
       setState(() {
-        log('from patient data $patients');
+        // log('from patient data $map');
+        print(
+            'form patientdata #################### ${messages[deviceID]} ###########################');
       });
     });
   }
@@ -54,7 +64,7 @@ class _PatientDataState extends State<PatientData> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(patients[patientIndex].name)),
+      appBar: AppBar(title: Text(deviceID)),
       body: Center(
         child: Container(
           // color: Color.fromARGB(155, 0, 140, 254),
@@ -85,8 +95,8 @@ class _PatientDataState extends State<PatientData> {
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 margin: const EdgeInsets.all(10),
-                child: ViewParameters(
-                    patientIndex: patientIndex, patients: patients),
+                child: SingleChildScrollView(
+                    child: ViewParameters(deviceID: deviceID, map: map)),
               ),
             ),
             Expanded(
@@ -96,7 +106,7 @@ class _PatientDataState extends State<PatientData> {
                     color: Color.fromARGB(192, 0, 140, 255),
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 margin: const EdgeInsets.all(10),
-                child: const Map(),
+                child: const Location(),
               ),
             ),
             Expanded(
@@ -114,7 +124,11 @@ class _PatientDataState extends State<PatientData> {
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 margin: const EdgeInsets.all(10),
-                child: Chat(mess: messages, connect: connect),
+                child: Chat(
+                    mess: messages,
+                    connect: connect,
+                    deviceID: deviceID,
+                    hospitalID: hospitalID),
               ),
             )
           ]),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:desktop_app/chat/Message.dart';
@@ -6,29 +7,42 @@ import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 class Chat extends StatefulWidget {
-  List<Message> mess;
+  String deviceID;
+  String hospitalID;
+  Map<String, List<Message>> mess;
   Connection connect;
-  Chat({super.key, required this.mess, required this.connect});
+  Chat(
+      {super.key,
+      required this.mess,
+      required this.connect,
+      required this.deviceID,
+      required this.hospitalID});
 
   @override
-  State<Chat> createState() => _ChatState(mess, connect);
+  State<Chat> createState() => _ChatState(mess, connect, deviceID, hospitalID);
 }
 
 class _ChatState extends State<Chat> {
-  List<Message> mess;
+  String deviceID;
+  String hospitalID;
+  Map<String, List<Message>> mess;
   Connection connect;
-  _ChatState(this.mess, this.connect);
+  _ChatState(this.mess, this.connect, this.deviceID, this.hospitalID);
 
   TextEditingController messageController = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    //mess.add(Message('text', DateTime.now(), true));
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
       }
-      setState(() {});
+      setState(() {
+        print(
+            '############################# ${mess[deviceID]} ###########################');
+      });
     });
   }
 
@@ -57,7 +71,7 @@ class _ChatState extends State<Chat> {
         Expanded(
             child: GroupedListView<Message, DateTime>(
           padding: const EdgeInsets.all(8),
-          elements: mess,
+          elements: mess[deviceID] ?? [],
           groupBy: (message) => DateTime(2022),
           groupHeaderBuilder: (Message message) => const SizedBox(),
           itemBuilder: (context, Message message) => Align(
@@ -90,8 +104,12 @@ class _ChatState extends State<Chat> {
                 final msg =
                     Message(messageController.text, DateTime.now(), true);
                 setState(() {
-                  mess.add(msg);
-                  connect.publishMsg('chat/send/data', msg.text);
+                  if (mess[deviceID] == null) {
+                    mess[deviceID] = [];
+                  }
+                  mess[deviceID]!.add(msg);
+                  connect.publishMsg(
+                      'message/from/hospital', '{"message":"${msg.text}"}');
                 });
               },
             ),

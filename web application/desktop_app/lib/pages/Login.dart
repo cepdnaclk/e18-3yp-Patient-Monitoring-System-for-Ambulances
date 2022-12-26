@@ -11,7 +11,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController userNameController = TextEditingController();
+  TextEditingController hospitalIDController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   HttpLoader httpLoader = HttpLoader();
 
@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
             padding: const EdgeInsets.all(50),
             // color: Colors.black.withOpacity(0.3),
             width: 400,
-            height: 350,
+            height: 355,
             child: Center(
               child: Form(
                 key: _formKey,
@@ -54,9 +54,9 @@ class _LoginState extends State<Login> {
                       }
                       return null;
                     },
-                    controller: userNameController,
+                    controller: hospitalIDController,
                     decoration: const InputDecoration(
-                        labelText: 'User ID',
+                        labelText: 'Hospital ID',
                         border: OutlineInputBorder(),
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10)),
@@ -85,14 +85,17 @@ class _LoginState extends State<Login> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           String response = await httpLoader.httpGET(
-                              userNameController.text, passwordController.text);
+                              hospitalIDController.text,
+                              passwordController.text);
                           if (!mounted) return;
                           if (response == '"True"') {
                             // print('response worked');
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Home()));
+                                    builder: (context) => Home(
+                                        hospitalID:
+                                            hospitalIDController.text)));
                           } else {
                             // print('respose not work');
                             showDialog(

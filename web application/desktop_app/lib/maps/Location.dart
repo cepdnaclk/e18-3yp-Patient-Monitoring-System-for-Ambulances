@@ -21,15 +21,15 @@ import 'package:flutter_map/flutter_map.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Map extends StatefulWidget {
+class Location extends StatefulWidget {
   //final double lat, long;
-  const Map({super.key});
+  const Location({super.key});
 
   @override
-  State<Map> createState() => _MapState();
+  State<Location> createState() => _LocationState();
 }
 
-class _MapState extends State<Map> {
+class _LocationState extends State<Location> {
   late double lat;
   late double long;
   @override
@@ -59,7 +59,7 @@ class _MapState extends State<Map> {
       child: FlutterMap(
         options: MapOptions(
           center: latLng.LatLng(lat, long),
-          zoom: 9.2,
+          zoom: 14,
         ),
         children: [
           TileLayer(
@@ -73,8 +73,8 @@ class _MapState extends State<Map> {
                 width: 80,
                 height: 80,
                 builder: (context) => const Icon(
-                  Icons.pin_drop,
-                  color: Color.fromARGB(255, 195, 33, 21),
+                  Icons.location_on,
+                  color: Color.fromARGB(255, 209, 27, 14),
                   size: 30,
                 ),
               ),
