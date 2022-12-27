@@ -33,7 +33,6 @@ void setup() {
         Serial.println("SUCCESS");
     }
 
-    ulang.setInterval(5L, takeReadings);
 
     // Configure sensor to use 7.6mA for LED drive
     pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);

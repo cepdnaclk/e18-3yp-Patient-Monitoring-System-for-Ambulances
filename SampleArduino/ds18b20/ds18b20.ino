@@ -1,5 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
+#include "MAX30100_PulseOximeter.h"
 
 // Data wire is plugged into digital pin 2 on the Arduino
 #define ONE_WIRE_BUS 2  //D4
@@ -32,5 +34,5 @@ void loop(void)
   Serial.print((char)176);//shows degrees character
   Serial.println("F");
   
-  delay(500);
+  delay(2000);
 }
