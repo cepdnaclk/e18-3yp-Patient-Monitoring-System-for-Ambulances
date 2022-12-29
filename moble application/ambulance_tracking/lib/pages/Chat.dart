@@ -119,6 +119,7 @@ class _ChatState extends State<Chat> {
                             'message/from/ambulance/${widget.hospitalID}/${widget.deviceID}',
                             '{"message":"${msg.text}"}');
                       });
+                      messageController.clear();
                     },
                   ),
                 ),

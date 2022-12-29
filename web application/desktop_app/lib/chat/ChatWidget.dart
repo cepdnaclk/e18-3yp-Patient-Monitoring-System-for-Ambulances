@@ -111,6 +111,7 @@ class _ChatState extends State<Chat> {
                   connect.publishMsg(
                       'message/from/hospital', '{"message":"${msg.text}"}');
                 });
+                messageController.clear();
               },
             ),
           ),
