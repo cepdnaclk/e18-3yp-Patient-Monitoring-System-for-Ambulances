@@ -12,8 +12,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-int buzzer = D3;
-boolean disconnected = false;   //Whether user has disconnected the connection with cloud
+int buzzer = D3;  //buzzer
 
 uint8_t connectivityLED = 3;  //Rx pin (GPIO3)(green wire)
 uint8_t rideLED = 1;          //Tx pin (GPIO1)(blue wire)
@@ -31,8 +30,8 @@ DallasTemperature sensors(&oneWire);
 
 
 // Choose two Arduino pins to use for software serial
-int RXPin = 13;   //D7
-int TXPin = 15;   //D8
+int RXPin = 13;   //D7 ()
+int TXPin = 15;   //D8 (purple)
 
 int GPSBaud = 9600;
 
@@ -167,6 +166,7 @@ void setup_wifi(){
   WiFi.begin(ssid,password);
 
   while(WiFi.status() != WL_CONNECTED){
+    analogWrite(connectivityLED,0);
     delay(500);
     Serial.print(".");  
   }
@@ -198,7 +198,7 @@ void checkMsg(String msgType,String MSG){
     stopRide();
   }else if(!strcmp(msgType.c_str(),(char*)"change")){    //If msg is to chnage the hospital
     changeHospital(MSG);
-  }else if(rideFLAG){                                //If it is just a msg
+  }else{                                //If it is just a msg
     Serial.print("NEW MSG:"+MSG);
     showMessage(MSG+"");
     tone(buzzer,1000,200);
@@ -240,7 +240,7 @@ void startRide(String newHospital){
 void stopRide(){
   /*This function stops an existing ride*/
   changeHospital(hospitalID);
-  rideFLAG = false;  
+  rideFLAG = false;
   analogWrite(rideLED,0);  
   showStop();
   delay(2000);
@@ -248,24 +248,22 @@ void stopRide(){
 }
 
 void reconnect(){
-  if(WiFi.status() != WL_CONNECTED){
-    analogWrite(connectivityLED,0);
-    setup_wifi();
-  }
+//  if(WiFi.status() != WL_CONNECTED){
+//    setup_wifi();
+//  }
   while(!client.connected()){
     analogWrite(connectivityLED,50);
-    if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
-      analogWrite(rideLED,50);
-    }
+//    if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
+//      analogWrite(rideLED,50);
+//    }
     Serial.print("Attempting to MQTT connection");
     if(client.connect("ESPthing")){
       Serial.println("Connected");
-      if(rideFLAG){         //If there is an ongoing ride and connected
-        analogWrite(rideLED,1023);  
-      } 
-      analogWrite(connectivityLED,1023);
+//      if(rideFLAG){         //If there is an ongoing ride and connected
+//        analogWrite(rideLED,1023);  
+//      } 
+//      analogWrite(connectivityLED,1023);
       client.subscribe((char*)(inTopic.c_str()));
-      disconnected = false;
       showWaiting();
     }else{
       tone(buzzer,1000,200);
@@ -281,44 +279,22 @@ void reconnect(){
   }  
 }
 
-void disconnectAWS(){
-    client.disconnect();
-}
-
-void rideButton(){
-  if(rideFLAG){
-    stopRide();
-  }else{
-    startRide("Colombo General Hospital");
-  }
-}
-
-void connectButton(){
-  if(client.connected()){
-    disconnectAWS();
-    disconnected = true;
-  }else{
-    reconnect();
-    disconnected = false;
-  }
-}
-
 void setup() {
   sensors.begin();  // Start up the library
-  
   //Begin the display
   TV.begin(SSD1306_SWITCHCAPVCC,0x3C);
   showWelcome();
-
+  
   pinMode(connectivityLED,OUTPUT);  //Set Rx pin as an output
   pinMode(rideLED,OUTPUT);          //Set Tx pin as an output
   analogWrite(connectivityLED,0);
   analogWrite(rideLED,0);
   pinMode(buzzer,OUTPUT);  //Set D3 as output for buzzer
-  
+
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.setDebugOutput(true);
+
   
   // Start the software serial port at the GPS's default baud
   gpsSerial.begin(GPSBaud);
@@ -564,26 +540,40 @@ void showMessage(String message){
   TV.display();   
 }
 
+void disconnectAWS(){
+    client.disconnect();
+}
+
+void rideButton(){
+  if(rideFLAG){
+    stopRide();
+  }else{
+    startRide("Colombo General Hospital");
+  }
+}
+
+void connectButton(){
+  if(client.connected()){
+    disconnectAWS();
+  }else{
+    reconnect();
+  }
+}
+
 float value3 = 58;
 
 void loop() {
   // put your main code here, to run repeatedly:
   pox.update(); 
-  
   if(!client.connected()){
-    analogWrite(connectivityLED,50);
-    if(rideFLAG){
-      analogWrite(rideLED,50);   
-    }
-    if(!disconnected){
       reconnect();  
-    }
   }
-  client.loop();
 
   if(rideFLAG){
     pox.update();
     
+    
+    client.loop();
     long now = millis();
     //location updating
     if(gpsSerial.available() > 0){
@@ -613,8 +603,8 @@ void loop() {
       calcMAX30100();
       snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lattitude\": %f, \"longitude\": %f, \"altitude\": %f}",temperature,heart_rate,value3,spo2,lattitude,longitude,Altitude);
       if(canShow==0){
-        showParameters(temperature,heart_rate,spo2);
-        tone(buzzer,10000,150);
+        showParameters(temperature,heart_rate,spo2); 
+        tone(buzzer,10000,150); 
       }else{
         tone(buzzer,1000,200);
         --canShow;  
@@ -628,7 +618,5 @@ void loop() {
       Serial.print("Heap: ");
       Serial.println(ESP.getFreeHeap());
     }
-  }else{
-    analogWrite(rideLED,0);  
   }
 } 
