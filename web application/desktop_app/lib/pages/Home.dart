@@ -7,6 +7,7 @@ import 'package:desktop_app/people/Patient.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:desktop_app/pages/PatientData.dart';
 import 'package:desktop_app/chat/Message.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:web_application/api/ApiConnection.dart';
@@ -24,40 +25,52 @@ class _HomeState extends State<Home> {
   _HomeState(this.hospitalID);
   Connection mqttConnection = Connection();
   Map<String, Patient> map = {};
-  // List<Patient> patients = [];
   Map<String, List<Message>> messages = {};
-  Map<String, int> msgCount = {};
-  // List<Message> messages = [];
+  Map<String, MsgCount> msgCount = {};
+  Map<String, List<bool>> isArrived =
+      {}; //index 0 for arriving and 1 for stopping
+  Map<String, String> ambulanceStatus = {};
+  Map<String, String> hospitalList = {
+    'H001': 'Hospital1',
+    'H002': 'Hospital2',
+    'H003': 'Hospital3'
+  };
+
+  Map<String, Map<String, int>> transferPatient = {};
+  // Map<String, String> transferStatus = {};
+  Map<String, List<String>> requests = {};
+
   double lat = 6.927079;
   double long = 79.861244;
   late int patientCount;
-  // late Patient p;
+  // late bool isArrived;
   String deviceID = 'none';
-  // Map<Patient, double> chartData = {};
-  // late int i;
-  // late int messageCount;
-  // late bool isHomePage;
+  late int requestCount;
+  late bool isConnected;
+  final Map<String, List<double>> parameterLimits = {
+    'Temp': [35.0, 40.0],
+    'HR': [60.0, 150.0],
+    'PL': [60.0, 150.0],
+    'OS': [10.0, 100.0]
+  };
 
+  late bool isOutRange;
+  // late String ambulanceStatus;
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
-    // isHomePage = true;
+    // requests['test'] = 'test';
+    requestCount = 0;
     patientCount = 0;
-    // messageCount = 0;
-    // i = 0;
     lat = 6.927079;
     long = 79.861244;
     deviceID = 'none';
-    //p = Patient('none', 0, 'none', 0.0, 0.0, 0.0, 0.0);
-    // Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
-    //   if (!mounted) {
-    //     return;
-    //   }
-    //   setState(() {
-    //     PatientData(patient, messages, mqttConnection, lat, long);
-    //   });
-    // });
+    isConnected = false;
+    isOutRange = false;
+    // ambulanceStatus = 'Arriving';
+    // isArrived = false;
   }
 
   int rowCount() {
@@ -78,67 +91,321 @@ class _HomeState extends State<Home> {
       final pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       setState(() {
+        //listen to initial message from device
+
+        if (pt == 'Active') {
+          return;
+        }
+
+        // if (c[0].topic.substring(0, c[0].topic.length - 4) ==
+        //     'TransferPatient/$hospitalID/') {
+        //   // log('test');
+        //   String h =
+        //       c[0].topic.substring(c[0].topic.length - 4, c[0].topic.length);
+        //   ambulanceStatus[pt] = h != hospitalID ? 'Transfering...' : '';
+        //   return;
+        // }
+        // if (c[0].topic.substring(0, 16) == 'TransferPatient/' &&
+        //     c[0].topic.substring(c[0].topic.length - 4, c[0].topic.length) ==
+        //         hospitalID) {
+        //   log('message');
+        //   String requestedHospital =
+        //       c[0].topic.substring(16, c[0].topic.length - 5);
+        //   String device = pt.substring(pt.length - 3, pt.length);
+        //   if (pt.substring(0, pt.length - 3) == 'Accepted:') {
+        //     // ambulanceStatus[device] = '';
+
+        //     ambulanceStatus[device] = 'Transferred';
+        //     transferPatient[device]![requestedHospital] = 2;
+        //     // map.remove(device);
+        //     // isArrived.remove(device);
+        //     // ambulanceStatus.remove(device);
+        //     // transferPatient.remove(device);
+        //     // transferStatus.remove(device);
+        //     return;
+        //   }
+        //   if (pt.substring(0, pt.length - 3) == 'Rejected:') {
+        //     transferPatient[device] = {hospitalID: 0};
+        //     ambulanceStatus[device] = '$requestedHospital Rejected!';
+        //     return;
+        //   }
+
+        //   if (!map.containsKey(pt)) {
+        //     // patientCount++;
+        //     // map[deviceID] = Patient.empty();
+        //     // isArrived[deviceID] = [false, false];
+        //     // ambulanceStatus[deviceID] = 'Arriving';
+        //     // trnasferPatient[deviceID] = {hospitalID: 0};
+        //     // transferStatus[deviceID] = '';
+        //     if (!requests.containsKey(requestedHospital)) {
+        //       requests[requestedHospital] = [];
+        //     }
+        //     if (!requests[requestedHospital]!.contains(pt)) {
+        //       requests[requestedHospital]!.add(pt);
+        //       requestCount++;
+        //       log('$requestedHospital $pt');
+        //     }
+        //   }
+
+        //   return;
+        // }
+
+        // //otherwise get device id from the topic
+        // deviceID =
+        //     c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
+
+        // //if ambulance user send stop message
+        // if (c[0].topic.substring(0, c[0].topic.length - 3) ==
+        //     'Stop/$hospitalID/') {
+        //   deviceID =
+        //     c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
+        //   ambulanceStatus[deviceID] = 'Arrived';
+        //   isArrived[deviceID]![1] = true;
+        //   // map.remove(deviceID);
+        //   // messages.remove(deviceID);
+        //   // msgCount.remove(deviceID);
+        //   // patientCount--;
+        //   return;
+        // }
+        log(c[0].topic.substring(0, c[0].topic.length - 3));
+        //if the message contain heath parameters
         if (c[0].topic.substring(0, c[0].topic.length - 3) ==
             '/AmbulanceProject/$hospitalID/') {
-          if (pt == 'Active') {
-            return;
-          }
           deviceID =
               c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
-          // if (pt.contains('message')) {
-          //   if (messages[deviceID] == null) {
-          //     messages[deviceID] = [];
-          //     msgCount[deviceID] = 0;
-          //   }
-          //   messages[deviceID]!.add(Message.fromJson(jsonDecode(pt),
-          //       DateTime.now().subtract(const Duration(minutes: 1)), false));
-          //   msgCount[deviceID] = msgCount[deviceID]! + 1;
-          //   return;
-          // }
-
           if (!map.containsKey(deviceID)) {
             patientCount++;
-            // i++;
+            map[deviceID] = Patient.empty();
+            // isArrived[deviceID]?[0] = false;
+            // isArrived[deviceID]![1] = false;
+            isArrived[deviceID] = [false, false];
+            ambulanceStatus[deviceID] = 'Arriving';
+            transferPatient[deviceID] = {hospitalID: 0};
+            msgCount[deviceID] = MsgCount();
+            msgCount[deviceID]!.count = 0;
+            // transferStatus[deviceID] = '';
           }
-          map[deviceID] = Patient.fromJson(jsonDecode(pt));
-          // chartData[Patient.fromJson(jsonDecode(pt))] =
-          // }else{
-          //   map[deviceID] =
-          // }
-          //for (int i = 0; i < patients.length; i++) {}
-          //patients.add(Patient.fromJson(jsonDecode(pt)));
+          log('${transferPatient[deviceID]!.keys.toList()[0]} with ${transferPatient[deviceID]!.values.toList()[0]} in $hospitalID');
+          isArrived[deviceID]![0] = isArrived[deviceID]![0] ? false : true;
+          map[deviceID]!.healthData(jsonDecode(pt));
 
-          log(map[deviceID]!.name);
-          // if (patientCount == 1) {
-          //   p = Patient.fromJson(jsonDecode(pt));
-          //   patients.add(p);
-          // } else {
-          //   p = Patient.fromJson(jsonDecode(pt));
-          //   patients[0] = p;
-          // }
-          //print('#############################################$patients');
-          // } else if (c[0].topic == 'chat/send/data') {
-          //   print('#############################################$messages');
-          //   messages.add(Message.fromJson(jsonDecode(pt),
-          //       DateTime.now().subtract(const Duration(minutes: 1)), false));
-        } else if (c[0].topic == 'map/data') {
-          lat += 0.01;
-          long += 0.01;
+          isOutRange = map[deviceID]!.temperature <
+                      parameterLimits['Temp']![0] ||
+                  map[deviceID]!.temperature > parameterLimits['Temp']![1] ||
+                  map[deviceID]!.heartRate < parameterLimits['HR']![0] ||
+                  map[deviceID]!.heartRate > parameterLimits['HR']![1] ||
+                  map[deviceID]!.pulseRate < parameterLimits['PL']![0] ||
+                  map[deviceID]!.pulseRate > parameterLimits['PL']![1] ||
+                  map[deviceID]!.oxygenSaturation < parameterLimits['OS']![0] ||
+                  map[deviceID]!.oxygenSaturation > parameterLimits['OS']![1]
+              ? true
+              : false;
+
+          //message from the chat
         } else if (c[0].topic.substring(0, c[0].topic.length - 3) ==
             'message/from/ambulance/$hospitalID/') {
           deviceID =
               c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
           if (messages[deviceID] == null) {
             messages[deviceID] = [];
-            msgCount[deviceID] = 0;
           }
           messages[deviceID]!.add(Message.fromJson(jsonDecode(pt),
               DateTime.now().subtract(const Duration(minutes: 1)), false));
-          msgCount[deviceID] = msgCount[deviceID]! + 1;
+          msgCount[deviceID]!.count++;
+
+          //message to change patient personal details
+        } else if (c[0].topic.substring(0, c[0].topic.length - 3) ==
+            'PatientData/$hospitalID/') {
+          deviceID =
+              c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
+          map[deviceID]!.personalData(jsonDecode(pt));
+        } else if (c[0].topic.substring(0, c[0].topic.length - 3) ==
+            'Stop/$hospitalID/') {
+          deviceID =
+              c[0].topic.substring(c[0].topic.length - 3, c[0].topic.length);
+          ambulanceStatus[deviceID] = 'Arrived';
+          isArrived[deviceID]![1] = true;
+          //return;
+        } else if (c[0].topic.substring(0, c[0].topic.length - 4) ==
+            'TransferPatient/$hospitalID/') {
+          // log('test');
+          String h =
+              c[0].topic.substring(c[0].topic.length - 4, c[0].topic.length);
+          ambulanceStatus[pt] = h != hospitalID ? 'Transfering...' : '';
+          //return;
+
+        } else if (c[0].topic.substring(0, 16) == 'TransferPatient/' &&
+            c[0].topic.substring(c[0].topic.length - 4, c[0].topic.length) ==
+                hospitalID) {
+          log('message');
+          String requestedHospital =
+              c[0].topic.substring(16, c[0].topic.length - 5);
+          String device = pt.substring(pt.length - 3, pt.length);
+          if (pt.substring(0, pt.length - 3) == 'Accepted:') {
+            // ambulanceStatus[device] = '';
+
+            ambulanceStatus[device] = 'Transferred';
+            transferPatient[device]![requestedHospital] = 2;
+            // map.remove(device);
+            // isArrived.remove(device);
+            // ambulanceStatus.remove(device);
+            // transferPatient.remove(device);
+            // transferStatus.remove(device);
+            //return;
+          } else if (pt.substring(0, pt.length - 3) == 'Rejected:') {
+            transferPatient[device] = {hospitalID: 0};
+            ambulanceStatus[device] = '$requestedHospital Rejected!';
+            // return;
+          } else if (!map.containsKey(pt)) {
+            if (!requests.containsKey(requestedHospital)) {
+              requests[requestedHospital] = [];
+            }
+            if (!requests[requestedHospital]!.contains(pt)) {
+              requests[requestedHospital]!.add(pt);
+              requestCount++;
+              log('$requestedHospital $pt');
+            }
+          }
+
+          //return;
+
         }
       });
       print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
     });
+  }
+
+  Widget requestTemplate(String hospital, List<String> device) {
+    return SingleChildScrollView(
+      child: Container(
+        // height: 200,
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.blueAccent,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        child: Column(
+          children: <Widget>[
+            Align(
+                alignment: Alignment.topLeft,
+                child: Row(
+                  children: [
+                    Text(
+                      'Hospital ID: $hospital',
+                      style: const TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Container(
+                      width: 15,
+                      decoration: const BoxDecoration(
+                        // border: Border.all(color: Colors.blueAccent),
+                        color: Colors.red,
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${device.length}',
+                          style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+            Column(
+                children: device.map((e) => deviceItem(e, hospital)).toList())
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget deviceItem(String device, String hospital) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blueAccent),
+        // color: Colors.amber,
+        borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+      ),
+      child: Column(children: [
+        Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              'Device ID: $device',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            )),
+        const SizedBox(
+          height: 10,
+        ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Row(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green, // Background color
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      requestCount--;
+                      mqttConnection.publishMsg(
+                          'Device_$device', 'change:$hospital');
+                      mqttConnection.publishMsg(
+                          'Mobile/Transfer/$device', hospitalID);
+                      mqttConnection.publishMsg(
+                          'TransferPatient/$hospitalID/$hospital',
+                          'Accepted:$device');
+                      patientCount++;
+                      map[device] = Patient.empty();
+                      isArrived[device] = [false, false];
+                      ambulanceStatus[device] = 'Arriving';
+                      transferPatient[device] = {hospitalID: 0};
+                      msgCount[deviceID] = MsgCount();
+                      msgCount[deviceID]!.count = 0;
+                      // transferStatus[device] = '';
+                      requests[hospital]!
+                          .removeAt(requests[hospital]!.indexOf(device));
+                      if (requests[hospital]!.isEmpty) {
+                        requests.remove(hospital);
+                      }
+                    });
+                  },
+                  child: const Text('Accept'),
+                ),
+                const Expanded(child: SizedBox()),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    // Background color
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      requestCount--;
+                      mqttConnection.publishMsg(
+                          'TransferPatient/${requests[hospital]}/$hospitalID',
+                          'Rejected:$device');
+                      requests.remove(hospital);
+                    });
+                  },
+                  child: const Text('Reject'),
+                ),
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
   }
 
   Widget cardTemplate(
@@ -148,12 +415,11 @@ class _HomeState extends State<Home> {
       double lat,
       double long,
       Map<String, Patient> map,
-      Map<String, int> msgCount) {
-    //final Patient patient1 = Patient('name', 2, 'condition', 1, 1, 1, 1);
+      Map<String, MsgCount> msgCount) {
     return InkWell(
       onTap: () {
         setState(() {
-          msgCount[deviceID] = 0;
+          msgCount[deviceID]!.count = 0;
         });
         //print("Card Clicked");
         Navigator.push(
@@ -166,20 +432,25 @@ class _HomeState extends State<Home> {
                     connect: mqttConnection,
                     lat: lat,
                     long: long,
-                    map: map)));
+                    map: map,
+                    hospitalList: hospitalList,
+                    trnasferPatient: transferPatient,
+                    msgCount: msgCount)));
       },
       child: Card(
         clipBehavior: Clip.antiAlias,
+        color: isArrived[deviceID]![1]
+            ? const Color.fromARGB(255, 159, 244, 161)
+            : transferPatient[deviceID]!.values.toList()[0] == 1
+                ? const Color.fromARGB(255, 222, 247, 131)
+                : transferPatient[deviceID]!.values.toList()[0] == 2
+                    ? const Color.fromARGB(255, 244, 238, 68)
+                    : isOutRange
+                        ? const Color.fromARGB(255, 255, 149, 142)
+                        : null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        // padding: const EdgeInsets.all(20),
-        // height: 100,
-        // width: 400,
-        // decoration: BoxDecoration(
-        //   color: Colors.white70.withOpacity(0.5),
-        //   borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-        // ),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.only(left: 7),
           child: Column(children: <Widget>[
             Row(children: <Widget>[
               Align(
@@ -187,20 +458,18 @@ class _HomeState extends State<Home> {
                 child: Text('Patient $patientNumber',
                     style: TextStyle(
                         fontSize:
-                            MediaQuery.of(context).size.width < 1400 ? 20 : 30,
+                            MediaQuery.of(context).size.width < 1400 ? 15 : 20,
                         fontWeight: FontWeight.bold)),
               ),
-              const SizedBox(
-                width: 35,
+              const Expanded(
+                child: SizedBox(),
               ),
               Container(
+                // color: Colors.white,
                 // height: 40,
                 width: 25,
                 padding: EdgeInsets.all(0),
-                // decoration: const BoxDecoration(
-                //   // color: Colors.amber,
-                //   // borderRadius: BorderRadius.all(Radius.circular(15.0))
-                // ),
+
                 child: Column(children: <Widget>[
                   Align(
                     alignment: Alignment.topRight,
@@ -210,16 +479,18 @@ class _HomeState extends State<Home> {
                       width: 12,
                       decoration: BoxDecoration(
                           color: msgCount[deviceID] != null &&
-                                  msgCount[deviceID] != 0
+                                  msgCount[deviceID]!.count != 0
                               ? const Color.fromARGB(255, 255, 0, 0)
                               : null,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10.0))),
                       child: Center(
                         child: Text(
-                          msgCount[deviceID] == null && msgCount[deviceID] != 0
+                          msgCount[deviceID] == null
                               ? ''
-                              : msgCount[deviceID]!.toString(),
+                              : msgCount[deviceID]!.count == 0
+                                  ? ''
+                                  : msgCount[deviceID]!.count.toString(),
                           style: const TextStyle(
                               fontSize: 9,
                               color: Colors.white,
@@ -230,23 +501,134 @@ class _HomeState extends State<Home> {
                   ),
                   const Icon(
                     Icons.message,
-                    //color: Colors.green,
-
-                    size: 16.0,
+                    size: 13,
                   ),
                 ]),
               ),
+              const SizedBox(
+                width: 10,
+              ),
+              Container(
+                // color: Colors.amber,
+                margin: const EdgeInsets.all(2),
+                height: 20,
+                width: 20,
+                // padding: EdgeInsets.only(bottom: 4),
+                child: ambulanceStatus[deviceID] == 'Transferred' ||
+                        ambulanceStatus[deviceID] == 'Arrived'
+                    ? FloatingActionButton(
+                        // hoverColor: Colo,
+                        // label: Text(''),
+
+                        hoverElevation: 0,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        // padding: EdgeInsets.all(0),
+                        hoverColor: Colors.red.withOpacity(0.3),
+                        // focusColor: Colors.red,
+                        // highlightColor: Colors.black,
+                        child: const Icon(
+                          Icons.cancel,
+                          color: Color.fromARGB(255, 225, 19, 5),
+                          size: 15,
+                        ),
+
+                        onPressed: () {
+                          setState(() {
+                            map.remove(deviceID);
+                            isArrived.remove(deviceID);
+                            ambulanceStatus.remove(deviceID);
+                            transferPatient.remove(deviceID);
+                            messages.remove(deviceID);
+                            msgCount.remove(deviceID);
+                            patientCount--;
+                          });
+                        },
+                        //child: const Text('Accept'),
+                      )
+                    : null,
+              )
             ]),
             const SizedBox(
-              height: 10,
+              height: 2,
             ),
             Align(
                 alignment: Alignment.topLeft,
                 child: Text(
                   'Device ID: $deviceID',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 10),
                 )),
-            // Text(patient.condition)
+            const SizedBox(
+              height: 3,
+            ),
+            Row(
+              children: <Widget>[
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      ambulanceStatus[deviceID]!,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 10),
+                    )),
+                const SizedBox(
+                  width: 7,
+                ),
+                //if (isArrived[deviceID]!) ...[],
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  height: 10,
+                  width: 10,
+                  decoration: BoxDecoration(
+                    color: isArrived[deviceID]![0] || isArrived[deviceID]![1]
+                        ? (!isArrived[deviceID]![1]
+                            ? Colors.red.withOpacity(0.8)
+                            : Colors.green.withOpacity(0.8))
+                        : null,
+                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                    // boxShadow: const [
+                    //   BoxShadow(
+                    //       blurRadius: 2.0, spreadRadius: 0.9, color: Colors.red)
+                    // ],
+                  ),
+                )
+              ],
+            ),
+            // Align(
+            //     alignment: Alignment.topLeft,
+            //     child: Text(
+            //       transferStatus[deviceID]!,
+            //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+            //     ))
+            // SizedBox(
+            //   height: 5,
+            // ),
+            // Container(
+            //   color: Colors.amber,
+            //   child: ambulanceStatus[deviceID] == 'Transferred'
+            //       ? IconButton(
+            //           // padding: EdgeInsets.all(0),
+            //           hoverColor: Colors.transparent,
+            //           // focusColor: Colors.red,
+            //           // highlightColor: Colors.black,
+            //           icon: const Icon(
+            //             Icons.cancel_rounded,
+            //             color: Color.fromARGB(255, 185, 12, 0),
+            //             size: 15,
+            //           ),
+
+            //           onPressed: () {
+            //             setState(() {
+            //               map.remove(deviceID);
+            //               isArrived.remove(deviceID);
+            //               ambulanceStatus.remove(deviceID);
+            //               transferPatient.remove(deviceID);
+            //             });
+            //           },
+            //           //child: const Text('Accept'),
+            //         )
+            //       : null,
+            // )
           ]),
         ),
       ),
@@ -257,8 +639,66 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patients ($patientCount)',
-            style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+        title: Row(
+          children: <Widget>[
+            Text('Patients ($patientCount)',
+                style:
+                    const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width - 500,
+            ),
+            Column(children: <Widget>[
+              // SizedBox(
+              //   height: 10,
+              // ),
+              DropdownButtonHideUnderline(
+                child: DropdownButton2(
+                    // dropdownPadding: EdgeInsets.all(10),
+                    // buttonHighlightColor: Colors.transparent,
+                    customButton: const Icon(
+                      Icons.add_alert_sharp,
+                      size: 35,
+                    ),
+                    offset: const Offset(-50, 0),
+                    //icon: Icon(Icons.add_alert_sharp),
+                    buttonHeight: 40,
+                    itemHeight: 150,
+                    dropdownWidth: 250,
+                    dropdownMaxHeight: 600,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: const Color.fromARGB(255, 59, 164, 250),
+                    ),
+                    // isExpanded: true,
+                    value: null,
+                    items: requests.entries
+                        .map((e) => DropdownMenuItem(
+                            value: e, child: requestTemplate(e.key, e.value)))
+                        .toList(),
+                    onChanged: (value) {}),
+              )
+            ]),
+            Container(
+              // width: 15,
+              padding: const EdgeInsets.all(2),
+              margin: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                // border: Border.all(color: Colors.blueAccent),
+                color: requestCount == 0 ? null : Colors.red,
+                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: Center(
+                child: Text(
+                  requestCount == 0 ? '' : requestCount.toString(),
+                  style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(children: <Widget>[
@@ -287,7 +727,7 @@ class _HomeState extends State<Home> {
                     MediaQuery.of(context).size.width < 750 ? 60 : 30,
                 crossAxisSpacing:
                     MediaQuery.of(context).size.width < 750 ? 60 : 30,
-                childAspectRatio: 2 / 1,
+                childAspectRatio: 16 / 9,
                 children: map.entries
                     .map((entry) => cardTemplate(
                         entry.key,
@@ -301,17 +741,48 @@ class _HomeState extends State<Home> {
               )),
           ElevatedButton(
             onPressed: () async {
-              await mqttConnection.mqttConnect();
+              isConnected = await mqttConnection.mqttConnect(hospitalID);
               mqttConnection.subscribeTopic('/AmbulanceProject/$hospitalID/+');
               mqttConnection
                   .subscribeTopic('message/from/ambulance/$hospitalID/+');
-              mqttConnection.subscribeTopic('map/data');
+              // mqttConnection.subscribeTopic('map/data');
+              mqttConnection.subscribeTopic('Stop/$hospitalID/+');
+              mqttConnection.subscribeTopic('PatientData/$hospitalID/+');
+              mqttConnection.subscribeTopic('TransferPatient/+/+');
               setupUpdatesListener();
             },
             child: const Text('Connect'),
           ),
+          const SizedBox(
+            height: 5,
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            ),
+            padding: const EdgeInsets.all(5),
+            child: isConnected
+                ? const Text(
+                    'Connected to AWS',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold),
+                  )
+                : const Text(
+                    'Not Connected',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold),
+                  ),
+          )
         ]),
       ),
     );
   }
+}
+
+class MsgCount {
+  late int count;
 }

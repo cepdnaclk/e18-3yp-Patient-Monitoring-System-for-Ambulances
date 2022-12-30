@@ -28,14 +28,11 @@ class Connection {
     log("ping invoked");
   }
 
-  // Future<void> connect(String hospitalID, String deviceID) async{
-  //   await mqttConnect(hospitalID, deviceID);
-  // }
   void disconnect() {
     client.disconnect();
   }
 
-  Future<bool> mqttConnect() async {
+  Future<bool> mqttConnect(String clientIdentifier) async {
     log("Connecting");
 
     ByteData rootCA = await rootBundle.load('asserts/certs/AmazonRootCA1.pem');
@@ -56,8 +53,9 @@ class Connection {
     client.onDisconnected = onDisconnected;
     client.pongCallback = pong;
 
-    final MqttConnectMessage connMess =
-        MqttConnectMessage().withClientIdentifier('android').startClean();
+    final MqttConnectMessage connMess = MqttConnectMessage()
+        .withClientIdentifier(clientIdentifier)
+        .startClean();
     client.connectionMessage = connMess;
 
     await client.connect();
@@ -68,49 +66,33 @@ class Connection {
       return false;
     }
 
-    //String topic = 'Device_$deviceID';
-    // String pubTopic = '/AmbulanceProject/Hospital_$hospitalID/$deviceID';
-    // const hosTopic = 'hospital/data';
-
-    // client.subscribe(pubTopic, MqttQos.atMostOnce);
-    // client.subscribe(hosTopic, MqttQos.atMostOnce);
-    //client.subscribe(pubTopic, MqttQos.atMostOnce);
-
-    //print(str);
     return true;
   }
 
   void subscribeTopic(String topic) {
     client.subscribe(topic, MqttQos.atMostOnce);
   }
-  // void publishInitialMsg(String topic, String hospitalID){
-  //   log('testttttttttttttttttttt');
-  //   final builder = MqttClientPayloadBuilder();
-  //   builder.addString('start:$hospitalID');
-  //   client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-  // }
 
   void publishMsg(String topic, String msg) {
-    log('testttttttttttttttttttt');
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }
 
-  String receiveMsg() {
-    String s = 'test';
-    client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-      final recMess = c![0].payload as MqttPublishMessage;
-      final pt =
-          MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-      s = pt;
-      // patient = Patient.fromJson(jsonDecode(pt));
+  // String receiveMsg() {
+  //   String s = 'test';
+  //   client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+  //     final recMess = c![0].payload as MqttPublishMessage;
+  //     final pt =
+  //         MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
+  //     s = pt;
+  //     // patient = Patient.fromJson(jsonDecode(pt));
 
-      print('Chat EXAMPLE:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-      print('');
-    });
-    return s;
-  }
+  //     print('Chat EXAMPLE:: topic is <${c[0].topic}>, payload is <-- $pt -->');
+  //     print('');
+  //   });
+  //   return s;
+  // }
 
   Stream<List<MqttReceivedMessage<MqttMessage>>>? getMessagesStream() {
     log(client.updates.toString());
@@ -121,6 +103,4 @@ class Connection {
     log(client.updates.toString());
     return client.updates;
   }
-
-  // void updatePatient(Patient patient) {}
 }

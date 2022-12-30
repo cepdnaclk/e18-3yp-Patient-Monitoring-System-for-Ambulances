@@ -20,31 +20,38 @@ import 'package:flutter_map/flutter_map.dart';
 // import "package:latlong/latlong.dart" as LatLng;
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:desktop_app/people/Patient.dart';
 
 class Location extends StatefulWidget {
   //final double lat, long;
-  const Location({super.key});
+  final String deviceID;
+  final Map<String, Patient> map;
+  const Location({super.key, required this.deviceID, required this.map});
 
   @override
-  State<Location> createState() => _LocationState();
+  // ignore: no_logic_in_create_state
+  State<Location> createState() => _LocationState(deviceID, map);
 }
 
 class _LocationState extends State<Location> {
-  late double lat;
-  late double long;
+  // late double lat;
+  // late double long;
+  Map<String, Patient> map;
+  String deviceID;
+  _LocationState(this.deviceID, this.map);
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    lat = 6.927079;
-    long = 79.861244;
+    // lat = map[deviceID]!.lat;
+    // long = map[deviceID]!.long;
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
       }
       setState(() {
-        lat += 0.0001;
-        long += 0.0001;
+        map[deviceID]!.lat += 0.0001;
+        map[deviceID]!.long += 0.0001;
       });
     });
   }
@@ -58,7 +65,7 @@ class _LocationState extends State<Location> {
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       child: FlutterMap(
         options: MapOptions(
-          center: latLng.LatLng(lat, long),
+          center: latLng.LatLng(map[deviceID]!.lat, map[deviceID]!.long),
           zoom: 14,
         ),
         children: [
@@ -69,7 +76,7 @@ class _LocationState extends State<Location> {
           MarkerLayer(
             markers: [
               Marker(
-                point: latLng.LatLng(lat, long),
+                point: latLng.LatLng(map[deviceID]!.lat, map[deviceID]!.long),
                 width: 80,
                 height: 80,
                 builder: (context) => const Icon(

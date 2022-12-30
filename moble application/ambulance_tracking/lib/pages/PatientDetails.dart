@@ -16,7 +16,8 @@ import 'package:ambulance_tracking/pages/Message.dart';
 
 // Sing ss = '';
 class ViewDetails extends StatefulWidget {
-  const ViewDetails({Key? key}) : super(key: key);
+  final String userName;
+  const ViewDetails(this.userName);
   @override
   State<ViewDetails> createState() => _ViewDetailsState();
 }
@@ -40,19 +41,22 @@ class _ViewDetailsState extends State<ViewDetails> {
   late bool isNameChanged;
   late bool isAgeChanged;
   late bool isConditionChanged;
-  late int msgCount;
+  // late int msgCount;
   late String deviceStatus;
   // late String temp;
   // late Timer time;
-  late bool flag;
+  // late bool flag;
+  late bool isHospitalChanged;
 
   Map<String, String> menuItems = {
-    "Hospital1": "001",
-    "Hospital2": "002",
-    "Hospital3": "003"
+    "Hospital1": "H001",
+    "Hospital2": "H002",
+    "Hospital3": "H003"
   };
   late String selectedVal;
   late bool isActive;
+  late String ambulanceStatus;
+  MsgCount msgCount = MsgCount();
 
   List<Message> messageFromHospital = [];
   @override
@@ -71,8 +75,11 @@ class _ViewDetailsState extends State<ViewDetails> {
     age = 0;
     condition = 'none';
     selectedVal = menuItems.keys.toList()[0];
-    msgCount = 0;
-    flag = false;
+    msgCount.count = 0;
+
+    // flag = false;
+    ambulanceStatus = '';
+    isHospitalChanged = false;
 
     deviceStatus = 'Offline';
     callMethod();
@@ -95,20 +102,45 @@ class _ViewDetailsState extends State<ViewDetails> {
       final pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       setState(() {
-        flag = false;
-        if (c[0].topic == '/AmbulanceProject/H$hospitalID/$deviceID') {
+        // flag = false;
+        if (c[0].topic == '/AmbulanceProject/$hospitalID/$deviceID') {
           if (pt == 'Active') {
             deviceStatus = 'Active';
             return;
           }
-          flag = true;
+          // flag = true;
           patient = Patient.fromJson(jsonDecode(pt));
           deviceStatus = 'Active';
           isActive = true;
-        } else if (c[0].topic == 'message/from/hospital') {
+        } else if (c[0].topic == 'Mobile/Transfer/$deviceID') {
+          ambulanceStatus = 'Tranferred to $pt';
+          hospitalID = pt;
+          // isHospitalChanged = true;
+          // Future.delayed(Duration(seconds: 5), () {
+          //   isHospitalChanged = false;
+          // });
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Tranfer'),
+                  content: Text('Transfer to $hospitalID'),
+                  actions: <Widget>[
+                    // TextButton(
+                    //   onPressed: () => Navigator.pop(context, 'Cancel'),
+                    //   child: const Text('Cancel'),
+                    // ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              });
+        } else if (c[0].topic.substring(0, 22) == 'message/from/hospital/') {
           messageFromHospital.add(Message.fromJson(jsonDecode(pt),
               DateTime.now().subtract(const Duration(minutes: 1)), false));
-          msgCount++;
+          msgCount.count++;
           //message.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false);
 
         }
@@ -186,6 +218,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                     child: Column(
                       children: <Widget>[
                         TextFormField(
+                          enabled: firstClick,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter Device ID';
@@ -257,20 +290,44 @@ class _ViewDetailsState extends State<ViewDetails> {
                             alignment: Alignment.topLeft,
                             width: 1000,
                             child: Column(children: <Widget>[
-                              DropdownButton(
-                                  value: selectedVal,
-                                  items: menuItems.keys
-                                      .toList()
-                                      .map((e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e),
-                                          ))
-                                      .toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedVal = value as String;
-                                    });
-                                  })
+                              Row(
+                                children: [
+                                  DropdownButton(
+                                      value: selectedVal,
+                                      items: menuItems.keys
+                                          .toList()
+                                          .map((e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(e),
+                                              ))
+                                          .toList(),
+                                      onChanged: firstClick
+                                          ? (value) {
+                                              setState(() {
+                                                selectedVal = value as String;
+                                              });
+                                            }
+                                          : null),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                      height: 35,
+                                      padding: const EdgeInsets.only(
+                                          top: 8, left: 5, right: 5),
+                                      decoration: BoxDecoration(
+                                        color: ambulanceStatus != ''
+                                            ? Colors.white70
+                                            : null,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(5.0)),
+                                      ),
+                                      child: Text(ambulanceStatus,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15.0)))
+                                ],
+                              )
                             ])),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -278,25 +335,37 @@ class _ViewDetailsState extends State<ViewDetails> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate() &&
                                   firstClick) {
-                                setState(() {
-                                  firstClick = false;
-                                });
                                 deviceID = deviceIDController.text;
                                 hospitalID = menuItems[selectedVal].toString();
+                                setState(() {
+                                  firstClick = false;
+                                  ambulanceStatus = 'Directed to $hospitalID';
+                                });
 
-                                await conn.mqttConnect();
+                                await conn.mqttConnect(widget.userName);
 
                                 conn.subscribeTopic(
-                                    '/AmbulanceProject/H$hospitalID/$deviceID');
+                                    '/AmbulanceProject/$hospitalID/$deviceID');
                                 conn.publishMsg(
                                     'Device_$deviceID', 'start:$hospitalID');
-                                conn.subscribeTopic('message/from/hospital');
+                                conn.subscribeTopic(
+                                    'message/from/hospital/+/$deviceID');
+                                conn.subscribeTopic(
+                                    'Mobile/Transfer/$deviceID');
                                 setupUpdatesListener();
                               }
 
                               patient.name = name;
                               patient.age = age;
                               patient.condition = condition;
+                              Future.delayed(const Duration(seconds: 4), () {
+                                conn.publishMsg(
+                                    'PatientData/$hospitalID/$deviceID',
+                                    '{"name":"${patient.name}", "age":${patient.age}, "condition": "${patient.condition}"}');
+                              });
+                              // conn.publishMsg(
+                              //     'PatientData/$hospitalID/$deviceID',
+                              //     '{"name":${patient.name}, "age":${patient.age}, "condition": ${patient.condition}}');
                               log(name);
                               log(condition);
                               log(age.toString());
@@ -347,7 +416,8 @@ class _ViewDetailsState extends State<ViewDetails> {
                                             ? Colors.red.withOpacity(0.8)
                                             : Colors.green,
                                         fontStyle: FontStyle.italic)),
-                              )
+                              ),
+                              //Text(ambulanceStatus),
                             ]))),
                     const SizedBox(height: 10.0),
                     SizedBox(
@@ -370,73 +440,146 @@ class _ViewDetailsState extends State<ViewDetails> {
                   ]),
                 ),
                 Container(
-                  // color: Colors.deepOrange,
-                  decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                  padding: EdgeInsets.all(2.0),
-                  height: 70,
-                  width: 70,
-                  child: Stack(children: <Widget>[
-                    //Text('1'),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: msgCount == 0
-                          ? const Text('')
-                          : Container(
-                              height: 25,
-                              width: 25,
-                              padding:
-                                  const EdgeInsets.only(bottom: 2.0, left: 6.0),
-                              decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              // color: Colors.red,
+                  // color: Colors.amber,
+                  padding: EdgeInsets.only(left: 100),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          // color: Colors.deepOrange,
+                          decoration: const BoxDecoration(
+                              color: Colors.black26,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
+                          padding: EdgeInsets.all(2.0),
+                          height: 70,
+                          width: 70,
+                          child: Stack(children: <Widget>[
+                            //Text('1'),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: msgCount.count == 0
+                                  ? const Text('')
+                                  : Container(
+                                      height: 25,
+                                      width: 25,
+                                      padding: const EdgeInsets.only(
+                                          bottom: 2.0, left: 6.0),
+                                      decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0))),
+                                      // color: Colors.red,
 
-                              child: Text("$msgCount",
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20.0,
-                                      color: Colors.white)),
+                                      child: Text("${msgCount.count}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20.0,
+                                              color: Colors.white)),
+                                    ),
                             ),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.message, size: 40),
-                          //iconSize: 40.0,
-                          color: Colors.blueAccent,
-                          padding: EdgeInsets.all(0),
-                          style: IconButton.styleFrom(
-                            foregroundColor: Colors.grey,
-                            elevation: 10,
-                            //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              msgCount = 0;
-                            });
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Chat(
-                                        conn,
-                                        messageFromHospital,
-                                        msgCount,
-                                        hospitalID,
-                                        deviceID)));
-                          },
+                            Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: IconButton(
+                                  icon: const Icon(Icons.message, size: 40),
+                                  //iconSize: 40.0,
+                                  color: Colors.blueAccent,
+                                  padding: EdgeInsets.all(0),
+                                  style: IconButton.styleFrom(
+                                    foregroundColor: Colors.grey,
+                                    elevation: 10,
+                                    //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      msgCount.count = 0;
+                                    });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Chat(
+                                                conn,
+                                                messageFromHospital,
+                                                msgCount,
+                                                hospitalID,
+                                                deviceID)));
+                                  },
+                                ),
+                              ),
+                            ),
+                          ]),
                         ),
-                      ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          // color: Colors.deepOrange,
+                          decoration: const BoxDecoration(
+                              color: Colors.black26,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
+                          // padding: EdgeInsets.all(2.0),
+                          height: 70,
+                          width: 70,
+                          child: Stack(children: <Widget>[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: IconButton(
+                                  icon: const Icon(Icons.stop_circle, size: 50),
+                                  //iconSize: 40.0,
+                                  color: Colors.red.withOpacity(0.7),
+                                  padding: EdgeInsets.all(0),
+                                  style: IconButton.styleFrom(
+                                    foregroundColor: Colors.grey,
+                                    elevation: 10,
+                                    //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      conn.publishMsg(
+                                          'Device_$deviceID', 'stop:');
+                                      conn.publishMsg(
+                                          'Stop/$hospitalID/$deviceID',
+                                          'Arrived');
+                                      conn.disconnect();
+                                      Future.delayed(const Duration(seconds: 5),
+                                          () {
+                                        patient = Patient.empty();
+                                        deviceStatus = 'Offline';
+                                        isActive = false;
+                                        firstClick = true;
+                                        ambulanceStatus = '';
+                                        messageFromHospital.clear();
+                                        msgCount.count = 0;
+                                      });
+                                      // patient = Patient.empty();
+                                      // deviceStatus = 'Offline';
+                                      // isActive = false;
+                                      // firstClick = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
                 )
               ],
             ),
           ),
         ));
   }
+}
+
+class MsgCount {
+  late int count;
 }

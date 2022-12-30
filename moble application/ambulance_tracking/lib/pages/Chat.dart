@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 // import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:ambulance_tracking/pages/Message.dart';
-// import 'package:ambulance_tracking/pages/PatientDetails.dart';
+import 'package:ambulance_tracking/pages/PatientDetails.dart';
 // import 'package:ambulance_tracking/pages/MessageList.dart';
 // import 'Conn.dart';
 // import 'Conn.dart';
@@ -18,9 +18,10 @@ import 'package:ambulance_tracking/pages/Message.dart';
 class Chat extends StatefulWidget {
   final Connection connect;
   final List<Message> mess;
-  late int msgCount;
+  // late int msgCount;
   final String hospitalID;
   final String deviceID;
+  final MsgCount msgCount;
   Chat(this.connect, this.mess, this.msgCount, this.hospitalID, this.deviceID);
 
   @override
@@ -42,14 +43,14 @@ class _ChatState extends State<Chat> {
     // message.addAll(widget.mess);
     // widget.mess.clear();
     // isFirstClick = true;
-
+    widget.msgCount.count = 0;
     //updateMsg();
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
       }
       setState(() {
-        widget.msgCount = 0;
+        widget.msgCount.count = 0;
         //widget.mess.add(Message('test', DateTime.now(), true));
       });
     });

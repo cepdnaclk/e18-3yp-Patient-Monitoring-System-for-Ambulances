@@ -5,29 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:desktop_app/chat/Message.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:desktop_app/pages/Home.dart';
 
 class Chat extends StatefulWidget {
   String deviceID;
   String hospitalID;
   Map<String, List<Message>> mess;
   Connection connect;
+  Map<String, MsgCount> msgCount;
   Chat(
       {super.key,
       required this.mess,
       required this.connect,
       required this.deviceID,
-      required this.hospitalID});
+      required this.hospitalID,
+      required this.msgCount});
 
   @override
-  State<Chat> createState() => _ChatState(mess, connect, deviceID, hospitalID);
+  State<Chat> createState() =>
+      _ChatState(mess, connect, deviceID, hospitalID, msgCount);
 }
 
 class _ChatState extends State<Chat> {
   String deviceID;
   String hospitalID;
   Map<String, List<Message>> mess;
+  Map<String, MsgCount> msgCount;
   Connection connect;
-  _ChatState(this.mess, this.connect, this.deviceID, this.hospitalID);
+  _ChatState(
+      this.mess, this.connect, this.deviceID, this.hospitalID, this.msgCount);
 
   TextEditingController messageController = TextEditingController();
   @override
@@ -40,8 +46,9 @@ class _ChatState extends State<Chat> {
         return;
       }
       setState(() {
-        print(
-            '############################# ${mess[deviceID]} ###########################');
+        // print(
+        //     '############################# ${mess[deviceID]} ###########################');
+        msgCount[deviceID]!.count = 0;
       });
     });
   }
@@ -109,7 +116,8 @@ class _ChatState extends State<Chat> {
                   }
                   mess[deviceID]!.add(msg);
                   connect.publishMsg(
-                      'message/from/hospital', '{"message":"${msg.text}"}');
+                      'message/from/hospital/$hospitalID/$deviceID',
+                      '{"message":"${msg.text}"}');
                 });
                 messageController.clear();
               },

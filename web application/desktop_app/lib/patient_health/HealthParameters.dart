@@ -35,8 +35,18 @@ class _ViewParametersState extends State<ViewParameters> {
       if (!mounted) {
         return;
       }
+      Patient x = Patient(
+          map[deviceID]!.name,
+          map[deviceID]!.age,
+          map[deviceID]!.condition,
+          map[deviceID]!.temperature,
+          map[deviceID]!.heartRate,
+          map[deviceID]!.pulseRate,
+          map[deviceID]!.oxygenSaturation,
+          map[deviceID]!.lat,
+          map[deviceID]!.long);
       setState(() {
-        temp.add(Point(time, map[deviceID]!));
+        temp.add(Point(time, x));
         time += 2;
         if (time % 30 == 0) {
           flag = true;
@@ -49,8 +59,8 @@ class _ViewParametersState extends State<ViewParameters> {
     });
   }
 
-  Widget parameterTemplate(
-      margin, String parameterName, double parameterValue) {
+  Widget parameterTemplate(margin, String parameterName, double parameterValue,
+      List<FlSpot> list, double minValue, double maxValue) {
     return Expanded(
       flex: 1,
       child: Container(
@@ -96,49 +106,54 @@ class _ViewParametersState extends State<ViewParameters> {
           //   parameterValue.toString(),
           //   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           // )
-          //TempGraphTemplate(temp)
+
+          graphTemplate(list, minValue, maxValue),
+          // Text('time'),
+          // const RotationTransition(
+          //     turns: AlwaysStoppedAnimation(270 / 360),
+          //     child: Text("flutter is awesome"))
         ]),
         // color: Colors.red,
       ),
     );
   }
 
-  Widget graphTemplate(margin, List<FlSpot> points, double min, double max) {
-    return Expanded(
-      flex: 1,
-      child: Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: const BorderRadius.all(Radius.circular(10.0))),
-          margin: margin,
-          // width: 100,
-          // height: 150,
-          child: AspectRatio(
-            aspectRatio: 2,
-            child: LineChart(LineChartData(minY: min, maxY: max,
-                // titlesData: FlTitlesData(
-                //   show: true,
-                // ),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots:
-                        points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-                    dotData: FlDotData(show: true),
-                    isCurved: false,
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: gradientColors
-                            .map((color) => color.withOpacity(0.3))
-                            .toList(),
-                      ),
-                    ),
-                  )
-                ])),
-          )),
-    );
-  }
+  // Widget graphTemplate(margin, List<FlSpot> points, double min, double max) {
+  //   return Expanded(
+  //     flex: 1,
+  //     child: Container(
+  //         padding: const EdgeInsets.all(5),
+  //         decoration: BoxDecoration(
+  //             color: Colors.black.withOpacity(0.5),
+  //             borderRadius: const BorderRadius.all(Radius.circular(10.0))),
+  //         margin: margin,
+  //         // width: 100,
+  //         // height: 150,
+  //         child: AspectRatio(
+  //           aspectRatio: 2,
+  //           child: LineChart(LineChartData(minY: min, maxY: max,
+  //               // titlesData: FlTitlesData(
+  //               //   show: true,
+  //               // ),
+  //               lineBarsData: [
+  //                 LineChartBarData(
+  //                   spots:
+  //                       points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
+  //                   dotData: FlDotData(show: true),
+  //                   isCurved: false,
+  //                   belowBarData: BarAreaData(
+  //                     show: true,
+  //                     gradient: LinearGradient(
+  //                       colors: gradientColors
+  //                           .map((color) => color.withOpacity(0.3))
+  //                           .toList(),
+  //                     ),
+  //                   ),
+  //                 )
+  //               ])),
+  //         )),
+  //   );
+  // }
 
   // void updateChart(){
   //   temp[map[deviceID]!.temperature] = map[deviceID]
@@ -148,29 +163,34 @@ class _ViewParametersState extends State<ViewParameters> {
     const Color(0xff02d39a),
   ];
 
-  Widget TempGraphTemplate(List<FlSpot> points) {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: LineChart(LineChartData(minY: 35, maxY: 40,
-          // titlesData: FlTitlesData(
-          //   show: true,
-          // ),
-          lineBarsData: [
-            LineChartBarData(
-              spots:
-                  points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-              dotData: FlDotData(show: true),
-              isCurved: false,
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  colors: gradientColors
-                      .map((color) => color.withOpacity(0.3))
-                      .toList(),
+  Widget graphTemplate(List<FlSpot> points, double minValue, double maxValue) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          borderRadius: const BorderRadius.all(Radius.circular(10.0))),
+      margin: EdgeInsets.only(top: 20),
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: LineChart(LineChartData(minY: minValue, maxY: maxValue,
+            // lineTouchData: LineTouchData(),
+            // titlesData: FlTitlesData(show: true, bottomTitles: SideTitles(fo)),
+            lineBarsData: [
+              LineChartBarData(
+                spots:
+                    points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
+                dotData: FlDotData(show: true),
+                isCurved: false,
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: gradientColors
+                        .map((color) => color.withOpacity(0.3))
+                        .toList(),
+                  ),
                 ),
               ),
-            )
-          ])),
+            ])),
+      ),
     );
   }
 
@@ -238,11 +258,17 @@ class _ViewParametersState extends State<ViewParameters> {
             parameterTemplate(
                 const EdgeInsets.only(top: 20, left: 20, right: 10, bottom: 10),
                 'Temperature',
-                map[deviceID]!.temperature),
+                map[deviceID]!.temperature,
+                temp.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
+                35.0,
+                40.0),
             parameterTemplate(
                 const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
                 'Heart Rate',
-                map[deviceID]!.heartRate)
+                map[deviceID]!.heartRate,
+                temp.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
+                50,
+                200)
           ],
         ),
         Row(
@@ -250,73 +276,46 @@ class _ViewParametersState extends State<ViewParameters> {
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
                 'Pulse Rate',
-                map[deviceID]!.pulseRate),
+                map[deviceID]!.pulseRate,
+                temp.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
+                50,
+                200),
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 10),
                 'Oxygen Sat.',
-                map[deviceID]!.oxygenSaturation)
-          ],
-        ),
-        SizedBox(height: 30),
-        Row(
-          children: <Widget>[
-            graphTemplate(
-                const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-                temp.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-                35.0,
-                40.0),
-            graphTemplate(
-                const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-                temp.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
-                50,
+                map[deviceID]!.oxygenSaturation,
+                temp.map((e) => FlSpot(e.time, e.p.oxygenSaturation)).toList(),
+                10,
                 200)
           ],
         ),
-        Row(children: <Widget>[
-          graphTemplate(
-              const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-              temp.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
-              50,
-              200),
-          graphTemplate(
-              const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-              temp.map((e) => FlSpot(e.time, e.p.oxygenSaturation)).toList(),
-              10,
-              200)
-        ]),
+        // SizedBox(height: 30),
         // Row(
-        //   children: [
-        //     Container(
-        //         color: Colors.white,
-        //         // height: 200,
-        //         // width: 300,
-        //         child: graphTemplate([1, 2])),
-        //     Container(
-        //         color: Colors.white,
-        //         // height: 200,
-        //         // width: 300,
-        //         child: graphTemplate([1, 2])),
+        //   children: <Widget>[
+        //     graphTemplate(
+        //         const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
+        //         temp.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
+        //         35.0,
+        //         40.0),
+        //     graphTemplate(
+        //         const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
+        //         temp.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
+        //         50,
+        //         200)
         //   ],
         // ),
-        // Container(
-        //     width: 400,
-        //     margin: EdgeInsets.all(10),
-        //     decoration: BoxDecoration(
-        //         color: Colors.black.withOpacity(0.5),
-        //         borderRadius: const BorderRadius.all(Radius.circular(10.0))),
-        //     child: TempGraphTemplate(temp)),
-        // Container(
-        //     margin: EdgeInsets.all(10),
-        //     decoration: BoxDecoration(
-        //         color: Colors.white.withOpacity(0.8),
-        //         borderRadius: const BorderRadius.all(Radius.circular(10.0))),
-        //     child: HRGraphTemplate(temp)),
-        // Container(
-        //     margin: EdgeInsets.all(10),
-        //     decoration: BoxDecoration(
-        //         color: Colors.white.withOpacity(0.8),
-        //         borderRadius: const BorderRadius.all(Radius.circular(10.0))),
-        //     child: PRGraphTemplate(temp)),
+        // Row(children: <Widget>[
+        //   graphTemplate(
+        //       const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
+        //       temp.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
+        //       50,
+        //       200),
+        //   graphTemplate(
+        //       const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
+        //       temp.map((e) => FlSpot(e.time, e.p.oxygenSaturation)).toList(),
+        //       10,
+        //       200)
+        // ]),
       ],
 
       // graphTemplate()
