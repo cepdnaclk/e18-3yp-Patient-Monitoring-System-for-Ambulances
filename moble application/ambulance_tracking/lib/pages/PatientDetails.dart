@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 // import 'dart:io';
+import 'package:ambulance_tracking/pages/Login.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:ambulance_tracking/pages/Connect.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
+// import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:ambulance_tracking/pages/Patient.dart';
 import 'package:ambulance_tracking/pages/Chat.dart';
 import 'package:ambulance_tracking/pages/Conn.dart';
@@ -28,8 +29,7 @@ class _ViewDetailsState extends State<ViewDetails> {
   TextEditingController deviceIDController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController conditionController = TextEditingController();
-  final MqttServerClient client = MqttServerClient(
-      'a3rwyladencomq-ats.iot.ap-northeast-1.amazonaws.com', '');
+  // final MqttServerClient client = MqttServerClient( 'a3rwyladencomq-ats.iot.ap-northeast-1.amazonaws.com', '');
   late Patient patient;
 
   late String deviceID;
@@ -149,10 +149,10 @@ class _ViewDetailsState extends State<ViewDetails> {
     });
   }
 
-  delayed() async {
-    await Future.delayed(Duration(seconds: 2)); // or some time consuming call
-    return true;
-  }
+  // delayed() async {
+  //   await Future.delayed(Duration(seconds: 2)); // or some time consuming call
+  //   return true;
+  // }
 
   Widget cardTemplate(
       String parameterName, double parameterValue, double maxValue) {
@@ -161,7 +161,7 @@ class _ViewDetailsState extends State<ViewDetails> {
       color: maxValue >= parameterValue ? Colors.blue[100] : Colors.red[200],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
-        padding: EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(5.0),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -186,11 +186,12 @@ class _ViewDetailsState extends State<ViewDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('APP'),
+          automaticallyImplyLeading: false,
+          title: const Text('APP'),
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -386,8 +387,8 @@ class _ViewDetailsState extends State<ViewDetails> {
                     color: Colors.black26,
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   ),
-                  padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(10.0),
                   // height: 500,
                   // width: 500,
                   child: Column(children: <Widget>[
@@ -402,7 +403,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                       fontSize: 15.0)),
                               Container(
                                 //color: Colors.white,
-                                padding: EdgeInsets.all(3),
+                                padding: const EdgeInsets.all(3),
                                 decoration: const BoxDecoration(
                                   color: Colors.white70,
                                   borderRadius:
@@ -441,136 +442,195 @@ class _ViewDetailsState extends State<ViewDetails> {
                 ),
                 Container(
                   // color: Colors.amber,
-                  padding: EdgeInsets.only(left: 100),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          // color: Colors.deepOrange,
-                          decoration: const BoxDecoration(
-                              color: Colors.black26,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0))),
-                          padding: EdgeInsets.all(2.0),
-                          height: 70,
-                          width: 70,
-                          child: Stack(children: <Widget>[
-                            //Text('1'),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: msgCount.count == 0
-                                  ? const Text('')
-                                  : Container(
-                                      height: 25,
-                                      width: 25,
-                                      padding: const EdgeInsets.only(
-                                          bottom: 2.0, left: 6.0),
-                                      decoration: const BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(20.0))),
-                                      // color: Colors.red,
+                  // padding: const EdgeInsets.only(left: 100),
+                  child: Row(
+                    children: <Widget>[
+                      const Expanded(flex: 1, child: SizedBox()),
+                      Container(
+                        // color: Colors.deepOrange,
+                        decoration: const BoxDecoration(
+                            color: Colors.black26,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        padding: const EdgeInsets.all(2.0),
+                        height: 70,
+                        width: 70,
+                        child: Stack(children: <Widget>[
+                          //Text('1'),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: msgCount.count == 0
+                                ? const Text('')
+                                : Container(
+                                    height: 25,
+                                    width: 25,
+                                    padding: const EdgeInsets.only(
+                                        bottom: 2.0, left: 6.0),
+                                    decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0))),
+                                    // color: Colors.red,
 
-                                      child: Text("${msgCount.count}",
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20.0,
-                                              color: Colors.white)),
-                                    ),
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                child: IconButton(
-                                  icon: const Icon(Icons.message, size: 40),
-                                  //iconSize: 40.0,
-                                  color: Colors.blueAccent,
-                                  padding: EdgeInsets.all(0),
-                                  style: IconButton.styleFrom(
-                                    foregroundColor: Colors.grey,
-                                    elevation: 10,
-                                    //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                    child: Text("${msgCount.count}",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20.0,
+                                            color: Colors.white)),
                                   ),
-                                  onPressed: () {
-                                    setState(() {
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: IconButton(
+                                icon: const Icon(Icons.message, size: 40),
+                                //iconSize: 40.0,
+                                color: Colors.blueAccent,
+                                padding: const EdgeInsets.all(0),
+                                style: IconButton.styleFrom(
+                                  foregroundColor: Colors.grey,
+                                  elevation: 10,
+                                  //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    msgCount.count = 0;
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Chat(
+                                              conn,
+                                              messageFromHospital,
+                                              msgCount,
+                                              hospitalID,
+                                              deviceID)));
+                                },
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Container(
+                        // color: Colors.deepOrange,
+                        decoration: const BoxDecoration(
+                            color: Colors.black26,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        // padding: EdgeInsets.all(2.0),
+                        height: 70,
+                        width: 70,
+                        child: Stack(children: <Widget>[
+                          Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: IconButton(
+                                icon: const Icon(Icons.stop_circle, size: 50),
+                                //iconSize: 40.0,
+                                color: Colors.red.withOpacity(0.7),
+                                padding: const EdgeInsets.all(0),
+                                style: IconButton.styleFrom(
+                                  foregroundColor: Colors.grey,
+                                  elevation: 10,
+                                  //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    conn.publishMsg(
+                                        'Device_$deviceID', 'stop:');
+                                    conn.publishMsg(
+                                        'Stop/$hospitalID/$deviceID',
+                                        'Arrived');
+                                    conn.disconnect();
+                                    Future.delayed(const Duration(seconds: 5),
+                                        () {
+                                      patient = Patient.empty();
+                                      deviceStatus = 'Offline';
+                                      isActive = false;
+                                      firstClick = true;
+                                      ambulanceStatus = '';
+                                      messageFromHospital.clear();
                                       msgCount.count = 0;
                                     });
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Chat(
-                                                conn,
-                                                messageFromHospital,
-                                                msgCount,
-                                                hospitalID,
-                                                deviceID)));
-                                  },
-                                ),
+                                    // patient = Patient.empty();
+                                    // deviceStatus = 'Offline';
+                                    // isActive = false;
+                                    // firstClick = true;
+                                  });
+                                },
                               ),
                             ),
-                          ]),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Container(
-                          // color: Colors.deepOrange,
-                          decoration: const BoxDecoration(
-                              color: Colors.black26,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0))),
-                          // padding: EdgeInsets.all(2.0),
-                          height: 70,
-                          width: 70,
-                          child: Stack(children: <Widget>[
-                            Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: IconButton(
-                                  icon: const Icon(Icons.stop_circle, size: 50),
-                                  //iconSize: 40.0,
-                                  color: Colors.red.withOpacity(0.7),
-                                  padding: EdgeInsets.all(0),
-                                  style: IconButton.styleFrom(
-                                    foregroundColor: Colors.grey,
-                                    elevation: 10,
-                                    //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
-                                  ),
-                                  onPressed: () async {
-                                    setState(() {
-                                      conn.publishMsg(
-                                          'Device_$deviceID', 'stop:');
-                                      conn.publishMsg(
-                                          'Stop/$hospitalID/$deviceID',
-                                          'Arrived');
-                                      conn.disconnect();
-                                      Future.delayed(const Duration(seconds: 5),
-                                          () {
-                                        patient = Patient.empty();
-                                        deviceStatus = 'Offline';
-                                        isActive = false;
-                                        firstClick = true;
-                                        ambulanceStatus = '';
-                                        messageFromHospital.clear();
-                                        msgCount.count = 0;
+                          ),
+                        ]),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Container(
+                        // color: Colors.deepOrange,
+                        decoration: const BoxDecoration(
+                            color: Colors.black26,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        // padding: EdgeInsets.all(2.0),
+                        height: 70,
+                        width: 70,
+                        child: Stack(children: <Widget>[
+                          Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: IconButton(
+                                icon: const Icon(Icons.logout, size: 50),
+                                //iconSize: 40.0,
+                                color: Colors.red.withOpacity(0.7),
+                                padding: const EdgeInsets.all(0),
+                                style: IconButton.styleFrom(
+                                  foregroundColor: Colors.grey,
+                                  elevation: 10,
+                                  //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+                                ),
+                                onPressed: () {
+                                  // setState(() {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('LogOut'),
+                                          content: const Text(
+                                              'Are you sure you want to logout'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(
+                                                  context, 'Cancel'),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const Login())),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
                                       });
-                                      // patient = Patient.empty();
-                                      // deviceStatus = 'Offline';
-                                      // isActive = false;
-                                      // firstClick = true;
-                                    });
-                                  },
-                                ),
+                                  // });
+                                },
                               ),
                             ),
-                          ]),
-                        ),
-                      ],
-                    ),
+                          ),
+                        ]),
+                      ),
+                      const Expanded(flex: 1, child: SizedBox()),
+                    ],
                   ),
                 )
               ],
