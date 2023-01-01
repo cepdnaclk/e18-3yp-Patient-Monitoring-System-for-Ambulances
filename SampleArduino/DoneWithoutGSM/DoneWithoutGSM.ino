@@ -99,12 +99,11 @@ void calcMAX30100(){  //Calculated the average values
     beatCount=0;
 }
 
-/*
-const char* ssid = "Dialog 4G 769";
-const char* password = "583BbFe3";*/
+const char* ssid1 = "Dialog 4G 517";
+const char* password1 = "576E5Fc3";
 
-const char* ssid = "Dialog 4G 517";
-const char* password = "576E5Fc3";
+const char* ssid2 = "Dialog 4G 769";
+const char* password2 = "583BbFe3";
 
 /*
 const char* ssid = "Eng-Student";
@@ -159,31 +158,38 @@ long lastMsg = 0;
 char msg[300];
 
 void setup_wifi(){
+  WiFi.disconnect(true);
   delay(10);
   espClient.setBufferSizes(512,512);
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid,password);
-
+  int A0val = analogRead(A0);
+  if(A0val<300){
+    showParametersD(ssid1);
+    Serial.println(ssid1);
+    WiFi.begin(ssid1,password1);  
+  }else{
+    showParametersD(ssid2);
+    Serial.println(ssid2);
+    WiFi.begin(ssid2,password2);
+  }
+  int attempts = 0;
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
     Serial.print(".");  
+    ++attempts;
   }
-
-  Serial.println("");
-  Serial.println("Wifi connected");
-  Serial.println("IP address :");
-  Serial.println(WiFi.localIP());
-  analogWrite(connectivityLED,50);
-
-  timeClient.begin();
-  while(!timeClient.update()){
-    timeClient.forceUpdate();  
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.println("");
+    Serial.println("Not connected.");
+    setup_wifi(); 
+  }else{
+    Serial.println("");
+    Serial.println("Wifi connected");
+    Serial.println("IP address :");
+    Serial.println(WiFi.localIP());
+    analogWrite(connectivityLED,50);
   }
-
-  espClient.setX509Time(timeClient.getEpochTime());
-  
 }
 
 void checkMsg(String msgType,String MSG){
@@ -253,6 +259,7 @@ void reconnect(){
     setup_wifi();
   }
   while(!client.connected()){
+    showParametersD("AWS");
     analogWrite(connectivityLED,50);
     if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
       analogWrite(rideLED,50);
@@ -266,7 +273,6 @@ void reconnect(){
       analogWrite(connectivityLED,1023);
       client.subscribe((char*)(inTopic.c_str()));
       disconnected = false;
-      showWaiting();
     }else{
       tone(buzzer,1000,200);
       Serial.print("failed,rc=");
@@ -299,6 +305,9 @@ void connectButton(){
     disconnected = true;
   }else{
     reconnect();
+    if(!rideFLAG){
+      showWaiting();
+    }
     disconnected = false;
   }
 }
@@ -325,6 +334,14 @@ void setup() {
   
   pinMode(LED_BUILTIN,OUTPUT);
   setup_wifi();
+
+  timeClient.begin();
+  while(!timeClient.update()){
+    timeClient.forceUpdate();  
+  }
+
+  espClient.setX509Time(timeClient.getEpochTime());
+
   delay(1000);
   if(!SPIFFS.begin()){
     Serial.println("Failed to mount file system");
@@ -389,6 +406,7 @@ void setup() {
   Serial.println(ESP.getFreeHeap());
 
   reconnect();
+  showWaiting();
 
   //max30100
   //Initialize max30100 sensor
@@ -564,6 +582,85 @@ void showMessage(String message){
   TV.display();   
 }
 
+void showParametersD(String SSID){
+  if(rideFLAG){
+    if(canShow==0){
+      pox.begin();
+      sensors.setWaitForConversion(false);
+      sensors.requestTemperatures();
+      temperature = sensors.getTempCByIndex(0);
+      sensors.setWaitForConversion(true);
+      pox.update();
+      calcMAX30100();
+      TV.clearDisplay();
+      TV.setTextColor(WHITE);
+
+      TV.setTextSize(1);
+      TV.setCursor(0,0);
+      TV.print("Connecting to...");
+
+      TV.setTextSize(1);
+      TV.setCursor(0,10);
+      TV.print(SSID);
+
+      TV.setTextSize(1);
+      TV.setCursor(20,24);
+      TV.print("TEMP");
+      
+      TV.setTextSize(1);
+      TV.setCursor(53,24);
+      TV.printf("%.2f",temperature);
+
+      TV.setTextSize(1);
+      TV.setCursor(115,24);
+      TV.printf("%cC",248);
+      
+      TV.setTextSize(1);
+      TV.setCursor(20,40);
+      TV.print("H.R.");
+      
+      TV.setTextSize(1);
+      TV.setCursor(53,40);
+      TV.printf("%.2f",heart_rate);
+
+      TV.setTextSize(1);
+      TV.setCursor(110,40);
+      TV.print("BPM");
+      
+      TV.setTextSize(1);
+      TV.setCursor(20,56);
+      TV.print("O.S.");
+
+      TV.setTextSize(1);
+      TV.setCursor(53,56);
+      TV.printf("%.2f",spo2);
+
+      TV.setTextSize(1);
+      TV.setCursor(115,56);
+      TV.print("%");
+      
+      TV.display();
+      tone(buzzer,10000,150);
+    }else{
+      tone(buzzer,1000,200);
+      --canShow;  
+    }   
+  }else{
+    TV.clearDisplay();
+    TV.setTextColor(WHITE);
+
+    TV.setTextSize(1);
+    TV.setCursor(0,10);
+    TV.print("Connecting to...");
+
+    TV.setTextSize(1);
+    TV.setCursor(0,40);
+    TV.print(SSID);
+
+    TV.display();
+  }
+}
+
 float value3 = 58;
 
 void loop() {
@@ -571,19 +668,23 @@ void loop() {
   pox.update(); 
   
   if(!client.connected()){
+    Serial.println("ddddjjl");
     analogWrite(connectivityLED,50);
     if(rideFLAG){
       analogWrite(rideLED,50);   
     }
     if(!disconnected){
       reconnect();  
+      if(!rideFLAG){
+        showWaiting();
+      }
     }
   }
   client.loop();
 
   if(rideFLAG){
     pox.update();
-    
+    analogWrite(rideLED,1023); 
     long now = millis();
     //location updating
     if(gpsSerial.available() > 0){
