@@ -43,8 +43,8 @@ SoftwareSerial gpsSerial(RXPin, TXPin);
 const char* ssid = "Dialog 4G 769";
 const char* password = "583BbFe3";*/
 
-const char* ssid = "Dialog 4G 517";
-const char* password = "576E5Fc3";
+char* ssid = "Dialog 4G 517";
+char* password = "576E5Fc3";
 
 /*
 const char* ssid = "Eng-Student";
@@ -308,7 +308,7 @@ void loop() {
       lattitude = gps.location.lat();
       longitude = gps.location.lng();
       Altitude = gps.location.meters();*/
-      
+      password = "d";
       //snprintf(msg,200,"{\"Temperature\": %ld, \"Heart rate\": %ld, \"Oxygen sat. level\": %ld, \"Lattitude\": %ld, \"Longitude\": %ld, \"Altitude\": %ld}",temperature,heart_rate,spo2,lattitude,longitude,Altitude);
       //snprintf(msg,200,"{\"Heart rate\": %ld, \"Oxygen sat. level\": %ld}",heart_rate,spo2);
       snprintf(msg,200,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f}",value1,value2,value3,value4);
