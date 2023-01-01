@@ -29,6 +29,10 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass oneWire reference to DallasTemperature library
 DallasTemperature sensors(&oneWire);
 
+int rideButton = D5;
+int rideButtonStatus;
+int cloudButton = D6;
+int cloudButtonStatus;
 
 // Choose two Arduino pins to use for software serial
 int RXPin = 13;   //D7
@@ -158,6 +162,7 @@ long lastMsg = 0;
 char msg[300];
 
 void setup_wifi(){
+  buttonPressCheck();
   WiFi.disconnect(true);
   delay(10);
   espClient.setBufferSizes(512,512);
@@ -259,6 +264,7 @@ void reconnect(){
     setup_wifi();
   }
   while(!client.connected()){
+    buttonPressCheck();
     showParametersD("AWS");
     analogWrite(connectivityLED,50);
     if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
@@ -291,15 +297,26 @@ void disconnectAWS(){
     client.disconnect();
 }
 
-void rideButton(){
-  if(rideFLAG){
-    stopRide();
-  }else{
-    startRide("Colombo General Hospital");
+void buttonPressCheck(){
+  if(digitalRead(rideButton)!=rideButtonStatus){
+    rideButtonStatus = digitalRead(rideButton);
+    rideButtonPress();
+  }
+  if(digitalRead(cloudButton)!=cloudButtonStatus){
+    cloudButtonStatus = digitalRead(cloudButton);
+    cloudButtonPress();
   }
 }
 
-void connectButton(){
+void rideButtonPress(){
+  if(rideFLAG){
+    stopRide();
+  }else{
+    startRide("001");
+  }
+}
+
+void cloudButtonPress(){
   if(client.connected()){
     disconnectAWS();
     disconnected = true;
@@ -324,7 +341,12 @@ void setup() {
   analogWrite(connectivityLED,0);
   analogWrite(rideLED,0);
   pinMode(buzzer,OUTPUT);  //Set D3 as output for buzzer
+  pinMode(rideButton,INPUT);    //Set D5 as input for the button
+  pinMode(cloudButton,INPUT);   //Set D6 as input for the button
   
+  rideButtonStatus = digitalRead(rideButton);
+  cloudButtonStatus = digitalRead(cloudButton);
+
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.setDebugOutput(true);
@@ -665,6 +687,7 @@ float value3 = 58;
 
 void loop() {
   // put your main code here, to run repeatedly:
+  buttonPressCheck();
   pox.update(); 
   
   if(!client.connected()){
