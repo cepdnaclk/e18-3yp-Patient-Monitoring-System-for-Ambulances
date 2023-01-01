@@ -50,6 +50,7 @@ dependencies:
   latlong: ^0.6.1
   fl_chart: ^0.55.2
   dropdown_button2: ^1.9.2
+  pdf: ^3.8.4
 
 dev_dependencies:
   flutter_test:

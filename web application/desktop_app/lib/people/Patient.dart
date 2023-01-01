@@ -36,7 +36,6 @@ class Patient {
 
   @override
   String toString() {
-    // TODO: implement toString
     return '{name:$name, age:$age,condition:$condition, temperature:$temperature, heartRate:$heartRate, pulseRate:$pulseRate,oxySat:$oxygenSaturation}';
   }
 }

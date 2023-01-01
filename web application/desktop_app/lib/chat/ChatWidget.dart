@@ -1,54 +1,50 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:desktop_app/chat/Message.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:desktop_app/pages/Home.dart';
 
+// ignore: must_be_immutable
 class Chat extends StatefulWidget {
   String deviceID;
   String hospitalID;
   Map<String, List<Message>> mess;
   Connection connect;
-  Map<String, MsgCount> msgCount;
-  Chat(
-      {super.key,
-      required this.mess,
-      required this.connect,
-      required this.deviceID,
-      required this.hospitalID,
-      required this.msgCount});
+  // Map<String, List<int>> msgCount;
+  Chat({
+    super.key,
+    required this.mess,
+    required this.connect,
+    required this.deviceID,
+    required this.hospitalID,
+    // required this.msgCount
+  });
 
   @override
   State<Chat> createState() =>
-      _ChatState(mess, connect, deviceID, hospitalID, msgCount);
+      // ignore: no_logic_in_create_state
+      _ChatState(mess, connect, deviceID, hospitalID);
 }
 
 class _ChatState extends State<Chat> {
   String deviceID;
   String hospitalID;
   Map<String, List<Message>> mess;
-  Map<String, MsgCount> msgCount;
+  // Map<String, List<int>> msgCount;
   Connection connect;
-  _ChatState(
-      this.mess, this.connect, this.deviceID, this.hospitalID, this.msgCount);
+  _ChatState(this.mess, this.connect, this.deviceID, this.hospitalID);
 
   TextEditingController messageController = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     //mess.add(Message('text', DateTime.now(), true));
-    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+    Timer.periodic(const Duration(seconds: 0), (Timer timer) async {
       if (!mounted) {
         return;
       }
       setState(() {
-        // print(
-        //     '############################# ${mess[deviceID]} ###########################');
-        msgCount[deviceID]!.count = 0;
+        // msgCount[deviceID]![0] = 0;
       });
     });
   }
