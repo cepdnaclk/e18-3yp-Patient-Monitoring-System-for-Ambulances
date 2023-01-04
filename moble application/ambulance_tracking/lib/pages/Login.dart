@@ -58,6 +58,7 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
+                      key: ValueKey('userFinder'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
@@ -72,9 +73,10 @@ class _LoginState extends State<Login> {
                               vertical: 10, horizontal: 10)),
                       style: const TextStyle(fontSize: 20),
                     ),
-                    const SizedBox(height: 30.0),
+                    const SizedBox(height: 20.0),
 
                     TextFormField(
+                      key: ValueKey("passwordFinder"),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
@@ -95,6 +97,7 @@ class _LoginState extends State<Login> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: ElevatedButton(
+                        key: ValueKey('loginBtnFinder'),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             String response = await httpLoader.httpGET(
@@ -115,17 +118,23 @@ class _LoginState extends State<Login> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: const Text('Invalid Login'),
-                                      content: response == '"False"'
-                                          ? const Text('Incorrect Password')
-                                          : const Text('Invalid User ID'),
+                                      content: Text('Incorrect login details',
+                                          key: ValueKey('wrongLoginText')),
+                                      // content: response == '"False"'
+                                      //     ? const Text('Incorrect Password')
+                                      //     : const Text('Invalid User ID'),
                                       actions: <Widget>[
                                         // TextButton(
                                         //   onPressed: () => Navigator.pop(context, 'Cancel'),
                                         //   child: const Text('Cancel'),
                                         // ),
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'OK'),
+                                          key: ValueKey('OKBtn'),
+                                          onPressed: () {
+                                            Navigator.pop(context, 'OK');
+                                            passwordController.clear();
+                                            userNameController.clear();
+                                          },
                                           child: const Text('OK'),
                                         ),
                                       ],
