@@ -59,7 +59,7 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat')),
+      appBar: AppBar(key: ValueKey('appbarChat'), title: const Text('Chat')),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -88,6 +88,7 @@ class _ChatState extends State<Chat> {
               SizedBox(
                 width: 315,
                 child: TextFormField(
+                  key: ValueKey('chatFieldFinder'),
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius:
@@ -104,12 +105,14 @@ class _ChatState extends State<Chat> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 0),
                   child: IconButton(
+                    key: ValueKey('chatSendFinder'),
                     color: Colors.blueAccent,
                     icon: const Icon(Icons.send, size: 45),
                     //padding: EdgeInsets.all(10),
                     onPressed: () {
                       final msg =
                           Message(messageController.text, DateTime.now(), true);
+                      messageController.clear();
                       // if(isFirstClick){
                       //   setupUpdatesListenerForChat();
                       // }
@@ -120,7 +123,6 @@ class _ChatState extends State<Chat> {
                             'message/from/ambulance/${widget.hospitalID}/${widget.deviceID}',
                             '{"message":"${msg.text}"}');
                       });
-                      messageController.clear();
                     },
                   ),
                 ),

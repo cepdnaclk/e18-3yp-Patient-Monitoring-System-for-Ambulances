@@ -142,7 +142,6 @@ class _ViewDetailsState extends State<ViewDetails> {
               DateTime.now().subtract(const Duration(minutes: 1)), false));
           msgCount.count++;
           //message.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false);
-
         }
       });
       print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
@@ -190,6 +189,7 @@ class _ViewDetailsState extends State<ViewDetails> {
           title: const Text('APP'),
         ),
         body: SingleChildScrollView(
+          key: ValueKey('scrollFinder'),
           child: Container(
             padding: const EdgeInsets.all(20.0),
             decoration: const BoxDecoration(
@@ -219,6 +219,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                     child: Column(
                       children: <Widget>[
                         TextFormField(
+                          key: ValueKey('HospitalIDFinder'),
                           enabled: firstClick,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -333,6 +334,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: ElevatedButton(
+                            key: ValueKey('submitBtnFinder'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate() &&
                                   firstClick) {
@@ -485,6 +487,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: IconButton(
+                                key: ValueKey('chatIconFinder'),
                                 icon: const Icon(Icons.message, size: 40),
                                 //iconSize: 40.0,
                                 color: Colors.blueAccent,
@@ -531,6 +534,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                             child: Padding(
                               padding: const EdgeInsets.all(10),
                               child: IconButton(
+                                key: ValueKey('stopIconFinder'),
                                 icon: const Icon(Icons.stop_circle, size: 50),
                                 //iconSize: 40.0,
                                 color: Colors.red.withOpacity(0.7),
@@ -587,6 +591,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                             child: Padding(
                               padding: const EdgeInsets.all(10),
                               child: IconButton(
+                                key: ValueKey('logoutFinder'),
                                 icon: const Icon(Icons.logout, size: 50),
                                 //iconSize: 40.0,
                                 color: Colors.red.withOpacity(0.7),
@@ -604,7 +609,9 @@ class _ViewDetailsState extends State<ViewDetails> {
                                         return AlertDialog(
                                           title: const Text('LogOut'),
                                           content: const Text(
-                                              'Are you sure you want to logout'),
+                                              'Are you sure you want to logout ?',
+                                              key: ValueKey(
+                                                  'logoutConfirmationFinder')),
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () => Navigator.pop(
@@ -617,7 +624,10 @@ class _ViewDetailsState extends State<ViewDetails> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           const Login())),
-                                              child: const Text('OK'),
+                                              child: const Text(
+                                                'OK',
+                                                key: ValueKey('logoutOKBtn'),
+                                              ),
                                             ),
                                           ],
                                         );
