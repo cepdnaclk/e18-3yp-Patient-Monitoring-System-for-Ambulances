@@ -1,3 +1,4 @@
+import 'package:desktop_app/people/Hospital.dart';
 import 'package:flutter/material.dart';
 import 'package:desktop_app/api/ApiConnection.dart';
 import 'package:desktop_app/pages/Home.dart';
@@ -87,6 +88,8 @@ class _LoginState extends State<Login> {
                           String response = await httpLoader.httpGET(
                               hospitalIDController.text,
                               passwordController.text);
+                          List<Hospital> hospitals =
+                              await httpLoader.getHospitals();
                           if (!mounted) return;
                           if (response == '"True"') {
                             // print('response worked');
@@ -94,8 +97,8 @@ class _LoginState extends State<Login> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Home(
-                                        hospitalID:
-                                            hospitalIDController.text)));
+                                        hospitalID: hospitalIDController.text,
+                                        hospitals: hospitals)));
                           } else {
                             // print('respose not work');
                             showDialog(

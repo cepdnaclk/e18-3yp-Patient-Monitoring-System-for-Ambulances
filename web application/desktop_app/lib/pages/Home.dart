@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:desktop_app/pages/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:desktop_app/people/Patient.dart';
@@ -6,20 +7,24 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:desktop_app/pages/PatientData.dart';
 import 'package:desktop_app/chat/Message.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:desktop_app/people/Hospital.dart';
+import 'package:desktop_app/file/GeneratePDF.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
   String hospitalID;
-  Home({super.key, required this.hospitalID});
+  List<Hospital> hospitals;
+  Home({super.key, required this.hospitalID, required this.hospitals});
 
   @override
   // ignore: no_logic_in_create_state
-  State<Home> createState() => _HomeState(hospitalID);
+  State<Home> createState() => _HomeState(hospitalID, hospitals);
 }
 
 class _HomeState extends State<Home> {
   String hospitalID;
-  _HomeState(this.hospitalID);
+  List<Hospital> hospitals;
+  _HomeState(this.hospitalID, this.hospitals);
   Connection mqttConnection = Connection();
   Map<String, Patient> map = {};
   Map<String, List<Message>> messages = {};
@@ -27,11 +32,13 @@ class _HomeState extends State<Home> {
   Map<String, List<bool>> isArrived =
       {}; //index 0 for arriving and 1 for stopping
   Map<String, String> ambulanceStatus = {};
-  Map<String, String> hospitalList = {
-    'H001': 'Hospital1',
-    'H002': 'Hospital2',
-    'H003': 'Hospital3'
-  };
+  // Map<String, String> hospitalList = {
+  //   'H001': 'Hospital1',
+  //   'H002': 'Hospital2',
+  //   'H003': 'Hospital3'
+  // };
+
+  PDF pdf = PDF();
 
   Map<String, Map<String, int>> transferPatient = {};
   Map<String, List<String>> requests = {};
@@ -346,16 +353,17 @@ class _HomeState extends State<Home> {
             context,
             MaterialPageRoute(
                 builder: (context) => PatientData(
-                    hospitalID: hospitalID,
-                    deviceID: deviceID,
-                    messages: messages,
-                    connect: mqttConnection,
-                    lat: lat,
-                    long: long,
-                    map: map,
-                    hospitalList: hospitalList,
-                    trnasferPatient: transferPatient,
-                    msgCount: msgCount)));
+                      hospitalID: hospitalID,
+                      deviceID: deviceID,
+                      messages: messages,
+                      connect: mqttConnection,
+                      lat: lat,
+                      long: long,
+                      map: map,
+                      transferPatient: transferPatient,
+                      msgCount: msgCount,
+                      hospitals: hospitals,
+                    )));
       },
       child: Card(
         clipBehavior: Clip.antiAlias,
@@ -510,6 +518,43 @@ class _HomeState extends State<Home> {
                 )
               ],
             ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                // color: Colors.amber,
+                margin: const EdgeInsets.only(top: 3),
+                height: 20,
+                width: 20,
+                child: isArrived[deviceID]![1]
+                    ? FloatingActionButton(
+                        // hoverColor: Colo,
+                        // label: Text(''),
+
+                        hoverElevation: 0,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        hoverColor: const Color.fromARGB(255, 96, 194, 243)
+                            .withOpacity(0.3),
+
+                        child: const Icon(
+                          Icons.file_download,
+                          color: Color.fromARGB(255, 63, 62, 62),
+                          size: 15,
+                        ),
+
+                        onPressed: () {
+                          pdf.createPDF(
+                              map[deviceID]!,
+                              hospitals[hospitals.indexWhere(
+                                  (element) => element.id == hospitalID)],
+                              deviceID,
+                              isOutRange[deviceID]!);
+                        },
+                        //child: const Text('Accept'),
+                      )
+                    : null,
+              ),
+            )
           ]),
         ),
       ),
@@ -620,19 +665,74 @@ class _HomeState extends State<Home> {
                         ))
                     .toList(),
               )),
-          ElevatedButton(
-            onPressed: () async {
-              isConnected = await mqttConnection.mqttConnect(hospitalID);
-              mqttConnection.subscribeTopic('/AmbulanceProject/$hospitalID/+');
-              mqttConnection
-                  .subscribeTopic('message/from/ambulance/$hospitalID/+');
-              // mqttConnection.subscribeTopic('map/data');
-              mqttConnection.subscribeTopic('Stop/$hospitalID/+');
-              mqttConnection.subscribeTopic('PatientData/$hospitalID/+');
-              mqttConnection.subscribeTopic('TransferPatient/+/+');
-              setupUpdatesListener();
-            },
-            child: const Text('Connect'),
+          Row(
+            children: [
+              const Expanded(child: SizedBox()),
+              SizedBox(
+                width: 110,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  onPressed: () async {
+                    if (!isConnected) {
+                      await mqttConnection.mqttConnect(hospitalID);
+                      mqttConnection
+                          .subscribeTopic('/AmbulanceProject/$hospitalID/+');
+                      mqttConnection.subscribeTopic(
+                          'message/from/ambulance/$hospitalID/+');
+                      mqttConnection.subscribeTopic('Stop/$hospitalID/+');
+                      mqttConnection
+                          .subscribeTopic('PatientData/$hospitalID/+');
+                      mqttConnection.subscribeTopic('TransferPatient/+/+');
+                      setupUpdatesListener();
+                      setState(() {
+                        isConnected = true;
+                      });
+                    }
+                  },
+                  child: const Text('Connect'),
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              SizedBox(
+                width: 110,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    if (isConnected) {
+                      setState(() {
+                        mqttConnection.disconnect();
+                        isConnected = false;
+                      });
+                    }
+                  },
+                  child: const Text('Disconnect'),
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              SizedBox(
+                width: 110,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                  ),
+                  onPressed: () {
+                    mqttConnection.disconnect();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Login()));
+                  },
+                  child: const Text('Logout'),
+                ),
+              ),
+              const Expanded(child: SizedBox()),
+            ],
           ),
           const SizedBox(
             height: 5,

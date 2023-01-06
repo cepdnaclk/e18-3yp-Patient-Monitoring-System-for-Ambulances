@@ -7,6 +7,8 @@ import 'package:desktop_app/chat/ChatWidget.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:desktop_app/patient_health/HealthParameters.dart';
 import 'package:desktop_app/maps/Location.dart';
+import 'package:desktop_app/people/Hospital.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 // ignore: must_be_immutable
 class PatientData extends StatefulWidget {
@@ -18,9 +20,10 @@ class PatientData extends StatefulWidget {
   Map<String, Patient> map;
   String deviceID;
   String hospitalID;
-  Map<String, String> hospitalList;
-  Map<String, Map<String, int>> trnasferPatient;
+  // Map<String, String> hospitalList;
+  Map<String, Map<String, int>> transferPatient;
   Map<String, List<int>> msgCount;
+  List<Hospital> hospitals;
 
   PatientData(
       {super.key,
@@ -31,23 +34,14 @@ class PatientData extends StatefulWidget {
       required this.lat,
       required this.long,
       required this.map,
-      required this.hospitalList,
-      required this.trnasferPatient,
+      required this.hospitals,
+      required this.transferPatient,
       required this.msgCount});
 
   @override
   // ignore: no_logic_in_create_state
-  State<PatientData> createState() => _PatientDataState(
-      hospitalID,
-      deviceID,
-      messages,
-      connect,
-      lat,
-      long,
-      map,
-      hospitalList,
-      trnasferPatient,
-      msgCount);
+  State<PatientData> createState() => _PatientDataState(hospitalID, deviceID,
+      messages, connect, lat, long, map, hospitals, transferPatient, msgCount);
 }
 
 class _PatientDataState extends State<PatientData> {
@@ -55,14 +49,15 @@ class _PatientDataState extends State<PatientData> {
   // int patientIndex;
   Map<String, List<int>> msgCount;
   Map<String, Patient> map;
+  List<Hospital> hospitals;
   String hospitalID;
   String deviceID;
   Map<String, List<Message>> messages;
   Connection connect;
   double lat, long;
-  late String selectedHospital;
-  Map<String, String> hospitalList;
-  Map<String, Map<String, int>> trnasferPatient;
+  late Hospital selectedHospital;
+  // Map<String, String> hospitalList;
+  Map<String, Map<String, int>> transferPatient;
   _PatientDataState(
       this.hospitalID,
       this.deviceID,
@@ -71,13 +66,15 @@ class _PatientDataState extends State<PatientData> {
       this.lat,
       this.long,
       this.map,
-      this.hospitalList,
-      this.trnasferPatient,
+      this.hospitals,
+      this.transferPatient,
       this.msgCount);
   @override
   void initState() {
     super.initState();
-    selectedHospital = trnasferPatient[deviceID]!.keys.toList()[0];
+    //if()
+    selectedHospital = hospitals[hospitals.indexWhere((element) =>
+        element.id == transferPatient[deviceID]!.keys.toList()[0])];
     Timer.periodic(const Duration(seconds: 0), (Timer timer) async {
       if (!mounted) {
         return;
@@ -151,7 +148,7 @@ class _PatientDataState extends State<PatientData> {
                           children: [
                             const Text('Name:   ',
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold)),
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(3),
@@ -162,7 +159,7 @@ class _PatientDataState extends State<PatientData> {
                                 child: Text(
                                   map[deviceID]!.name,
                                   style: const TextStyle(
-                                      color: Colors.black, fontSize: 16),
+                                      color: Colors.black, fontSize: 14),
                                 ),
                               ),
                             )
@@ -175,7 +172,7 @@ class _PatientDataState extends State<PatientData> {
                           children: [
                             const Text('Age:      ',
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold)),
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(3),
@@ -189,7 +186,7 @@ class _PatientDataState extends State<PatientData> {
                                       ? 'none'
                                       : map[deviceID]!.age.toString(),
                                   style: const TextStyle(
-                                      color: Colors.black, fontSize: 16),
+                                      color: Colors.black, fontSize: 14),
                                 ),
                               ),
                             )
@@ -204,7 +201,7 @@ class _PatientDataState extends State<PatientData> {
                                 alignment: Alignment.topLeft,
                                 child: Text('Condition:',
                                     style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.bold))),
                             const SizedBox(
                               height: 5,
@@ -214,7 +211,7 @@ class _PatientDataState extends State<PatientData> {
                                 Expanded(
                                   child: SingleChildScrollView(
                                     child: Container(
-                                      height: 80,
+                                      height: 50,
                                       padding: const EdgeInsets.all(3),
                                       decoration: const BoxDecoration(
                                           color: Colors.white,
@@ -232,40 +229,85 @@ class _PatientDataState extends State<PatientData> {
                             ),
                           ],
                         ),
-                        Container(
-                            alignment: Alignment.topLeft,
-                            width: 1000,
-                            child: Column(children: <Widget>[
-                              DropdownButton(
-                                  value: selectedHospital,
-                                  items: hospitalList.keys
-                                      .toList()
-                                      .map((e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e),
-                                          ))
-                                      .toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedHospital = value as String;
-                                    });
-                                  })
-                            ])),
+                        const Expanded(
+                          child: SizedBox(),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                              // alignment: Alignment.topLeft,
+                              width: MediaQuery.of(context).size.width / 6,
+                              padding: const EdgeInsets.all(3),
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5.0))),
+                              child: Center(
+                                child: Column(children: <Widget>[
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton2(
+                                        dropdownWidth: 200,
+                                        dropdownDecoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          // color: Colors.redAccent,
+                                        ),
+                                        selectedItemHighlightColor:
+                                            const Color.fromARGB(
+                                                255, 89, 172, 241),
+                                        dropdownMaxHeight: 400,
+                                        value: selectedHospital,
+                                        items: hospitals
+                                            .map((e) => DropdownMenuItem(
+                                                  value: e,
+                                                  child: SingleChildScrollView(
+                                                    child: SizedBox(
+                                                      // color: Colors.amber,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              8,
+                                                      child: Text(
+                                                        e.name,
+                                                        style: const TextStyle(
+                                                            fontSize: 12),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedHospital =
+                                                value as Hospital;
+                                          });
+                                        }),
+                                  )
+                                ]),
+                              )),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              if (selectedHospital != hospitalID) {
-                                trnasferPatient[deviceID] = {
-                                  selectedHospital: 1
+                              if (selectedHospital.id != hospitalID) {
+                                transferPatient[deviceID] = {
+                                  selectedHospital.id: 1
                                 };
                               }
                             });
 
                             connect.publishMsg(
-                                'TransferPatient/$hospitalID/$selectedHospital',
+                                'TransferPatient/$hospitalID/${selectedHospital.id}',
                                 deviceID);
                           },
-                          child: const Text('Send'),
+                          child: const Text('Tranfer'),
+                        ),
+                        const Expanded(
+                          child: SizedBox(),
                         ),
                       ],
                     ),

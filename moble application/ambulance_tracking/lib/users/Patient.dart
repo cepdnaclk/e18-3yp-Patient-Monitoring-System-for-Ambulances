@@ -1,6 +1,6 @@
 class Patient {
   late String name;
-  late int age = 0;
+  late int age;
   final double temperature;
   final double heartRate;
   final double pulseRate;
@@ -15,12 +15,6 @@ class Patient {
         heartRate = json['heart rate'],
         pulseRate = json['pulse rate'],
         oxygenSaturation = json['oxygen saturation'];
-
-  // Map<String, dynamic> toJson() => {
-  //   'name': name,
-  //   'age': age,
-  //   'condition': condition
-  // };
 
   @override
   String toString() {

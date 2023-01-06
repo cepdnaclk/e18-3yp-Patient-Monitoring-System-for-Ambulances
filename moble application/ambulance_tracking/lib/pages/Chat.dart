@@ -3,7 +3,7 @@ import 'dart:async';
 // import 'dart:developer';
 // import 'dart:html';
 
-import 'package:ambulance_tracking/pages/Conn.dart';
+import 'package:ambulance_tracking/pages/Connection.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:mqtt_client/mqtt_client.dart';
@@ -18,11 +18,12 @@ import 'package:ambulance_tracking/pages/PatientDetails.dart';
 class Chat extends StatefulWidget {
   final Connection connect;
   final List<Message> mess;
-  // late int msgCount;
   final String hospitalID;
   final String deviceID;
   final MsgCount msgCount;
-  Chat(this.connect, this.mess, this.msgCount, this.hospitalID, this.deviceID);
+  const Chat(
+      this.connect, this.mess, this.msgCount, this.hospitalID, this.deviceID,
+      {super.key});
 
   @override
   State<Chat> createState() => _ChatState();
@@ -30,13 +31,11 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   TextEditingController messageController = TextEditingController();
-  // late String str = 'none';
   late bool isFirstClick;
 
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
     // str = 'none';
     print(widget.mess);
 
@@ -45,7 +44,7 @@ class _ChatState extends State<Chat> {
     // isFirstClick = true;
     widget.msgCount.count = 0;
     //updateMsg();
-    Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
+    Timer.periodic(const Duration(seconds: 0), (Timer timer) async {
       if (!mounted) {
         return;
       }
@@ -59,7 +58,7 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(key: ValueKey('appbarChat'), title: const Text('Chat')),
+      appBar: AppBar(title: const Text('Chat')),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -88,7 +87,6 @@ class _ChatState extends State<Chat> {
               SizedBox(
                 width: 315,
                 child: TextFormField(
-                  key: ValueKey('chatFieldFinder'),
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius:
@@ -105,14 +103,12 @@ class _ChatState extends State<Chat> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 0),
                   child: IconButton(
-                    key: ValueKey('chatSendFinder'),
                     color: Colors.blueAccent,
                     icon: const Icon(Icons.send, size: 45),
                     //padding: EdgeInsets.all(10),
                     onPressed: () {
                       final msg =
                           Message(messageController.text, DateTime.now(), true);
-                      messageController.clear();
                       // if(isFirstClick){
                       //   setupUpdatesListenerForChat();
                       // }
@@ -123,6 +119,7 @@ class _ChatState extends State<Chat> {
                             'message/from/ambulance/${widget.hospitalID}/${widget.deviceID}',
                             '{"message":"${msg.text}"}');
                       });
+                      messageController.clear();
                     },
                   ),
                 ),

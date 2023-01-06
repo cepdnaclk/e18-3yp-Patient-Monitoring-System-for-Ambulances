@@ -1,17 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-// import 'dart:html';
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:ndialog/ndialog.dart';
-import 'package:flutter/material.dart';
-import 'package:ambulance_tracking/pages/NewPatient.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:ambulance_tracking/pages/Patient.dart';
-import 'package:ambulance_tracking/pages/PatientDetails.dart';
+import 'package:ambulance_tracking/users/Patient.dart';
 
 class Connection {
   final MqttServerClient client = MqttServerClient(
@@ -28,9 +21,6 @@ class Connection {
     log("ping invoked");
   }
 
-  // Future<void> connect(String hospitalID, String deviceID) async{
-  //   await mqttConnect(hospitalID, deviceID);
-  // }
   void disconnect() {
     client.disconnect();
   }
@@ -69,14 +59,6 @@ class Connection {
       return false;
     }
 
-    //String topic = 'Device_$deviceID';
-    // String pubTopic = '/AmbulanceProject/Hospital_$hospitalID/$deviceID';
-    // const hosTopic = 'hospital/data';
-
-    // client.subscribe(pubTopic, MqttQos.atMostOnce);
-    // client.subscribe(hosTopic, MqttQos.atMostOnce);
-    //client.subscribe(pubTopic, MqttQos.atMostOnce);
-
     //print(str);
     return true;
   }
@@ -84,15 +66,8 @@ class Connection {
   void subscribeTopic(String topic) {
     client.subscribe(topic, MqttQos.atMostOnce);
   }
-  // void publishInitialMsg(String topic, String hospitalID){
-  //   log('testttttttttttttttttttt');
-  //   final builder = MqttClientPayloadBuilder();
-  //   builder.addString('start:$hospitalID');
-  //   client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-  // }
 
   void publishMsg(String topic, String msg) {
-    log('testttttttttttttttttttt');
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
@@ -103,9 +78,8 @@ class Connection {
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
       final pt =
-          MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       s = pt;
-      // patient = Patient.fromJson(jsonDecode(pt));
 
       print('Chat EXAMPLE:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       print('');
