@@ -269,7 +269,7 @@ class _PatientDataState extends State<PatientData> {
                                                                   .width /
                                                               8,
                                                       child: Text(
-                                                        e.name,
+                                                        '${e.name}(${e.id})',
                                                         style: const TextStyle(
                                                             fontSize: 12),
                                                       ),

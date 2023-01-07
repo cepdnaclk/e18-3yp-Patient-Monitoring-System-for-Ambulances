@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:desktop_app/pages/Login.dart';
+import 'package:desktop_app/pages/Admin.dart';
 import 'package:flutter/material.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:desktop_app/people/Patient.dart';
@@ -312,8 +314,9 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     setState(() {
                       requestCount--;
+                      // log('TransferPatient/$hospital/$hospitalID');
                       mqttConnection.publishMsg(
-                          'TransferPatient/${requests[hospital]}/$hospitalID',
+                          'TransferPatient/$hospital/$hospitalID',
                           'Rejected:$device');
                       requests[hospital]!
                           .removeAt(requests[hospital]!.indexOf(device));
@@ -447,7 +450,7 @@ class _HomeState extends State<Home> {
                     ? FloatingActionButton(
                         // hoverColor: Colo,
                         // label: Text(''),
-
+                        heroTag: "btn1",
                         hoverElevation: 0,
                         backgroundColor: Colors.transparent,
                         elevation: 0,
@@ -529,7 +532,7 @@ class _HomeState extends State<Home> {
                     ? FloatingActionButton(
                         // hoverColor: Colo,
                         // label: Text(''),
-
+                        heroTag: "btn2",
                         hoverElevation: 0,
                         backgroundColor: Colors.transparent,
                         elevation: 0,
@@ -571,8 +574,10 @@ class _HomeState extends State<Home> {
             Text('Patients ($patientCount)',
                 style:
                     const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 500,
+            const Expanded(
+              child: SizedBox(
+                  //width: MediaQuery.of(context).size.width - 500,
+                  ),
             ),
             Column(children: <Widget>[
               // SizedBox(
@@ -584,7 +589,7 @@ class _HomeState extends State<Home> {
                       Icons.add_alert_sharp,
                       size: 35,
                     ),
-                    offset: const Offset(-50, 0),
+                    offset: const Offset(-230, 0),
                     //icon: Icon(Icons.add_alert_sharp),
                     buttonHeight: 40,
                     itemHeight: 150,
@@ -729,6 +734,25 @@ class _HomeState extends State<Home> {
                         MaterialPageRoute(builder: (context) => const Login()));
                   },
                   child: const Text('Logout'),
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              SizedBox(
+                width: 110,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                  ),
+                  onPressed: () {
+                    // mqttConnection.disconnect();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Admin(hospitals: hospitals)));
+                  },
+                  child: const Text('Admin'),
                 ),
               ),
               const Expanded(child: SizedBox()),

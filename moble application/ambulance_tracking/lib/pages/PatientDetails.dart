@@ -331,12 +331,13 @@ class _ViewDetailsState extends State<ViewDetails> {
                               patient.age = age;
                               patient.condition = condition;
                               Future.delayed(const Duration(seconds: 4), () {
+                                log('PatientData/$hospitalID/$deviceID');
                                 conn.publishMsg(
                                     'PatientData/$hospitalID/$deviceID',
                                     '{"name":"${patient.name}", "age":${patient.age}, "condition": "${patient.condition}"}');
                               });
 
-                              log(name);
+                              log(patient.name);
                               log(condition);
                               log(age.toString());
                               log(deviceID.toString());
