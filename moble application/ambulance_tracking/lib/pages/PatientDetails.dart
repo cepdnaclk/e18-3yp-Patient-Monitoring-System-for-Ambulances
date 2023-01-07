@@ -121,7 +121,6 @@ class _ViewDetailsState extends State<ViewDetails> {
               DateTime.now().subtract(const Duration(minutes: 1)), false));
           msgCount.count++;
           //message.add(Message.fromJson(jsonDecode(pt), DateTime.now().subtract(const Duration(minutes: 1)), false);
-
         }
       });
       print('MQTTClient::Message received on topic: <${c[0].topic}> is $pt\n');
@@ -577,9 +576,9 @@ class _ViewDetailsState extends State<ViewDetails> {
                                       return AlertDialog(
                                         title: const Text('LogOut'),
                                         content: const Text(
-                                              'Are you sure you want to logout ?',
-                                              key: ValueKey(
-                                                  'logoutConfirmationFinder')),
+                                            'Are you sure you want to logout ?',
+                                            key: ValueKey(
+                                                'logoutConfirmationFinder')),
                                         actions: <Widget>[
                                           TextButton(
                                             onPressed: () => Navigator.pop(
@@ -587,6 +586,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                             child: const Text('Cancel'),
                                           ),
                                           TextButton(
+                                            key: ValueKey('logoutOKBtn'),
                                             onPressed: () {
                                               conn.disconnect();
                                               Navigator.push(
@@ -596,9 +596,8 @@ class _ViewDetailsState extends State<ViewDetails> {
                                                           const Login()));
                                             },
                                             child: const Text(
-                                                'OK',
-                                                key: ValueKey('logoutOKBtn'),
-                                              ),
+                                              'OK',
+                                            ),
                                           ),
                                         ],
                                       );
