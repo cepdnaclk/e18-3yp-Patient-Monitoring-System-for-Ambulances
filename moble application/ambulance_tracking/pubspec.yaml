@@ -31,6 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_gherkin: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -42,8 +43,9 @@ dependencies:
   http: ^0.13.5
 
 dev_dependencies:
-  flutter_test:
+  flutter_driver:
     sdk: flutter
+  test: any
 #  test: ^1.22.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
