@@ -87,7 +87,7 @@ void main() {
       await driver.tap(find.pageBack());
     });
     test('checking logout', () async {
-      await delay(100);
+      await driver.scrollUntilVisible(listFinder, logoutIcon);
       await driver.tap(logoutIcon);
       expect(await driver.getText(logoutConfirmation),
           "Are you sure you want to logout ?");
