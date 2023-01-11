@@ -76,20 +76,28 @@ void callback(char* topic, byte* payload, unsigned int length){
   Serial.print(topic);
   Serial.print("] ");
   boolean found = false;
+  boolean found2 = false;
   String receivedMsg = "";
+  String receivedMsg2 = "";
   String msgType = "";
   for(int i=0;i<length;i++){
     Serial.print((char)payload[i]);
-    if(found){
-      receivedMsg = receivedMsg + (char)payload[i];    
-    }else if((char)payload[i]==':'){
+    if((char)payload[i]==':'){
       msgType = msgType + (char)0;
       found = true;
+    }else if((char)payload[i]=='-'){
+      receivedMsg = receivedMsg + (char)0;
+      found = false;
+      found2 = true;
+    }else if(found2){
+      receivedMsg2 = receivedMsg2 + (char)payload[i];
+    }else if(found){
+      receivedMsg = receivedMsg + (char)payload[i];    
     }else{
       msgType = msgType + (char)payload[i];
     }
   }
-  checkMsg(msgType,receivedMsg);
+  checkMsg(msgType,receivedMsg,receivedMsg2);
   Serial.println();
 }
 
@@ -131,8 +139,11 @@ void setup_wifi(){
   
 }
 
-void checkMsg(String msgType,String MSG){
+void checkMsg(String msgType,String MSG,String MSG2){
   /*This function checks the type of the received msg and proceed the corresponding task*/
+  Serial.println(msgType);
+  Serial.println(MSG);
+  Serial.println(MSG2);
   Serial.print("msgType:"+msgType);
   Serial.print("MSG:"+MSG);
   if(!strcmp(msgType.c_str(),(char*)"start")){    //If msg is to start a ride
@@ -150,7 +161,7 @@ void checkMsg(String msgType,String MSG){
 
 void changeHospital(String hospital){
   /*This function changes the destination hospital*/
-  outTopic = "/AmbulanceProject/Hospital_"+hospital+"/"+deviceID;
+  outTopic = "/AmbulanceProject/"+hospital+"/"+deviceID;
 }
 
 void startRide(String newHospital){
