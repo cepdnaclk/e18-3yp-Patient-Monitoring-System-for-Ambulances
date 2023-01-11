@@ -4,33 +4,47 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:desktop_app/data/Points.dart';
 
 class ViewParameters extends StatefulWidget {
   // List<Patient> patients;
-  // int patientIndex;
+  Map<String, List<Point>> data;
   Map<String, Patient> map;
   String deviceID;
-  ViewParameters({super.key, required this.deviceID, required this.map});
+  ViewParameters(
+      {super.key,
+      required this.deviceID,
+      required this.map,
+      required this.data});
 
   @override
-  State<ViewParameters> createState() => _ViewParametersState(deviceID, map);
+  State<ViewParameters> createState() =>
+      _ViewParametersState(deviceID, map, data);
 }
 
 class _ViewParametersState extends State<ViewParameters> {
   Map<String, Patient> map;
   String deviceID;
-  _ViewParametersState(this.deviceID, this.map);
-  List<Point> temp = [];
-  double time = 0;
+  Map<String, List<Point>> data;
+  _ViewParametersState(this.deviceID, this.map, this.data);
+  // List<Point> temp = [];
+  late double time;
   late bool flag;
-
+  // late double time1;
+  // late bool flag1;
   // late Patient pa;
   @override
   void initState() {
     super.initState();
     flag = false;
-    temp = [];
-    time = 0;
+    log('${data[deviceID]![0].time} ${data[deviceID]![1].time} ${data[deviceID]![2].time}');
+    // log(time.toString());
+    log(data[deviceID]!.length.toString());
+    // flag1 = false;
+    time = data[deviceID]![data[deviceID]!.length - 1].time;
+
+    // temp = data[deviceID]![data.length-1].time;
+    // time = 0;
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
@@ -47,15 +61,25 @@ class _ViewParametersState extends State<ViewParameters> {
           map[deviceID]!.lat,
           map[deviceID]!.long);
       setState(() {
-        temp.add(Point(time, x));
+        // temp.add(Point(time, x));
         time += 2;
-        if (time % 30 == 0) {
-          flag = true;
-          // time = 0;
+        data[deviceID]!.add(Point(time, x));
+        // time1 += 2;
+
+        // if (time1 % 16 == 0) {
+        //   flag1 = true;
+        //   // time = 0;
+        // }
+        if (data[deviceID]!.length >= 10) {
+          data[deviceID]!.removeAt(0);
         }
-        if (flag) {
-          temp.removeAt(0);
-        }
+        // if (time % 30 == 0) {
+        //   flag = true;
+        //   // time = 0;
+        // }
+        // if (flag) {
+        //   temp.removeAt(0);
+        // }
         //log('from parameters $map');
       });
     });
@@ -239,7 +263,7 @@ class _ViewParametersState extends State<ViewParameters> {
               ),
 
               bottomTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false, reservedSize: 100
+                sideTitles: SideTitles(showTitles: false, reservedSize: 40
                     // getTitlesWidget: bottomTitleWidgets,
                     ),
               ),
@@ -358,7 +382,10 @@ class _ViewParametersState extends State<ViewParameters> {
             child: const Center(
                 child: Text(
               'Health Parameters',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             )),
           )),
         ]),
@@ -368,14 +395,16 @@ class _ViewParametersState extends State<ViewParameters> {
               const EdgeInsets.only(top: 20, left: 20, right: 10, bottom: 10),
               'Temperature',
               map[deviceID]!.temperature,
-              temp.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-              35,
+              data[deviceID]!
+                  .map((e) => FlSpot(e.time, e.p.temperature))
+                  .toList(),
+              0,
               40,
               AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 20,
-                  interval: 1,
+                  interval: 5,
                   getTitlesWidget: leftTitleWidgets,
                 ),
               ),
@@ -386,13 +415,15 @@ class _ViewParametersState extends State<ViewParameters> {
                 const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
                 'Heart Rate',
                 map[deviceID]!.heartRate,
-                temp.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
-                60,
+                data[deviceID]!
+                    .map((e) => FlSpot(e.time, e.p.heartRate))
+                    .toList(),
+                0,
                 150,
                 AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 25,
+                    reservedSize: 30,
                     interval: 25,
                     getTitlesWidget: leftTitleWidgets,
                   ),
@@ -407,8 +438,10 @@ class _ViewParametersState extends State<ViewParameters> {
                 const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
                 'Pulse Rate',
                 map[deviceID]!.pulseRate,
-                temp.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
-                60,
+                data[deviceID]!
+                    .map((e) => FlSpot(e.time, e.p.pulseRate))
+                    .toList(),
+                0,
                 150,
                 AxisTitles(
                   sideTitles: SideTitles(
@@ -418,20 +451,22 @@ class _ViewParametersState extends State<ViewParameters> {
                     getTitlesWidget: leftTitleWidgets,
                   ),
                 ),
-                60,
+                0,
                 120),
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 10),
                 'Oxygen Sat.',
                 map[deviceID]!.oxygenSaturation,
-                temp.map((e) => FlSpot(e.time, e.p.oxygenSaturation)).toList(),
-                10,
+                data[deviceID]!
+                    .map((e) => FlSpot(e.time, e.p.oxygenSaturation))
+                    .toList(),
+                0,
                 100,
                 AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 25,
-                    interval: 25,
+                    interval: 20,
                     getTitlesWidget: leftTitleWidgets,
                   ),
                 ),
@@ -473,8 +508,8 @@ class _ViewParametersState extends State<ViewParameters> {
   }
 }
 
-class Point {
-  final double time;
-  final Patient p;
-  Point(this.time, this.p);
-}
+// class Point {
+//   final double time;
+//   final Patient p;
+//   Point(this.time, this.p);
+// }

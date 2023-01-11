@@ -30,10 +30,60 @@ class HttpLoader {
         '/prod/wholehospitallist', {'q': '{http}'});
 
     var response = await http.get(url);
+
     var hospitalObjsJson = jsonDecode(response.body)['hospitals'] as List;
 
     List<Hospital> hospitals =
         hospitalObjsJson.map((h) => Hospital.fromJson(h)).toList();
+    // for (int i = 0; i < hospitals.length; i++) {
+    //   log('${hospitals[i].name} ${hospitals[i].id}');
+    // }
     return hospitals;
+  }
+
+  Future<int> putHospital(String hospitalID, String hospitalName, String lat,
+      String long, String contactNo) async {
+    var url = Uri.https('scrkjt8p76.execute-api.ap-northeast-1.amazonaws.com',
+        '/prod/hospitallist', {
+      'q': '{http}',
+      'HospitalID': hospitalID,
+      'HospitalName': hospitalName,
+      'Lattitude': lat,
+      'Longitude': long,
+      'ContactNo': contactNo
+    });
+
+    var response = await http.put(url);
+    log(response.body);
+    return response.statusCode;
+  }
+
+  Future<int> deleteHospital(String hospitalID) async {
+    var url = Uri.https('scrkjt8p76.execute-api.ap-northeast-1.amazonaws.com',
+        '/prod/hospitallist', {'q': '{http}', 'HospitalID': hospitalID});
+
+    var response = await http.delete(url);
+    log(response.body);
+    return response.statusCode;
+  }
+
+  Future<int> putUser(String userID, String password) async {
+    var url = Uri.https(
+        'rrne8k3me4.execute-api.ap-northeast-1.amazonaws.com',
+        '/prod/passwordlist',
+        {'q': '{http}', 'UserID': userID, 'Password': password});
+
+    var response = await http.put(url);
+    log(response.body);
+    return response.statusCode;
+  }
+
+  Future<int> deleteUser(String userID) async {
+    var url = Uri.https('rrne8k3me4.execute-api.ap-northeast-1.amazonaws.com',
+        '/prod/passwordlist', {'q': '{http}', 'UserID': userID});
+
+    var response = await http.delete(url);
+    log(response.body);
+    return response.statusCode;
   }
 }

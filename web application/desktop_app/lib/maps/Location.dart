@@ -21,27 +21,37 @@ import 'package:flutter_map/flutter_map.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:desktop_app/people/Patient.dart';
+import 'package:desktop_app/people/Hospital.dart';
 
 class Location extends StatefulWidget {
   //final double lat, long;
-  final String deviceID;
-  final Map<String, Patient> map;
-  const Location({super.key, required this.deviceID, required this.map});
+  Map<String, Map<Hospital, int>> transferPatient;
+  String deviceID;
+  Map<String, Patient> map;
+  Location(
+      {super.key,
+      required this.deviceID,
+      required this.map,
+      required this.transferPatient});
 
   @override
   // ignore: no_logic_in_create_state
-  State<Location> createState() => _LocationState(deviceID, map);
+  State<Location> createState() =>
+      // ignore: no_logic_in_create_state
+      _LocationState(deviceID, map, transferPatient);
 }
 
 class _LocationState extends State<Location> {
   // late double lat;
   // late double long;
+  Map<String, Map<Hospital, int>> transferPatient;
   Map<String, Patient> map;
   String deviceID;
-  _LocationState(this.deviceID, this.map);
+  _LocationState(this.deviceID, this.map, this.transferPatient);
+
+  // late double hospitalLat, hospitalLong;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // lat = map[deviceID]!.lat;
     // long = map[deviceID]!.long;
@@ -52,6 +62,10 @@ class _LocationState extends State<Location> {
       setState(() {
         map[deviceID]!.lat += 0.0001;
         map[deviceID]!.long += 0.0001;
+        // hospitalLat =
+        //     double.parse(transferPatient[deviceID]!.keys.toList()[0].lat);
+        // hospitalLong =
+        //     double.parse(transferPatient[deviceID]!.keys.toList()[0].long);
       });
     });
   }
@@ -66,7 +80,7 @@ class _LocationState extends State<Location> {
       child: FlutterMap(
         options: MapOptions(
           center: latLng.LatLng(map[deviceID]!.lat, map[deviceID]!.long),
-          zoom: 14,
+          zoom: 12,
         ),
         children: [
           TileLayer(
@@ -75,6 +89,20 @@ class _LocationState extends State<Location> {
           ),
           MarkerLayer(
             markers: [
+              Marker(
+                point: latLng.LatLng(
+                    double.parse(
+                        transferPatient[deviceID]!.keys.toList()[0].lat),
+                    double.parse(
+                        transferPatient[deviceID]!.keys.toList()[0].long)),
+                width: 80,
+                height: 80,
+                builder: (context) => const Icon(
+                  Icons.local_hospital,
+                  color: Colors.blueAccent,
+                  size: 30,
+                ),
+              ),
               Marker(
                 point: latLng.LatLng(map[deviceID]!.lat, map[deviceID]!.long),
                 width: 80,
@@ -90,25 +118,5 @@ class _LocationState extends State<Location> {
         ],
       ),
     );
-
-    //Scaffold(
-    //   appBar: AppBar(title: Text("amp")),
-    //   body: Center(
-    //     child: Container(
-    //       child: Column(children: [
-    //         Flexible(
-    //           child: FlutterMap(options: MapOptions(
-    //             center: latLng.LatLng(6.927079, 79.861244),
-    //             zoom: 8
-    //           ),
-    //           layers: [
-
-    //           ]
-    //           )
-    //           )
-    //       ]),
-    //     ),
-    //   ),
-    // );
   }
 }

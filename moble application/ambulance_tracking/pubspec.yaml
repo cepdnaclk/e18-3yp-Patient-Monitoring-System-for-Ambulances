@@ -41,6 +41,7 @@ dependencies:
   grouped_list: ^5.1.2
   path_provider: ^2.0.11
   http: ^0.13.5
+  dropdown_button2: ^1.9.2
 
 dev_dependencies:
   flutter_driver:

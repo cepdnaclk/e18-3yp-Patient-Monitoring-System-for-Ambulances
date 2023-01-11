@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:desktop_app/pages/Login.dart';
-import 'package:desktop_app/pages/Admin.dart';
 import 'package:flutter/material.dart';
 import 'package:desktop_app/mqtt/MqttConnect.dart';
 import 'package:desktop_app/people/Patient.dart';
@@ -11,6 +10,8 @@ import 'package:desktop_app/chat/Message.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:desktop_app/people/Hospital.dart';
 import 'package:desktop_app/file/GeneratePDF.dart';
+import 'package:desktop_app/pages/Admin.dart';
+import 'package:desktop_app/data/Points.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
@@ -42,7 +43,8 @@ class _HomeState extends State<Home> {
 
   PDF pdf = PDF();
 
-  Map<String, Map<String, int>> transferPatient = {};
+  Map<String, Map<Hospital, int>> transferPatient =
+      {}; // 0 for initial hospital 1 for tranfering hospital 2 for transferrd hospital
   Map<String, List<String>> requests = {};
 
   double lat = 6.927079;
@@ -60,6 +62,7 @@ class _HomeState extends State<Home> {
   };
 
   late Map<String, bool> isOutRange = {};
+  Map<String, List<Point>> data = {};
   // late String ambulanceStatus;
   @override
   void initState() {
@@ -106,7 +109,15 @@ class _HomeState extends State<Home> {
             map[deviceID] = Patient.empty();
             isArrived[deviceID] = [false, false];
             ambulanceStatus[deviceID] = 'Arriving';
-            transferPatient[deviceID] = {hospitalID: 0};
+            data[deviceID] = [
+              Point(0, Patient.empty()),
+              Point(2, Patient.empty()),
+              Point(4, Patient.empty())
+            ];
+            transferPatient[deviceID] = {
+              hospitals[hospitals
+                  .indexWhere((element) => element.id == hospitalID)]: 0
+            };
             // msgCount[deviceID] = MsgCount();
             msgCount[deviceID] = [0];
             isOutRange[deviceID] = false;
@@ -117,6 +128,13 @@ class _HomeState extends State<Home> {
 
           //decode health parameters
           map[deviceID]!.healthData(jsonDecode(pt));
+          Patient pa = Patient.empty();
+          pa.healthData(jsonDecode(pt));
+          data[deviceID]!.add(Point(data[deviceID]!.last.time + 2, pa));
+          data[deviceID]!.removeAt(0);
+          for (int i = 0; i < data[deviceID]!.length; i++) {
+            log('${data[deviceID]![i].time}--${data[deviceID]![i].p.heartRate}');
+          }
 
           //check wether health parameters out of range
           isOutRange[deviceID] = map[deviceID]!.temperature <
@@ -163,8 +181,9 @@ class _HomeState extends State<Home> {
             'TransferPatient/$hospitalID/') {
           String requestedHospital =
               c[0].topic.substring(c[0].topic.length - 4, c[0].topic.length);
+          //if(requestedHospital == )
           ambulanceStatus[pt] =
-              requestedHospital != hospitalID ? 'Transfering...' : '';
+              requestedHospital != hospitalID ? 'Transfering...' : 'Arriving';
 
           //requsest coming from another hospital
         } else if (c[0].topic.substring(0, 16) == 'TransferPatient/' &&
@@ -175,11 +194,15 @@ class _HomeState extends State<Home> {
           String device = pt.substring(pt.length - 3, pt.length);
           if (pt.substring(0, pt.length - 3) == 'Accepted:') {
             ambulanceStatus[device] = 'Transferred';
-            transferPatient[device]![requestedHospital] = 2;
+            transferPatient[device]![hospitals[hospitals
+                .indexWhere((element) => element.id == requestedHospital)]] = 2;
             mqttConnection.publishMsg('PatientData/$requestedHospital/$device',
                 '{"name":"${map[device]!.name}", "age":${map[device]!.age}, "condition": "${map[device]!.condition}"}');
           } else if (pt.substring(0, pt.length - 3) == 'Rejected:') {
-            transferPatient[device] = {hospitalID: 0};
+            transferPatient[device] = {
+              hospitals[hospitals
+                  .indexWhere((element) => element.id == hospitalID)]: 0
+            };
             ambulanceStatus[device] = '$requestedHospital Rejected!';
           } else if (!map.containsKey(pt) && !pt.contains('Rejected')) {
             if (!requests.containsKey(requestedHospital)) {
@@ -280,8 +303,8 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     setState(() {
                       requestCount--;
-                      mqttConnection.publishMsg(
-                          'Device_$device', 'change:$hospital');
+                      mqttConnection.publishMsg('Device_$device',
+                          'change:$hospital-${hospitals[hospitals.indexWhere((element) => element.id == hospital)].name}');
                       mqttConnection.publishMsg(
                           'Mobile/Transfer/$device', hospitalID);
                       mqttConnection.publishMsg(
@@ -289,9 +312,20 @@ class _HomeState extends State<Home> {
                           'Accepted:$device');
                       patientCount++;
                       map[device] = Patient.empty();
+                      data[device] = [
+                        Point(0, Patient.empty()),
+                        Point(2, Patient.empty()),
+                        Point(4, Patient.empty())
+                      ];
+                      // log('${data[deviceID]![0].time} ${data[deviceID]![1].time} ${data[deviceID]![2].time}');
+                      // // log(time.toString());
+                      // log(data[deviceID]!.length.toString());
                       isArrived[device] = [false, false];
                       ambulanceStatus[device] = 'Arriving';
-                      transferPatient[device] = {hospitalID: 0};
+                      transferPatient[device] = {
+                        hospitals[hospitals.indexWhere(
+                            (element) => element.id == hospitalID)]: 0
+                      };
                       msgCount[device] = [0];
                       isOutRange[device] = false;
 
@@ -356,17 +390,17 @@ class _HomeState extends State<Home> {
             context,
             MaterialPageRoute(
                 builder: (context) => PatientData(
-                      hospitalID: hospitalID,
-                      deviceID: deviceID,
-                      messages: messages,
-                      connect: mqttConnection,
-                      lat: lat,
-                      long: long,
-                      map: map,
-                      transferPatient: transferPatient,
-                      msgCount: msgCount,
-                      hospitals: hospitals,
-                    )));
+                    hospitalID: hospitalID,
+                    deviceID: deviceID,
+                    messages: messages,
+                    connect: mqttConnection,
+                    lat: lat,
+                    long: long,
+                    map: map,
+                    transferPatient: transferPatient,
+                    msgCount: msgCount,
+                    hospitals: hospitals,
+                    data: data)));
       },
       child: Card(
         clipBehavior: Clip.antiAlias,
@@ -472,6 +506,7 @@ class _HomeState extends State<Home> {
                             transferPatient.remove(deviceID);
                             messages.remove(deviceID);
                             msgCount.remove(deviceID);
+                            data.remove(deviceID);
                             patientCount--;
                           });
                         },
@@ -647,7 +682,7 @@ class _HomeState extends State<Home> {
               ),
               // padding: const EdgeInsets.all(50),
               margin: const EdgeInsets.all(20),
-              height: MediaQuery.of(context).size.height * 2 / 3,
+              height: MediaQuery.of(context).size.height * 2.1 / 3,
               width: MediaQuery.of(context).size.width,
               // color: Colors.black.withOpacity(0.2),
               child: GridView.count(
@@ -743,7 +778,7 @@ class _HomeState extends State<Home> {
                 width: 110,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
+                    backgroundColor: Colors.blueAccent,
                   ),
                   onPressed: () {
                     // mqttConnection.disconnect();

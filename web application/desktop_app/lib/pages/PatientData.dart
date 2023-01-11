@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
@@ -9,11 +10,13 @@ import 'package:desktop_app/patient_health/HealthParameters.dart';
 import 'package:desktop_app/maps/Location.dart';
 import 'package:desktop_app/people/Hospital.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:desktop_app/data/Points.dart';
 
 // ignore: must_be_immutable
 class PatientData extends StatefulWidget {
   //List<Patient> patients;
   //int patientIndex;
+  Map<String, List<Point>> data;
   Map<String, List<Message>> messages;
   Connection connect;
   double lat, long;
@@ -21,7 +24,7 @@ class PatientData extends StatefulWidget {
   String deviceID;
   String hospitalID;
   // Map<String, String> hospitalList;
-  Map<String, Map<String, int>> transferPatient;
+  Map<String, Map<Hospital, int>> transferPatient;
   Map<String, List<int>> msgCount;
   List<Hospital> hospitals;
 
@@ -36,17 +39,29 @@ class PatientData extends StatefulWidget {
       required this.map,
       required this.hospitals,
       required this.transferPatient,
-      required this.msgCount});
+      required this.msgCount,
+      required this.data});
 
   @override
   // ignore: no_logic_in_create_state
-  State<PatientData> createState() => _PatientDataState(hospitalID, deviceID,
-      messages, connect, lat, long, map, hospitals, transferPatient, msgCount);
+  State<PatientData> createState() => _PatientDataState(
+      hospitalID,
+      deviceID,
+      messages,
+      connect,
+      lat,
+      long,
+      map,
+      hospitals,
+      transferPatient,
+      msgCount,
+      data);
 }
 
 class _PatientDataState extends State<PatientData> {
   // List<Patient> patients;
   // int patientIndex;
+  Map<String, List<Point>> data;
   Map<String, List<int>> msgCount;
   Map<String, Patient> map;
   List<Hospital> hospitals;
@@ -57,7 +72,7 @@ class _PatientDataState extends State<PatientData> {
   double lat, long;
   late Hospital selectedHospital;
   // Map<String, String> hospitalList;
-  Map<String, Map<String, int>> transferPatient;
+  Map<String, Map<Hospital, int>> transferPatient;
   _PatientDataState(
       this.hospitalID,
       this.deviceID,
@@ -68,13 +83,13 @@ class _PatientDataState extends State<PatientData> {
       this.map,
       this.hospitals,
       this.transferPatient,
-      this.msgCount);
+      this.msgCount,
+      this.data);
   @override
   void initState() {
     super.initState();
     //if()
-    selectedHospital = hospitals[hospitals.indexWhere((element) =>
-        element.id == transferPatient[deviceID]!.keys.toList()[0])];
+    selectedHospital = transferPatient[deviceID]!.keys.toList()[0];
     Timer.periodic(const Duration(seconds: 0), (Timer timer) async {
       if (!mounted) {
         return;
@@ -108,7 +123,7 @@ class _PatientDataState extends State<PatientData> {
                   ),
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               margin: const EdgeInsets.all(10),
-              child: ViewParameters(deviceID: deviceID, map: map),
+              child: ViewParameters(deviceID: deviceID, map: map, data: data),
             ),
           ),
           Expanded(
@@ -122,7 +137,10 @@ class _PatientDataState extends State<PatientData> {
                         color: Color.fromARGB(192, 0, 140, 255),
                         borderRadius: BorderRadius.all(Radius.circular(20.0))),
                     margin: const EdgeInsets.all(10),
-                    child: Location(deviceID: deviceID, map: map),
+                    child: Location(
+                        deviceID: deviceID,
+                        map: map,
+                        transferPatient: transferPatient),
                   ),
                 ),
                 Expanded(
@@ -233,7 +251,7 @@ class _PatientDataState extends State<PatientData> {
                           child: SizedBox(),
                         ),
                         Align(
-                          alignment: Alignment.topLeft,
+                          alignment: Alignment.topCenter,
                           child: Container(
                               // alignment: Alignment.topLeft,
                               width: MediaQuery.of(context).size.width / 6,
@@ -295,11 +313,15 @@ class _PatientDataState extends State<PatientData> {
                             setState(() {
                               if (selectedHospital.id != hospitalID) {
                                 transferPatient[deviceID] = {
-                                  selectedHospital.id: 1
+                                  selectedHospital: 1
+                                };
+                              } else {
+                                transferPatient[deviceID] = {
+                                  selectedHospital: 0
                                 };
                               }
                             });
-
+                            log('TransferPatient/$hospitalID/${selectedHospital.id}');
                             connect.publishMsg(
                                 'TransferPatient/$hospitalID/${selectedHospital.id}',
                                 deviceID);

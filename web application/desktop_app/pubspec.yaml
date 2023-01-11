@@ -54,6 +54,7 @@ dependencies:
   syncfusion_flutter_pdf: ^20.4.41
   path_provider: ^2.0.11
   open_file_plus: ^3.3.0
+  bitsdojo_window: ^0.1.5
 
 dev_dependencies:
   flutter_test:

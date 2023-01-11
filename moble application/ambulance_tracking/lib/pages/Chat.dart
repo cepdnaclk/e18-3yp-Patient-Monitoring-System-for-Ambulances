@@ -85,7 +85,7 @@ class _ChatState extends State<Chat> {
             // color: Colors.grey,
             child: Row(children: <Widget>[
               SizedBox(
-                width: 315,
+                width: 300,
                 child: TextFormField(
                   key: ValueKey('chatFieldFinder'),
                   decoration: const InputDecoration(
@@ -97,7 +97,7 @@ class _ChatState extends State<Chat> {
                   controller: messageController,
                 ),
               ),
-              const SizedBox(width: 10),
+              const Expanded(child: SizedBox()),
               Container(
                 // color: Colors.red,
                 padding: const EdgeInsets.only(bottom: 15),
@@ -111,7 +111,7 @@ class _ChatState extends State<Chat> {
                     onPressed: () {
                       final msg =
                           Message(messageController.text, DateTime.now(), true);
-                           messageController.clear();
+                      messageController.clear();
                       // if(isFirstClick){
                       //   setupUpdatesListenerForChat();
                       // }
@@ -122,11 +122,11 @@ class _ChatState extends State<Chat> {
                             'message/from/ambulance/${widget.hospitalID}/${widget.deviceID}',
                             '{"message":"${msg.text}"}');
                       });
-                     
                     },
                   ),
                 ),
-              )
+              ),
+              const Expanded(child: SizedBox()),
             ]),
           ),
         ],

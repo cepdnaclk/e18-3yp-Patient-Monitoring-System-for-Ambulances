@@ -66,7 +66,10 @@ class _ChatState extends State<Chat> {
               child: const Center(
                   child: Text(
                 'Chat',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               )),
             ))
           ],

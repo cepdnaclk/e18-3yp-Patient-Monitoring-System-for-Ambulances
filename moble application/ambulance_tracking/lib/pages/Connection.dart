@@ -45,6 +45,7 @@ class Connection {
     client.onConnected = onConnected;
     client.onDisconnected = onDisconnected;
     client.pongCallback = pong;
+    client.onUnsubscribed;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier(clientIdentifier)
@@ -66,6 +67,10 @@ class Connection {
   void subscribeTopic(String topic) {
     client.subscribe(topic, MqttQos.atMostOnce);
   }
+
+  // void unsubscribeTopic(String topic) {
+  //   client.unsubscribe(topic);
+  // }
 
   void publishMsg(String topic, String msg) {
     final builder = MqttClientPayloadBuilder();
