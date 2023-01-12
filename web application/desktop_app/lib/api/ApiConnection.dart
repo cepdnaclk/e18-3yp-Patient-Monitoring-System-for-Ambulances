@@ -12,15 +12,15 @@ class HttpLoader {
 
     var response = await http.get(url);
 
-    print(response.body);
-    print(response.statusCode);
+    log(response.body);
+    log(response.statusCode.toString());
     log(response.toString());
 
     if (response.statusCode == 200) {
-      print("retrived from AWS" + response.body);
+      log("retrived from AWS${response.body}");
       return response.body;
     } else {
-      print("req failed with code{$response.statusCode}");
+      log("req failed with code{$response.statusCode}");
       return "cant load";
     }
   }
@@ -35,9 +35,6 @@ class HttpLoader {
 
     List<Hospital> hospitals =
         hospitalObjsJson.map((h) => Hospital.fromJson(h)).toList();
-    // for (int i = 0; i < hospitals.length; i++) {
-    //   log('${hospitals[i].name} ${hospitals[i].id}');
-    // }
     return hospitals;
   }
 

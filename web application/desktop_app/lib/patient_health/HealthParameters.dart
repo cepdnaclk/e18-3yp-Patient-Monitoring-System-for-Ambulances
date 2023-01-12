@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:desktop_app/data/Points.dart';
 
+// ignore: must_be_immutable
 class ViewParameters extends StatefulWidget {
-  // List<Patient> patients;
+
   Map<String, List<Point>> data;
   Map<String, Patient> map;
   String deviceID;
@@ -19,6 +19,7 @@ class ViewParameters extends StatefulWidget {
 
   @override
   State<ViewParameters> createState() =>
+      // ignore: no_logic_in_create_state
       _ViewParametersState(deviceID, map, data);
 }
 
@@ -27,29 +28,21 @@ class _ViewParametersState extends State<ViewParameters> {
   String deviceID;
   Map<String, List<Point>> data;
   _ViewParametersState(this.deviceID, this.map, this.data);
-  // List<Point> temp = [];
   late double time;
   late bool flag;
-  // late double time1;
-  // late bool flag1;
-  // late Patient pa;
+
   @override
   void initState() {
     super.initState();
     flag = false;
-    log('${data[deviceID]![0].time} ${data[deviceID]![1].time} ${data[deviceID]![2].time}');
-    // log(time.toString());
-    log(data[deviceID]!.length.toString());
-    // flag1 = false;
+
     time = data[deviceID]![data[deviceID]!.length - 1].time;
 
-    // temp = data[deviceID]![data.length-1].time;
-    // time = 0;
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
       }
-      // double y = DateTime.now().second * 1.0;
+
       Patient x = Patient(
           map[deviceID]!.name,
           map[deviceID]!.age,
@@ -61,26 +54,12 @@ class _ViewParametersState extends State<ViewParameters> {
           map[deviceID]!.lat,
           map[deviceID]!.long);
       setState(() {
-        // temp.add(Point(time, x));
         time += 2;
         data[deviceID]!.add(Point(time, x));
-        // time1 += 2;
 
-        // if (time1 % 16 == 0) {
-        //   flag1 = true;
-        //   // time = 0;
-        // }
         if (data[deviceID]!.length >= 10) {
           data[deviceID]!.removeAt(0);
         }
-        // if (time % 30 == 0) {
-        //   flag = true;
-        //   // time = 0;
-        // }
-        // if (flag) {
-        //   temp.removeAt(0);
-        // }
-        //log('from parameters $map');
       });
     });
   }
@@ -105,8 +84,6 @@ class _ViewParametersState extends State<ViewParameters> {
             color: !outRange ? Colors.black12 : Colors.black.withOpacity(0.4),
             borderRadius: const BorderRadius.all(Radius.circular(10.0))),
         margin: margin,
-        // width: 100,
-        // height: 300,
         child: Column(children: <Widget>[
           Row(children: <Widget>[
             Align(
@@ -128,8 +105,6 @@ class _ViewParametersState extends State<ViewParameters> {
                         : const Color.fromARGB(255, 244, 172, 166),
                     borderRadius:
                         const BorderRadius.all(Radius.circular(10.0))),
-                // height: 10,
-                // width: 20,
                 child: Center(
                   child: Text(
                       double.parse((parameterValue).toStringAsFixed(3))
@@ -140,27 +115,14 @@ class _ViewParametersState extends State<ViewParameters> {
               ),
             )
           ]),
-          // const SizedBox(height: 30),
-          // Text(
-          //   parameterValue.toString(),
-          //   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          // )
-
           graphTemplate(
               list, minValue, maxValue, parameterName, rightTitles, outRange),
-          // Text('time'),
-          // const RotationTransition(
-          //     turns: AlwaysStoppedAnimation(270 / 360),
-          //     child: Text("flutter is awesome"))
         ]),
-        // color: Colors.red,
       ),
     );
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    // const style = TextStyle(fontSize: 10);
-
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
@@ -172,46 +134,7 @@ class _ViewParametersState extends State<ViewParameters> {
       ),
     );
   }
-  // Widget graphTemplate(margin, List<FlSpot> points, double min, double max) {
-  //   return Expanded(
-  //     flex: 1,
-  //     child: Container(
-  //         padding: const EdgeInsets.all(5),
-  //         decoration: BoxDecoration(
-  //             color: Colors.black.withOpacity(0.5),
-  //             borderRadius: const BorderRadius.all(Radius.circular(10.0))),
-  //         margin: margin,
-  //         // width: 100,
-  //         // height: 150,
-  //         child: AspectRatio(
-  //           aspectRatio: 2,
-  //           child: LineChart(LineChartData(minY: min, maxY: max,
-  //               // titlesData: FlTitlesData(
-  //               //   show: true,
-  //               // ),
-  //               lineBarsData: [
-  //                 LineChartBarData(
-  //                   spots:
-  //                       points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-  //                   dotData: FlDotData(show: true),
-  //                   isCurved: false,
-  //                   belowBarData: BarAreaData(
-  //                     show: true,
-  //                     gradient: LinearGradient(
-  //                       colors: gradientColors
-  //                           .map((color) => color.withOpacity(0.3))
-  //                           .toList(),
-  //                     ),
-  //                   ),
-  //                 )
-  //               ])),
-  //         )),
-  //   );
-  // }
 
-  // void updateChart(){
-  //   temp[map[deviceID]!.temperature] = map[deviceID]
-  // }
   List<Color> gradientColors1 = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
@@ -261,27 +184,16 @@ class _ViewParametersState extends State<ViewParameters> {
                   reservedSize: 30,
                 ),
               ),
-
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(showTitles: false, reservedSize: 40
-                    // getTitlesWidget: bottomTitleWidgets,
+         
                     ),
               ),
               rightTitles: rightTitles,
-              // AxisTitles(
-              //   sideTitles: SideTitles(
-              //     showTitles: true,
-              //     reservedSize: 25,
-              //     interval: 50,
-              //     getTitlesWidget: leftTitleWidgets,
-              //   ),
-              // ),
             ),
-            // titlesData: AxisTitles(),
             lineBarsData: [
               LineChartBarData(
-                spots:
-                    points, //.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
+                spots: points,
                 dotData: FlDotData(show: true),
                 isCurved: false,
                 gradient: outRange
@@ -326,45 +238,6 @@ class _ViewParametersState extends State<ViewParameters> {
       ),
     );
   }
-
-  // Widget TempGraphTemplate(List<Point> points) {
-  //   return AspectRatio(
-  //     aspectRatio: 5,
-  //     child: LineChart(LineChartData(minY: 35, maxY: 40, lineBarsData: [
-  //       LineChartBarData(
-  //         spots: points.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-  //         dotData: FlDotData(show: true),
-  //         isCurved: false,
-  //       )
-  //     ])),
-  //   );
-  // }
-
-  // Widget HRGraphTemplate(List<Point> points) {
-  //   return AspectRatio(
-  //     aspectRatio: 5,
-  //     child: LineChart(LineChartData(lineBarsData: [
-  //       LineChartBarData(
-  //         spots: points.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
-  //         dotData: FlDotData(show: true),
-  //         isCurved: false,
-  //       )
-  //     ])),
-  //   );
-  // }
-
-  // Widget PRGraphTemplate(List<Point> points) {
-  //   return AspectRatio(
-  //     aspectRatio: 5,
-  //     child: LineChart(LineChartData(lineBarsData: [
-  //       LineChartBarData(
-  //         spots: points.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
-  //         dotData: FlDotData(show: true),
-  //         isCurved: false,
-  //       )
-  //     ])),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -474,42 +347,10 @@ class _ViewParametersState extends State<ViewParameters> {
                 90)
           ],
         ),
-        // SizedBox(height: 30),
-        // Row(
-        //   children: <Widget>[
-        //     graphTemplate(
-        //         const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-        //         temp.map((e) => FlSpot(e.time, e.p.temperature)).toList(),
-        //         35.0,
-        //         40.0),
-        //     graphTemplate(
-        //         const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-        //         temp.map((e) => FlSpot(e.time, e.p.heartRate)).toList(),
-        //         50,
-        //         200)
-        //   ],
-        // ),
-        // Row(children: <Widget>[
-        //   graphTemplate(
-        //       const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-        //       temp.map((e) => FlSpot(e.time, e.p.pulseRate)).toList(),
-        //       50,
-        //       200),
-        //   graphTemplate(
-        //       const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-        //       temp.map((e) => FlSpot(e.time, e.p.oxygenSaturation)).toList(),
-        //       10,
-        //       200)
-        // ]),
       ],
 
-      // graphTemplate()
     );
   }
 }
 
-// class Point {
-//   final double time;
-//   final Patient p;
-//   Point(this.time, this.p);
-// }
+

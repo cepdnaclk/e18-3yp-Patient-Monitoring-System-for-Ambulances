@@ -36,6 +36,6 @@ class Patient {
 
   @override
   String toString() {
-    return '{name:$name, age:$age,condition:$condition, temperature:$temperature, heartRate:$heartRate, pulseRate:$pulseRate,oxySat:$oxygenSaturation}';
+    return '{name:$name, age:$age, condition:$condition, temperature:$temperature, heartRate:$heartRate, pulseRate:$pulseRate,oxySat:$oxygenSaturation}';
   }
 }

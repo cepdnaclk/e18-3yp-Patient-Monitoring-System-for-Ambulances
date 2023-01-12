@@ -79,21 +79,6 @@ class Connection {
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }
 
-  // String receiveMsg() {
-  //   String s = 'test';
-  //   client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-  //     final recMess = c![0].payload as MqttPublishMessage;
-  //     final pt =
-  //         MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-  //     s = pt;
-  //     // patient = Patient.fromJson(jsonDecode(pt));
-
-  //     print('Chat EXAMPLE:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-  //     print('');
-  //   });
-  //   return s;
-  // }
-
   Stream<List<MqttReceivedMessage<MqttMessage>>>? getMessagesStream() {
     log(client.updates.toString());
     return client.updates;

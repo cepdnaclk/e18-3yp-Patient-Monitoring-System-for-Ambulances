@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Ambulance Tracking"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "E18Group19"
 #define MyAppURL "https://cepdnaclk.github.io/e18-3yp-Patient-Monitoring-System-for-Ambulances/"
-#define MyAppExeName "desktop_app.exe"
+#define MyAppExeName "AmbulanceTracking.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\Didula\OneDrive\Desktop\desktop_app\installers
-OutputBaseFilename=Ambulance_Tracking
+OutputBaseFilename=Ambulance_Tracking_v1.1
 SetupIconFile=C:\Users\Didula\OneDrive\Desktop\desktop_app\images\hospital-icon.ico
 Compression=lzma
 SolidCompression=yes

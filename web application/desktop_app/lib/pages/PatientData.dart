@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:desktop_app/people/Patient.dart';
 import 'package:desktop_app/chat/Message.dart';
@@ -14,16 +13,12 @@ import 'package:desktop_app/data/Points.dart';
 
 // ignore: must_be_immutable
 class PatientData extends StatefulWidget {
-  //List<Patient> patients;
-  //int patientIndex;
   Map<String, List<Point>> data;
   Map<String, List<Message>> messages;
   Connection connect;
-  double lat, long;
   Map<String, Patient> map;
   String deviceID;
   String hospitalID;
-  // Map<String, String> hospitalList;
   Map<String, Map<Hospital, int>> transferPatient;
   Map<String, List<int>> msgCount;
   List<Hospital> hospitals;
@@ -34,8 +29,6 @@ class PatientData extends StatefulWidget {
       required this.deviceID,
       required this.messages,
       required this.connect,
-      required this.lat,
-      required this.long,
       required this.map,
       required this.hospitals,
       required this.transferPatient,
@@ -44,23 +37,11 @@ class PatientData extends StatefulWidget {
 
   @override
   // ignore: no_logic_in_create_state
-  State<PatientData> createState() => _PatientDataState(
-      hospitalID,
-      deviceID,
-      messages,
-      connect,
-      lat,
-      long,
-      map,
-      hospitals,
-      transferPatient,
-      msgCount,
-      data);
+  State<PatientData> createState() => _PatientDataState(hospitalID, deviceID,
+      messages, connect, map, hospitals, transferPatient, msgCount, data);
 }
 
 class _PatientDataState extends State<PatientData> {
-  // List<Patient> patients;
-  // int patientIndex;
   Map<String, List<Point>> data;
   Map<String, List<int>> msgCount;
   Map<String, Patient> map;
@@ -69,22 +50,10 @@ class _PatientDataState extends State<PatientData> {
   String deviceID;
   Map<String, List<Message>> messages;
   Connection connect;
-  double lat, long;
   late Hospital selectedHospital;
-  // Map<String, String> hospitalList;
   Map<String, Map<Hospital, int>> transferPatient;
-  _PatientDataState(
-      this.hospitalID,
-      this.deviceID,
-      this.messages,
-      this.connect,
-      this.lat,
-      this.long,
-      this.map,
-      this.hospitals,
-      this.transferPatient,
-      this.msgCount,
-      this.data);
+  _PatientDataState(this.hospitalID, this.deviceID, this.messages, this.connect,
+      this.map, this.hospitals, this.transferPatient, this.msgCount, this.data);
   @override
   void initState() {
     super.initState();
@@ -194,7 +163,6 @@ class _PatientDataState extends State<PatientData> {
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                // margin: const EdgeInsets.only(top: 4),
                                 decoration: const BoxDecoration(
                                     color: Colors.white,
                                     borderRadius:
@@ -253,7 +221,6 @@ class _PatientDataState extends State<PatientData> {
                         Align(
                           alignment: Alignment.topCenter,
                           child: Container(
-                              // alignment: Alignment.topLeft,
                               width: MediaQuery.of(context).size.width / 6,
                               padding: const EdgeInsets.all(3),
                               decoration: const BoxDecoration(
@@ -280,7 +247,6 @@ class _PatientDataState extends State<PatientData> {
                                                   value: e,
                                                   child: SingleChildScrollView(
                                                     child: SizedBox(
-                                                      // color: Colors.amber,
                                                       width:
                                                           MediaQuery.of(context)
                                                                   .size
@@ -358,7 +324,6 @@ class _PatientDataState extends State<PatientData> {
                 connect: connect,
                 deviceID: deviceID,
                 hospitalID: hospitalID,
-                // msgCount: msgCount
               ),
             ),
           )

@@ -42,19 +42,15 @@ class Location extends StatefulWidget {
 }
 
 class _LocationState extends State<Location> {
-  // late double lat;
-  // late double long;
   Map<String, Map<Hospital, int>> transferPatient;
   Map<String, Patient> map;
   String deviceID;
   _LocationState(this.deviceID, this.map, this.transferPatient);
 
-  // late double hospitalLat, hospitalLong;
   @override
   void initState() {
     super.initState();
-    // lat = map[deviceID]!.lat;
-    // long = map[deviceID]!.long;
+
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;
@@ -62,10 +58,6 @@ class _LocationState extends State<Location> {
       setState(() {
         map[deviceID]!.lat += 0.0001;
         map[deviceID]!.long += 0.0001;
-        // hospitalLat =
-        //     double.parse(transferPatient[deviceID]!.keys.toList()[0].lat);
-        // hospitalLong =
-        //     double.parse(transferPatient[deviceID]!.keys.toList()[0].long);
       });
     });
   }
@@ -75,7 +67,6 @@ class _LocationState extends State<Location> {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
-          // color: Colors.blue,
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       child: FlutterMap(
         options: MapOptions(

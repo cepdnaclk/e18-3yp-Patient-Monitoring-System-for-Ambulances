@@ -10,14 +10,14 @@ class Chat extends StatefulWidget {
   String hospitalID;
   Map<String, List<Message>> mess;
   Connection connect;
-  // Map<String, List<int>> msgCount;
+
   Chat({
     super.key,
     required this.mess,
     required this.connect,
     required this.deviceID,
     required this.hospitalID,
-    // required this.msgCount
+
   });
 
   @override
@@ -30,7 +30,7 @@ class _ChatState extends State<Chat> {
   String deviceID;
   String hospitalID;
   Map<String, List<Message>> mess;
-  // Map<String, List<int>> msgCount;
+
   Connection connect;
   _ChatState(this.mess, this.connect, this.deviceID, this.hospitalID);
 
@@ -38,13 +38,13 @@ class _ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();
-    //mess.add(Message('text', DateTime.now(), true));
+
     Timer.periodic(const Duration(seconds: 0), (Timer timer) async {
       if (!mounted) {
         return;
       }
       setState(() {
-        // msgCount[deviceID]![0] = 0;
+
       });
     });
   }
@@ -95,7 +95,7 @@ class _ChatState extends State<Chat> {
         )),
         Container(
           padding: const EdgeInsets.all(10.0),
-          // color: Colors.grey,
+
           child: SizedBox(
             child: TextField(
               decoration: const InputDecoration(

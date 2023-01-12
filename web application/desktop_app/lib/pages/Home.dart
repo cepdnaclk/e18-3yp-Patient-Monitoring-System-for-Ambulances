@@ -25,35 +25,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //given hospital ID
   String hospitalID;
+
+  //hospital list
   List<Hospital> hospitals;
   _HomeState(this.hospitalID, this.hospitals);
-  Connection mqttConnection = Connection();
-  Map<String, Patient> map = {};
-  Map<String, List<Message>> messages = {};
-  Map<String, List<int>> msgCount = {};
-  Map<String, List<bool>> isArrived =
-      {}; //index 0 for arriving and 1 for stopping
-  Map<String, String> ambulanceStatus = {};
-  // Map<String, String> hospitalList = {
-  //   'H001': 'Hospital1',
-  //   'H002': 'Hospital2',
-  //   'H003': 'Hospital3'
-  // };
 
+  //MQtt connection
+  Connection mqttConnection = Connection();
+
+  //map device ID and patient
+  Map<String, Patient> map = {};
+
+  //map messages with device ID
+  Map<String, List<Message>> messages = {};
+
+  //map message count with device ID
+  Map<String, List<int>> msgCount = {};
+
+  //arriving status checker (index 0 for arriving and 1 for stopping)
+  Map<String, List<bool>> isArrived = {};
+
+  //map ambulance status with device ID
+  Map<String, String> ambulanceStatus = {};
+
+  //Map patient conditions with device ID
+  Map<String, bool> isOutRange = {};
+
+  //to store data and time
+  Map<String, List<Point>> data = {};
+
+  //PDF object
   PDF pdf = PDF();
 
-  Map<String, Map<Hospital, int>> transferPatient =
-      {}; // 0 for initial hospital 1 for tranfering hospital 2 for transferrd hospital
+  //for transfer hospital details (0 for initial hospital 1 for tranfering hospital 2 for transferrd hospital)
+  Map<String, Map<Hospital, int>> transferPatient = {};
+
+  //to store requests coming form other hospitals
   Map<String, List<String>> requests = {};
 
-  double lat = 6.927079;
-  double long = 79.861244;
   late int patientCount;
-  // late bool isArrived;
-  String deviceID = 'none';
+  late String deviceID;
   late int requestCount;
   late bool isConnected;
+
+  //treshold  values for health parameters
   final Map<String, List<double>> parameterLimits = {
     'Temp': [35.0, 40.0],
     'HR': [60.0, 150.0],
@@ -61,20 +78,16 @@ class _HomeState extends State<Home> {
     'OS': [10.0, 100.0]
   };
 
-  late Map<String, bool> isOutRange = {};
-  Map<String, List<Point>> data = {};
-  // late String ambulanceStatus;
   @override
   void initState() {
     super.initState();
     requestCount = 0;
     patientCount = 0;
-    lat = 6.927079;
-    long = 79.861244;
     deviceID = 'none';
     isConnected = false;
   }
 
+//adjust page for different page sizes
   int rowCount() {
     double width = MediaQuery.of(context).size.width;
     if (width > 1000) {
@@ -132,10 +145,6 @@ class _HomeState extends State<Home> {
           pa.healthData(jsonDecode(pt));
           data[deviceID]!.add(Point(data[deviceID]!.last.time + 2, pa));
           data[deviceID]!.removeAt(0);
-          for (int i = 0; i < data[deviceID]!.length; i++) {
-            log('${data[deviceID]![i].time}--${data[deviceID]![i].p.heartRate}');
-          }
-
           //check wether health parameters out of range
           isOutRange[deviceID] = map[deviceID]!.temperature <
                       parameterLimits['Temp']![0] ||
@@ -222,7 +231,6 @@ class _HomeState extends State<Home> {
   Widget requestTemplate(String hospital, List<String> device) {
     return SingleChildScrollView(
       child: Container(
-        // height: 200,
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
             color: Colors.white,
@@ -247,7 +255,6 @@ class _HomeState extends State<Home> {
                     Container(
                       width: 15,
                       decoration: const BoxDecoration(
-                        // border: Border.all(color: Colors.blueAccent),
                         color: Colors.red,
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
@@ -271,13 +278,13 @@ class _HomeState extends State<Home> {
     );
   }
 
+//drop down device item
   Widget deviceItem(String device, String hospital) {
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(1),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blueAccent),
-        // color: Colors.amber,
         borderRadius: const BorderRadius.all(Radius.circular(10.0)),
       ),
       child: Column(children: [
@@ -304,7 +311,7 @@ class _HomeState extends State<Home> {
                     setState(() {
                       requestCount--;
                       mqttConnection.publishMsg('Device_$device',
-                          'change:$hospital-${hospitals[hospitals.indexWhere((element) => element.id == hospital)].name}');
+                          'change:$hospitalID-${hospitals[hospitals.indexWhere((element) => element.id == hospitalID)].name}');
                       mqttConnection.publishMsg(
                           'Mobile/Transfer/$device', hospitalID);
                       mqttConnection.publishMsg(
@@ -317,9 +324,6 @@ class _HomeState extends State<Home> {
                         Point(2, Patient.empty()),
                         Point(4, Patient.empty())
                       ];
-                      // log('${data[deviceID]![0].time} ${data[deviceID]![1].time} ${data[deviceID]![2].time}');
-                      // // log(time.toString());
-                      // log(data[deviceID]!.length.toString());
                       isArrived[device] = [false, false];
                       ambulanceStatus[device] = 'Arriving';
                       transferPatient[device] = {
@@ -343,12 +347,10 @@ class _HomeState extends State<Home> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    // Background color
                   ),
                   onPressed: () {
                     setState(() {
                       requestCount--;
-                      // log('TransferPatient/$hospital/$hospitalID');
                       mqttConnection.publishMsg(
                           'TransferPatient/$hospital/$hospitalID',
                           'Rejected:$device');
@@ -369,21 +371,14 @@ class _HomeState extends State<Home> {
     );
   }
 
+//patient card
   Widget cardTemplate(
     String deviceID,
     int patientNumber,
-    // Map<String, List<Message>> msgs,
-    // double lat,
-    //double long,
-    //Map<String, Patient> map,
-    // Map<String, MsgCount> msgCount
   ) {
     return InkWell(
       onTap: () {
         setState(() {
-          // if (msgCount[deviceID] == null) {
-          //   msgCount[deviceID] = [];
-          // }
           msgCount[deviceID]![0] = 0;
         });
         Navigator.push(
@@ -394,8 +389,6 @@ class _HomeState extends State<Home> {
                     deviceID: deviceID,
                     messages: messages,
                     connect: mqttConnection,
-                    lat: lat,
-                    long: long,
                     map: map,
                     transferPatient: transferPatient,
                     msgCount: msgCount,
@@ -430,11 +423,8 @@ class _HomeState extends State<Home> {
                 child: SizedBox(),
               ),
               Container(
-                // color: Colors.white,
-                // height: 40,
                 width: 25,
                 padding: const EdgeInsets.all(0),
-
                 child: Column(children: <Widget>[
                   Align(
                     alignment: Alignment.topRight,
@@ -474,30 +464,22 @@ class _HomeState extends State<Home> {
                 width: 10,
               ),
               Container(
-                // color: Colors.amber,
                 margin: const EdgeInsets.all(2),
                 height: 20,
                 width: 20,
-                // padding: EdgeInsets.only(bottom: 4),
                 child: ambulanceStatus[deviceID] == 'Transferred' ||
                         ambulanceStatus[deviceID] == 'Arrived'
                     ? FloatingActionButton(
-                        // hoverColor: Colo,
-                        // label: Text(''),
                         heroTag: "btn1",
                         hoverElevation: 0,
                         backgroundColor: Colors.transparent,
                         elevation: 0,
-                        // padding: EdgeInsets.all(0),
                         hoverColor: Colors.red.withOpacity(0.3),
-                        // focusColor: Colors.red,
-                        // highlightColor: Colors.black,
                         child: const Icon(
                           Icons.cancel,
                           color: Color.fromARGB(255, 225, 19, 5),
                           size: 15,
                         ),
-
                         onPressed: () {
                           setState(() {
                             map.remove(deviceID);
@@ -510,7 +492,6 @@ class _HomeState extends State<Home> {
                             patientCount--;
                           });
                         },
-                        //child: const Text('Accept'),
                       )
                     : null,
               )
@@ -540,7 +521,6 @@ class _HomeState extends State<Home> {
                 const SizedBox(
                   width: 7,
                 ),
-                //if (isArrived[deviceID]!) ...[],
                 Container(
                   margin: const EdgeInsets.only(top: 2),
                   height: 10,
@@ -565,21 +545,17 @@ class _HomeState extends State<Home> {
                 width: 20,
                 child: isArrived[deviceID]![1]
                     ? FloatingActionButton(
-                        // hoverColor: Colo,
-                        // label: Text(''),
                         heroTag: "btn2",
                         hoverElevation: 0,
                         backgroundColor: Colors.transparent,
                         elevation: 0,
                         hoverColor: const Color.fromARGB(255, 96, 194, 243)
                             .withOpacity(0.3),
-
                         child: const Icon(
                           Icons.file_download,
                           color: Color.fromARGB(255, 63, 62, 62),
                           size: 15,
                         ),
-
                         onPressed: () {
                           pdf.createPDF(
                               map[deviceID]!,
@@ -588,7 +564,6 @@ class _HomeState extends State<Home> {
                               deviceID,
                               isOutRange[deviceID]!);
                         },
-                        //child: const Text('Accept'),
                       )
                     : null,
               ),
@@ -610,14 +585,9 @@ class _HomeState extends State<Home> {
                 style:
                     const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
             const Expanded(
-              child: SizedBox(
-                  //width: MediaQuery.of(context).size.width - 500,
-                  ),
+              child: SizedBox(),
             ),
             Column(children: <Widget>[
-              // SizedBox(
-              //   height: 10,
-              // ),
               DropdownButtonHideUnderline(
                 child: DropdownButton2(
                     customButton: const Icon(
@@ -625,7 +595,6 @@ class _HomeState extends State<Home> {
                       size: 35,
                     ),
                     offset: const Offset(-230, 0),
-                    //icon: Icon(Icons.add_alert_sharp),
                     buttonHeight: 40,
                     itemHeight: 150,
                     dropdownWidth: 250,
@@ -634,7 +603,6 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(14),
                       color: const Color.fromARGB(255, 59, 164, 250),
                     ),
-                    // isExpanded: true,
                     value: null,
                     items: requests.entries
                         .map((e) => DropdownMenuItem(
@@ -644,11 +612,9 @@ class _HomeState extends State<Home> {
               )
             ]),
             Container(
-              // width: 15,
               padding: const EdgeInsets.all(2),
               margin: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
-                // border: Border.all(color: Colors.blueAccent),
                 color: requestCount == 0 ? null : Colors.red,
                 borderRadius: const BorderRadius.all(Radius.circular(10.0)),
               ),
@@ -680,11 +646,9 @@ class _HomeState extends State<Home> {
                   tileMode: TileMode.mirror,
                 ),
               ),
-              // padding: const EdgeInsets.all(50),
               margin: const EdgeInsets.all(20),
               height: MediaQuery.of(context).size.height * 2.1 / 3,
               width: MediaQuery.of(context).size.width,
-              // color: Colors.black.withOpacity(0.2),
               child: GridView.count(
                 padding: const EdgeInsets.all(50),
                 crossAxisCount: rowCount(),
@@ -697,11 +661,6 @@ class _HomeState extends State<Home> {
                     .map((entry) => cardTemplate(
                           entry.key,
                           map.keys.toList().indexOf(entry.key) + 1,
-                          // messages,
-                          // lat,
-                          // long,
-                          // map,
-                          // msgCount
                         ))
                     .toList(),
               )),
@@ -764,9 +723,37 @@ class _HomeState extends State<Home> {
                     backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
-                    mqttConnection.disconnect();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Login()));
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('LogOut'),
+                            content: const Text(
+                                'Are you sure you want to logout ?',
+                                key: ValueKey('logoutConfirmationFinder')),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  mqttConnection.disconnect();
+                                  // dispose();
+                                  deactivate();
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const Login()));
+                                },
+                                child: const Text(
+                                  'OK',
+                                ),
+                              ),
+                            ],
+                          );
+                        });
                   },
                   child: const Text('Logout'),
                 ),
@@ -781,7 +768,6 @@ class _HomeState extends State<Home> {
                     backgroundColor: Colors.blueAccent,
                   ),
                   onPressed: () {
-                    // mqttConnection.disconnect();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -822,7 +808,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-// class MsgCount {
-//   late int count;
-// }
