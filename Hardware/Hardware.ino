@@ -11,8 +11,9 @@
 #include <DallasTemperature.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <iostream>
-#include <string.h>
+
+long now1 = millis();
+long lastcheck = now1;
 
 int buzzer = D3;
 boolean disconnected = false;   //Whether user has disconnected the connection with cloud
@@ -107,18 +108,20 @@ void calcMAX30100(){  //Calculated the average values
     beatCount=0;
 }
 
-char* ssid1 = "Dialog 4G 517";
-char* password1 = "576E5Fc3";
+const char* ssid1 = "Dialog 4G 517";
+const char* password1 = "576E5Fc3";
+
+const char* ssid2 = "HUAWEI";
+const char* password2 = "abcdefgh";
+
+int ssidNo = 2;
 /*
-char* ssid1 = "Dialog 4G 769";
-char* password1 = "583BbFe3";
+char* ssid2 = "Dialog 4G 769";
+char* password2 = "583BbFe3";
+
+const char* ssid = "Eng-Student";
+const char* password = "3nG5tuDt";
 */
-char* ssid2 = "Eng-Student";
-char* password2 = "3nG5tuDt";
-
-char* ssid = ssid2;
-char* password = password2;
-
 /*
 const char* ssid = "ACES_Coders";
 const char* password = "Coders@2022";
@@ -128,7 +131,7 @@ const char* ssid = "Gimhara Wi~Fi";
 const char* password = "hachcha@1122";
 */
 
-String const deviceID = "004";
+String const deviceID = "001";
 String const hospitalID = "H001";
 String currhospitalID = hospitalID;
 String const hospitalName = "Colombo General Hospital";
@@ -184,20 +187,33 @@ void setup_wifi(){
   espClient.setBufferSizes(512,512);
   Serial.println();
   Serial.print("Connecting to ");
-  if(ssid==ssid2){
-    ssid = ssid1;
+  
+  if(ssidNo==2){
     showParametersD(ssid1);
     Serial.println(ssid1);
-    WiFi.begin(ssid1,password1);  
+    WiFi.begin(ssid1,password1);
+    ssidNo = 1;  
   }else{
-    ssid = ssid2;
     showParametersD(ssid2);
     Serial.println(ssid2);
     WiFi.begin(ssid2,password2);
+    ssidNo = 2;
   }
-  int attempts = 0;
-  while(WiFi.status() != WL_CONNECTED & attempts<20){
+  int attempts = 1;
+  while(WiFi.status() != WL_CONNECTED & attempts<18){
+    analogWrite(connectivityLED,0);
+    pox.begin();
+    pox.update();
     delay(500);
+    if(ssidNo==1){
+      if(attempts%3==0){
+        showParametersD(ssid1);
+      }
+    }else{
+      if(attempts%3==0){
+        showParametersD(ssid2);
+      }
+    }
     Serial.print(".");  
     ++attempts;
   }
@@ -220,7 +236,9 @@ void checkMsg(String msgType,String MSG,String MSG2){
   Serial.print("MSG:"+MSG);
   if(!strcmp(msgType.c_str(),(char*)"start")){    //If msg is to start a ride
     if(!rideFLAG){
-      startRide(MSG,MSG2);
+      if(client.connected()){
+        startRide(MSG,MSG2);
+      }
     }
   }else if(!strcmp(msgType.c_str(),(char*)"stop")){    //If msg is to stop a ride
     stopRide();
@@ -239,16 +257,13 @@ void checkMsg(String msgType,String MSG,String MSG2){
 void changeHospital(String hospital,String hospitalName){
   /*This function changes the destination hospital*/
   outTopic = "/AmbulanceProject/"+hospital+"/"+deviceID;
+  client.unsubscribe((char*)("message/from/hospital/"+currhospitalID+"/"+deviceID).c_str());
   currhospitalID = hospital;
+  client.subscribe((char*)("message/from/hospital/"+currhospitalID+"/"+deviceID).c_str());
   showNewHospital(hospitalName);
   canShow = 2;
   tone(buzzer,1000,200);
-  if (!pox.begin()) {
-    Serial.println("FAILED");
-    for(;;);
-  }else{
-    Serial.println("SUCCESS");
-  }
+  pox.begin();
 }
 
 void startRide(String newHospital,String newHospitalName){
@@ -257,19 +272,16 @@ void startRide(String newHospital,String newHospitalName){
   delay(1500);
   changeHospital(newHospital,newHospitalName);
   client.publish((char*)(outTopic.c_str()),"Active");
-  if (!pox.begin()) {
-    Serial.println("FAILED");
-    for(;;);
-  }else{
-    Serial.println("SUCCESS");
-  }
+  pox.begin();
   pox.update();
   rideFLAG = true;
   analogWrite(rideLED,1023);
 }
 
+
 void stopRide(){
   /*This function stops an existing ride*/
+  client.unsubscribe((char*)("message/from/hospital/"+currhospitalID+"/"+deviceID).c_str());
   changeHospital(hospitalID,hospitalName);
   rideFLAG = false;  
   analogWrite(rideLED,0);  
@@ -283,35 +295,39 @@ void reconnect(){
     analogWrite(connectivityLED,0);
     setup_wifi();
   }
-  while(!client.connected()){
-    buttonPressCheck();
-    showParametersD("AWS");
-    analogWrite(connectivityLED,50);
-    if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
-      analogWrite(rideLED,50);
+  if(!disconnected){
+    while(!client.connected()){
+      buttonPressCheck();
+      showParametersD("AWS");
+      analogWrite(connectivityLED,50);
+      if(rideFLAG){   //If there is an ongoing ride and connectivity has been lost
+        analogWrite(rideLED,50);
+      }
+      Serial.print("Attempting to MQTT connection");
+      if(client.connect("ESPthing")){
+        Serial.println("Connected");
+        if(rideFLAG){         //If there is an ongoing ride and connected
+          analogWrite(rideLED,1023);  
+        } 
+        analogWrite(connectivityLED,1023);
+        client.subscribe((char*)(inTopic.c_str()));
+        client.subscribe((char*)("message/from/hospital/"+currhospitalID+"/"+deviceID).c_str());
+        disconnected = false;
+      }else{
+        tone(buzzer,1000,200);
+        Serial.print("failed,rc=");
+        Serial.print(client.state());
+        Serial.println(" try again in 5 seconds");
+        char buf[256];
+        espClient.getLastSSLError(buf,256);
+        Serial.print("WiFiClientSecure SSL error: ");
+        Serial.println(buf);
+        delay(5000);
+      }
     }
-    Serial.print("Attempting to MQTT connection");
-    if(client.connect("ESPthing")){
-      Serial.println("Connected");
-      if(rideFLAG){         //If there is an ongoing ride and connected
-        analogWrite(rideLED,1023);  
-      } 
-      analogWrite(connectivityLED,1023);
-      client.subscribe((char*)(inTopic.c_str()));
-      client.subscribe((char*)("message/from/hospital/"+currhospitalID+"/"+deviceID).c_str());
-      disconnected = false;
-    }else{
-      tone(buzzer,1000,200);
-      Serial.print("failed,rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      char buf[256];
-      espClient.getLastSSLError(buf,256);
-      Serial.print("WiFiClientSecure SSL error: ");
-      Serial.println(buf);
-      delay(5000);
-    }
-  }  
+  }else{
+    showPress();
+  }
 }
 
 void disconnectAWS(){
@@ -327,42 +343,54 @@ void buttonPressCheck(){
     cloudButtonStatus = digitalRead(cloudButton);
     cloudButtonPress();
   }
-  int temp = analogRead(connectionButton)<300?0:1;
-  if(temp!=connectionButtonStatus){
-    connectionButtonStatus = temp;
-    connectionButtonPress();
+  now1 = millis();
+  if(now1-lastcheck>1000){
+    lastcheck = now1;
+    int temp;
+    if(analogRead(connectionButton)<300){
+      temp = 0;
+    }else{
+      temp = 1;
+    }      
+    if(temp!=connectionButtonStatus){
+      connectionButtonStatus = temp;
+      connectionButtonPress();
+    } 
   }
 }
 
+ void connectionButtonPress(){
+    setup_wifi();
+ }
+
 void rideButtonPress(){
-  if(rideFLAG){
-    stopRide();
-    client.publish((char*)("Stop/"+currhospitalID+"/"+deviceID).c_str(),"stop:");  //hospital
-    client.publish((char*)("Mobile/Stop/"+deviceID).c_str(),"stop:");
-    currhospitalID = hospitalID;
-    //send stop msg to the desktop app
-  }else{
-    startRide(hospitalID,hospitalName);
+  if(client.connected() & WiFi.status()== WL_CONNECTED){
+    if(rideFLAG){
+      client.publish((char*)("Stop/"+currhospitalID+"/"+deviceID).c_str(),"stop:");  //hospital
+      client.publish((char*)("Mobile/Stop/"+deviceID).c_str(),"stop:");
+      stopRide();
+    }else{
+        startRide(hospitalID,hospitalName);
+    }
   }
 }
 
 void cloudButtonPress(){
-  if(client.connected()){
-    if(!rideFLAG){
-      disconnectAWS();
-      disconnected = true;
+  if(WiFi.status()== WL_CONNECTED){
+    if(client.connected()){
+      if(!rideFLAG){
+        disconnectAWS();
+        disconnected = true;
+        showPress();
+      }
+    }else{
+      reconnect();
+      if(!rideFLAG){
+        showWaiting();
+      }
+      disconnected = false;
     }
-  }else{
-    reconnect();
-    if(!rideFLAG){
-      showWaiting();
-    }
-    disconnected = false;
   }
-}
-
-void connectionButtonPress(){
-  setup_wifi();
 }
 
 void setup() {
@@ -371,7 +399,7 @@ void setup() {
   //Begin the display
   TV.begin(SSD1306_SWITCHCAPVCC,0x3C);
   showWelcome();
-
+  delay(1000);
   pinMode(connectivityLED,OUTPUT);  //Set Rx pin as an output
   pinMode(rideLED,OUTPUT);          //Set Tx pin as an output
   analogWrite(connectivityLED,0);
@@ -382,11 +410,11 @@ void setup() {
   
   rideButtonStatus = digitalRead(rideButton);
   cloudButtonStatus = digitalRead(cloudButton);
-  if(analogRead(connectionButton)<300){
-    connectionButtonStatus = 0;
-  }else{
-    connectionButtonStatus = 1;
-  }
+   if(analogRead(connectionButton)<300){
+     connectionButtonStatus = 0;
+   }else{
+     connectionButtonStatus = 1;
+   }
 
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -473,18 +501,28 @@ void setup() {
 
   //max30100
   //Initialize max30100 sensor
-  if (!pox.begin()) {
-    Serial.println("FAILED");
-      for(;;);
-  }else{
-    Serial.println("SUCCESS");
-  }
+  pox.begin();
 
   // Configure sensor to use 7.6mA for LED drive
   pox.setIRLedCurrent(MAX30100_LED_CURR_37MA);
 
   //Set the callback function on a beat
   pox.setOnBeatDetectedCallback(onBeatDetected);
+}
+
+void showPress(){
+  TV.clearDisplay();
+  TV.setTextColor(WHITE);
+
+  TV.setTextSize(1);
+  TV.setCursor(0,10);
+  TV.print("DISCONNECTED");
+
+  TV.setTextSize(1);
+  TV.setCursor(0,40);
+  TV.print("Press Green Button to connect");
+
+  TV.display();
 }
 
 void showParameters(float temp, float hrate, float spO2){
@@ -645,93 +683,14 @@ void showMessage(String message){
   TV.display();   
 }
 
-void showParametersC(){
-  if(rideFLAG){
-    if(canShow==0){
-      pox.begin();
-      sensors.setWaitForConversion(false);
-      sensors.requestTemperatures();
-      temperature = sensors.getTempCByIndex(0);
-      sensors.setWaitForConversion(true);
-      pox.update();
-      calcMAX30100();
-      TV.clearDisplay();
-      TV.setTextColor(WHITE);
-
-      TV.setTextSize(1);
-      TV.setCursor(0,0);
-      TV.print("Not Connected");
-
-      TV.setTextSize(1);
-      TV.setCursor(0,10);
-      TV.print("Press the Green button");
-
-      TV.setTextSize(1);
-      TV.setCursor(20,24);
-      TV.print("TEMP");
-      
-      TV.setTextSize(1);
-      TV.setCursor(53,24);
-      TV.printf("%.2f",temperature);
-
-      TV.setTextSize(1);
-      TV.setCursor(115,24);
-      TV.printf("%cC",248);
-      
-      TV.setTextSize(1);
-      TV.setCursor(20,40);
-      TV.print("H.R.");
-      
-      TV.setTextSize(1);
-      TV.setCursor(53,40);
-      TV.printf("%.2f",heart_rate);
-
-      TV.setTextSize(1);
-      TV.setCursor(110,40);
-      TV.print("BPM");
-      
-      TV.setTextSize(1);
-      TV.setCursor(20,56);
-      TV.print("O.S.");
-
-      TV.setTextSize(1);
-      TV.setCursor(53,56);
-      TV.printf("%.2f",spo2);
-
-      TV.setTextSize(1);
-      TV.setCursor(115,56);
-      TV.print("%");
-      
-      TV.display();
-      tone(buzzer,10000,150);
-    }else{
-      tone(buzzer,1000,200);
-      --canShow;  
-    }   
-  }else{
-    TV.clearDisplay();
-    TV.setTextColor(WHITE);
-
-    TV.setTextSize(1);
-    TV.setCursor(0,10);
-    TV.print("Not Connected");
-
-    TV.setTextSize(1);
-    TV.setCursor(0,40);
-    TV.print("Press the Green button");
-
-    TV.display();
-  }
-}
-
 void showParametersD(String SSID){
   if(rideFLAG){
     if(canShow==0){
-      pox.begin();
       sensors.setWaitForConversion(false);
       sensors.requestTemperatures();
       temperature = sensors.getTempCByIndex(0);
       sensors.setWaitForConversion(true);
+      pox.begin();
       pox.update();
       calcMAX30100();
       TV.clearDisplay();
@@ -811,7 +770,6 @@ void loop() {
   pox.update(); 
   
   if(!client.connected()){
-    Serial.println("ddddjjl");
     analogWrite(connectivityLED,50);
     if(rideFLAG){
       analogWrite(rideLED,50);   
@@ -855,23 +813,19 @@ void loop() {
       Serial.print("Altitude: ");
       Serial.println(gps.altitude.meters());
       calcMAX30100();
-      if(!client.connected()){
-        showParametersC(); 
+      snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lattitude\": %f, \"longitude\": %f, \"altitude\": %f}",temperature,heart_rate,value3,spo2,lattitude,longitude,Altitude);
+      if(canShow==0){
+        showParameters(temperature,heart_rate,spo2);
+        tone(buzzer,10000,150);
       }else{
-        snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lat\": %f, \"long\": %f}",temperature,heart_rate,value3,spo2,lattitude,longitude);
-        if(canShow==0){
-          showParameters(temperature,heart_rate,spo2);
-          tone(buzzer,10000,150);
-        }else{
-          tone(buzzer,1000,200);
-          --canShow;  
-        }
-        
-        Serial.print("Publish message: ");
-        Serial.print(outTopic);
-        Serial.println(msg);
-        client.publish((char*)(outTopic.c_str()),msg);
+        tone(buzzer,1000,200);
+        --canShow;  
       }
+      
+      Serial.print("Publish message: ");
+      Serial.print(outTopic);
+      Serial.println(msg);
+      client.publish((char*)(outTopic.c_str()),msg);
       pox.begin();
       Serial.print("Heap: ");
       Serial.println(ESP.getFreeHeap());
