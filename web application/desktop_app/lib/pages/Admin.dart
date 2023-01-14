@@ -4,6 +4,7 @@ import 'package:desktop_app/people/Hospital.dart';
 import 'package:desktop_app/api/ApiConnection.dart';
 import 'package:latlong2/latlong.dart' as latLng;
 import 'package:flutter_map/flutter_map.dart';
+import 'package:desktop_app/pages/Home.dart';
 
 // ignore: must_be_immutable
 class Admin extends StatefulWidget {
@@ -22,12 +23,14 @@ class _AdminState extends State<Admin> {
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey3 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey4 = GlobalKey<FormState>();
+
   TextEditingController hospitalIDController = TextEditingController();
   TextEditingController hospitalNameController = TextEditingController();
-  TextEditingController userIDController = TextEditingController();
+
   TextEditingController hospitalLatController = TextEditingController();
   TextEditingController hospitalLongController = TextEditingController();
   TextEditingController hospitalContactController = TextEditingController();
+  TextEditingController userIDController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
   TextEditingController removeHospitalIDController = TextEditingController();
   TextEditingController removeUserIDController = TextEditingController();
@@ -41,7 +44,6 @@ class _AdminState extends State<Admin> {
     selectedHospital =
         hospitals[hospitals.indexWhere((element) => element.id == 'H001')];
     findHospitals = hospitals;
-
     Timer.periodic(const Duration(seconds: 2), (Timer timer) async {
       if (!mounted) {
         return;

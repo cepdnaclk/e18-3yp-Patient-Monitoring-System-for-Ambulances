@@ -139,8 +139,8 @@ class _PatientDataState extends State<PatientData> {
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                decoration: const BoxDecoration(
-                                    color: Colors.white,
+                                decoration: BoxDecoration(
+                                    color: Colors.blue[100],
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5.0))),
                                 child: Text(
@@ -163,8 +163,8 @@ class _PatientDataState extends State<PatientData> {
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                decoration: const BoxDecoration(
-                                    color: Colors.white,
+                                decoration: BoxDecoration(
+                                    color: Colors.blue[100],
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5.0))),
                                 child: Text(
@@ -199,8 +199,8 @@ class _PatientDataState extends State<PatientData> {
                                     child: Container(
                                       height: 50,
                                       padding: const EdgeInsets.all(3),
-                                      decoration: const BoxDecoration(
-                                          color: Colors.white,
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue[100],
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(5.0))),
                                       child: Text(

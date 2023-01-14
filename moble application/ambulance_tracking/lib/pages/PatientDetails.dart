@@ -200,7 +200,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                       fontWeight: FontWeight.bold, fontSize: 18.0)),
             ),
             const SizedBox(height: 20.0),
-            Text(parameterValue.toString(),
+            Text(double.parse((parameterValue).toStringAsFixed(3)).toString(),
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 20.0))
           ],
@@ -415,7 +415,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                             child: Text(
                                               e.name,
                                               style:
-                                                  const TextStyle(fontSize: 14),
+                                                  const TextStyle(fontSize: 15),
                                             ),
                                           ))
                                       .toList(),
@@ -446,8 +446,8 @@ class _ViewDetailsState extends State<ViewDetails> {
 
                                   conn.subscribeTopic(
                                       '/AmbulanceProject/$hospitalID/$deviceID');
-                                  conn.publishMsg(
-                                      'Device_$deviceID', 'start:$hospitalID');
+                                  conn.publishMsg('Device_$deviceID',
+                                      'start:$hospitalID-${widget.hospitals[widget.hospitals.indexWhere((element) => element.id == hospitalID)].name}');
                                   conn.subscribeTopic(
                                       'message/from/hospital/$hospitalID/$deviceID');
                                   conn.subscribeTopic(

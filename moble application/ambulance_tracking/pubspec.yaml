@@ -47,6 +47,12 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: any
+  flutter_launcher_icons: "^0.11.0"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "images/logoRC.png"
 #  test: ^1.22.1
 
   # The "flutter_lints" package below contains a set of recommended lints to

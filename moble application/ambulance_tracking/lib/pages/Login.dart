@@ -15,8 +15,13 @@ class _LoginState extends State<Login> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   HttpLoader httpLoader = HttpLoader();
-
+  late bool isObscure;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    super.initState();
+    isObscure = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +82,10 @@ class _LoginState extends State<Login> {
                           decoration: const InputDecoration(
                               labelText: 'User ID',
                               border: OutlineInputBorder(),
+                              suffixIcon: Icon(
+                                Icons.verified_user,
+                                size: 20,
+                              ),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10)),
                           style: const TextStyle(fontSize: 20),
@@ -91,13 +100,27 @@ class _LoginState extends State<Login> {
                             }
                             return null;
                           },
-                          obscureText: true,
+                          obscureText: isObscure,
                           enableSuggestions: false,
                           autocorrect: false,
                           controller: passwordController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                               labelText: 'Password',
                               border: OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                  // hoverColor: null,
+                                  highlightColor: null,
+                                  icon: Icon(
+                                    !isObscure
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    size: 20,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      isObscure = !isObscure;
+                                    });
+                                  }),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10)),
                           style: const TextStyle(fontSize: 20),
