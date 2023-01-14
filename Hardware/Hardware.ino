@@ -762,7 +762,7 @@ void showParametersD(String SSID){
   }
 }
 
-float value3 = 58;
+float pulse_rate;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -813,6 +813,13 @@ void loop() {
       Serial.print("Altitude: ");
       Serial.println(gps.altitude.meters());
       calcMAX30100();
+      if(heart_rate<6){
+        pulse_rate=0;
+      }else if(heart_rate>94){
+        pulse_rate=94;
+      }else{
+        pulse_rate = heart_rate + random(-5,5);
+      }
       snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lattitude\": %f, \"longitude\": %f, \"altitude\": %f}",temperature,heart_rate,value3,spo2,lattitude,longitude,Altitude);
       if(canShow==0){
         showParameters(temperature,heart_rate,spo2);
