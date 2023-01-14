@@ -215,6 +215,7 @@ class _HomeState extends State<Home> {
             mqttConnection.publishMsg('PatientData/$requestedHospital/$device',
                 '{"name":"${map[device]!.name}", "age":${map[device]!.age}, "condition": "${map[device]!.condition}"}');
           } else if (pt.substring(0, pt.length - 3) == 'Rejected:') {
+            log('test');
             transferPatient[device] = {
               hospitals[hospitals
                   .indexWhere((element) => element.id == hospitalID)]: 0
@@ -359,7 +360,7 @@ class _HomeState extends State<Home> {
                     setState(() {
                       requestCount--;
                       mqttConnection.publishMsg(
-                          'TransferPatient/$hospital/$hospitalID',
+                          'TransferPatient/$hospitalID/$hospital',
                           'Rejected:$device');
                       requests[hospital]!
                           .removeAt(requests[hospital]!.indexOf(device));
