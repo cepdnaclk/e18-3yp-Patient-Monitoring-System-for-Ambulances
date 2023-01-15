@@ -223,8 +223,13 @@ class _PatientDataState extends State<PatientData> {
                           child: Container(
                               width: MediaQuery.of(context).size.width / 6,
                               padding: const EdgeInsets.all(3),
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
+                              decoration: BoxDecoration(
+                                  color: transferPatient[deviceID]!
+                                              .values
+                                              .toList()[0] ==
+                                          1
+                                      ? Color.fromARGB(255, 247, 247, 93)
+                                      : Colors.white,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(5.0))),
                               child: Center(

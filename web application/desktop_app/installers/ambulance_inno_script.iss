@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Live Ray"
-#define MyAppVersion "1.3"
+#define MyAppVersion "1.4"
 #define MyAppPublisher "E18Group19"
 #define MyAppURL "https://cepdnaclk.github.io/e18-3yp-Patient-Monitoring-System-for-Ambulances/"
 #define MyAppExeName "AmbulanceTracking.exe"
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\Didula\OneDrive\Desktop\desktop_app\installers
-OutputBaseFilename=Ambulance_Tracking_v1.3
+OutputBaseFilename=Ambulance_Tracking_v1.4
 SetupIconFile=C:\Users\Didula\OneDrive\Desktop\desktop_app\images\hospital-icon.ico
 Compression=lzma
 SolidCompression=yes

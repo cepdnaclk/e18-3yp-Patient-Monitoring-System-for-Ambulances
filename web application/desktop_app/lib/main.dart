@@ -9,7 +9,7 @@ void main() {
     appWindow.minSize = const Size(800, 700);
     appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;
-    appWindow.title = 'Ambulance Tracking';
+    appWindow.title = 'Live Ray';
     appWindow.show();
   });
 }

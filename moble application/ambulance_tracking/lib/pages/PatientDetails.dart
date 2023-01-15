@@ -197,7 +197,7 @@ class _ViewDetailsState extends State<ViewDetails> {
               // color: Colors.cyan,
               child: Text(parameterName,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18.0)),
+                      fontWeight: FontWeight.bold, fontSize: 15)),
             ),
             const SizedBox(height: 20.0),
             Text(double.parse((parameterValue).toStringAsFixed(3)).toString(),
@@ -532,12 +532,13 @@ class _ViewDetailsState extends State<ViewDetails> {
                           crossAxisSpacing: 8.0,
                           children: <Widget>[
                             cardTemplate(
-                                "Temperature", patient.temperature, 37.0),
+                                "Temperature(°C)", patient.temperature, 37.0),
                             cardTemplate(
-                                "Heart Rate", patient.heartRate, 100.0),
-                            cardTemplate("Pulse Rate", patient.pulseRate, 10.0),
+                                "Heart Rate(bpm)", patient.heartRate, 100.0),
                             cardTemplate(
-                                "Oxygen Sat.", patient.oxygenSaturation, 20.0),
+                                "Pulse Rate(bpm)", patient.pulseRate, 10.0),
+                            cardTemplate("Oxygen Sat.(%)",
+                                patient.oxygenSaturation, 20.0),
                           ],
                         ),
                       ),
@@ -588,7 +589,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                 key: ValueKey('chatIconFinder'),
                                 icon: const Icon(Icons.message, size: 40),
                                 //iconSize: 40.0,
-                                color: Colors.blueAccent,
+                                color: Color.fromARGB(255, 141, 194, 238),
                                 padding: const EdgeInsets.all(0),
                                 style: IconButton.styleFrom(
                                   foregroundColor: Colors.grey,
@@ -596,18 +597,20 @@ class _ViewDetailsState extends State<ViewDetails> {
                                   //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    msgCount.count = 0;
-                                  });
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Chat(
-                                              conn,
-                                              messageFromHospital,
-                                              msgCount,
-                                              hospitalID,
-                                              deviceID)));
+                                  if (!firstClick) {
+                                    setState(() {
+                                      msgCount.count = 0;
+                                    });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Chat(
+                                                conn,
+                                                messageFromHospital,
+                                                msgCount,
+                                                hospitalID,
+                                                deviceID)));
+                                  }
                                 },
                               ),
                             ),
@@ -640,36 +643,50 @@ class _ViewDetailsState extends State<ViewDetails> {
                                 style: IconButton.styleFrom(
                                   foregroundColor: Colors.grey,
                                   elevation: 10,
-                                  //hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    conn.publishMsg(
-                                        'Device_$deviceID', 'stop:');
-                                    conn.publishMsg(
-                                        'Stop/$hospitalID/$deviceID',
-                                        'Arrived');
-                                    conn.disconnect();
-                                    Future.delayed(const Duration(seconds: 5),
-                                        () {
-                                      patient = Patient.empty();
-                                      deviceStatus = 'Offline';
-                                      isActive = false;
-                                      firstClick = true;
-                                      ambulanceStatus = '';
-                                      messageFromHospital.clear();
-                                      msgCount.count = 0;
-                                      deviceIDController.clear();
-                                      nameController.clear();
-                                      ageController.clear();
-                                      conditionController.clear();
-                                      flag = false;
+                                  if (!firstClick) {
+                                    setState(() {
+                                      conn.publishMsg(
+                                          'Device_$deviceID', 'stop:');
+                                      conn.publishMsg(
+                                          'Stop/$hospitalID/$deviceID',
+                                          'Arrived');
+                                      conn.disconnect();
+                                      Future.delayed(const Duration(seconds: 3),
+                                          () {
+                                        patient = Patient.empty();
+                                        deviceStatus = 'Offline';
+                                        isActive = false;
+                                        firstClick = true;
+                                        ambulanceStatus = '';
+                                        messageFromHospital.clear();
+                                        msgCount.count = 0;
+                                        deviceIDController.clear();
+                                        nameController.clear();
+                                        ageController.clear();
+                                        conditionController.clear();
+                                        flag = false;
+                                      });
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Stop Device'),
+                                              content: Text(
+                                                  'Stopped Device: $deviceID'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                          context, 'OK'),
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          });
                                     });
-                                    // patient = Patient.empty();
-                                    // deviceStatus = 'Offline';
-                                    // isActive = false;
-                                    // firstClick = true;
-                                  });
+                                  }
                                 },
                               ),
                             ),

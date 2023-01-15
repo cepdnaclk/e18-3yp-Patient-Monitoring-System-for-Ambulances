@@ -593,6 +593,15 @@ class _HomeState extends State<Home> {
                 style:
                     const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
             const Expanded(
+              flex: 3,
+              child: SizedBox(),
+            ),
+            Text(
+                '${hospitals[hospitals.indexWhere((element) => element.id == hospitalID)].name}',
+                style:
+                    const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            const Expanded(
+              flex: 4,
               child: SizedBox(),
             ),
             Column(children: <Widget>[

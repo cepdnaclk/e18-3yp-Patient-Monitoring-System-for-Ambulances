@@ -7,7 +7,6 @@ import 'package:desktop_app/data/Points.dart';
 
 // ignore: must_be_immutable
 class ViewParameters extends StatefulWidget {
-
   Map<String, List<Point>> data;
   Map<String, Patient> map;
   String deviceID;
@@ -81,7 +80,7 @@ class _ViewParametersState extends State<ViewParameters> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-            color: !outRange ? Colors.black12 : Colors.black.withOpacity(0.4),
+            color: !outRange ? Colors.black12 : Colors.black.withOpacity(0.3),
             borderRadius: const BorderRadius.all(Radius.circular(10.0))),
         margin: margin,
         child: Column(children: <Widget>[
@@ -185,9 +184,7 @@ class _ViewParametersState extends State<ViewParameters> {
                 ),
               ),
               bottomTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false, reservedSize: 40
-         
-                    ),
+                sideTitles: SideTitles(showTitles: false, reservedSize: 40),
               ),
               rightTitles: rightTitles,
             ),
@@ -266,7 +263,7 @@ class _ViewParametersState extends State<ViewParameters> {
           children: <Widget>[
             parameterTemplate(
               const EdgeInsets.only(top: 20, left: 20, right: 10, bottom: 10),
-              'Temperature',
+              'Temperature(°C)',
               map[deviceID]!.temperature,
               data[deviceID]!
                   .map((e) => FlSpot(e.time, e.p.temperature))
@@ -286,7 +283,7 @@ class _ViewParametersState extends State<ViewParameters> {
             ),
             parameterTemplate(
                 const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 10),
-                'Heart Rate',
+                'Heart Rate(bpm)',
                 map[deviceID]!.heartRate,
                 data[deviceID]!
                     .map((e) => FlSpot(e.time, e.p.heartRate))
@@ -309,7 +306,7 @@ class _ViewParametersState extends State<ViewParameters> {
           children: <Widget>[
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
-                'Pulse Rate',
+                'Pulse Rate(bpm)',
                 map[deviceID]!.pulseRate,
                 data[deviceID]!
                     .map((e) => FlSpot(e.time, e.p.pulseRate))
@@ -328,7 +325,7 @@ class _ViewParametersState extends State<ViewParameters> {
                 120),
             parameterTemplate(
                 const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 10),
-                'Oxygen Sat.',
+                'Oxygen Sat.(%)',
                 map[deviceID]!.oxygenSaturation,
                 data[deviceID]!
                     .map((e) => FlSpot(e.time, e.p.oxygenSaturation))
@@ -348,9 +345,6 @@ class _ViewParametersState extends State<ViewParameters> {
           ],
         ),
       ],
-
     );
   }
 }
-
-

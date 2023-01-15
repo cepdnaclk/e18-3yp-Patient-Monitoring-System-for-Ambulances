@@ -1,22 +1,13 @@
-// import 'dart:developer';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:desktop_app/people/Patient.dart';
 import 'package:desktop_app/people/Hospital.dart';
-// import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class PDF {
   Future<void> createPDF(Patient p, Hospital h, String d, bool status) async {
-    // String h = 'General Hospital Colombo';
-    // String d = '001';
-    // String n = 'none';
-    // String a = 'none';
-    // String c = 'none';
-    // p = Patient.empty();
     PdfDocument document = PdfDocument();
     final page = document.pages.add();
     //blue line
@@ -77,7 +68,7 @@ class PDF {
     page.graphics.drawString(
         'Age', PdfStandardFont(PdfFontFamily.helvetica, 20),
         bounds: const Rect.fromLTWH(0, 280, 0, 0));
-    page.graphics.drawString(': ${p.age}',
+    page.graphics.drawString(': ${p.age == 0 ? 'none' : p.age}',
         PdfStandardFont(PdfFontFamily.helvetica, 20, style: PdfFontStyle.bold),
         bounds: const Rect.fromLTWH(100, 280, 0, 0));
 //condition
@@ -123,8 +114,6 @@ class PDF {
     row.cells[3].value = p.oxygenSaturation.toString();
     grid.style = PdfGridStyle(
         cellPadding: PdfPaddings(left: 10, right: 3, top: 4, bottom: 5),
-        // backgroundBrush: PdfBrushes.blue,
-        // textBrush: PdfBrushes.white,
         font: PdfStandardFont(PdfFontFamily.helvetica, 15));
     grid.draw(
       page: page,
@@ -133,7 +122,8 @@ class PDF {
 
     List<int> bytes = await document.save();
     document.dispose();
-    saveAndLaunch(bytes, 'test.pdf');
+    saveAndLaunch(bytes,
+        '${d}-${h.id}-${DateTime.now().hour}-${DateTime.now().minute}-${DateTime.now().second}-${DateTime.now().toString().substring(0, 10)}.pdf');
   }
 
   Future<Uint8List> readImage(String name) async {
@@ -142,11 +132,16 @@ class PDF {
   }
 
   Future<void> saveAndLaunch(List<int> bytes, String fileName) async {
-    // final path = (await getExternalStorageDirectory())?.path;
-    String dir = Directory.current.path;
-    // log(dir);
-    final file = File('$dir/patients/$fileName');
+    Directory docPath = await getApplicationDocumentsDirectory();
+
+    var isThere = await Directory('${docPath.path}/patients').exists();
+
+    if (!isThere) {
+      await Directory('${docPath.path}/patients').create();
+    }
+
+    final file = File('${docPath.path}/patients/$fileName');
     await file.writeAsBytes(bytes, flush: true);
-    OpenFile.open('$dir/patients/$fileName');
+    OpenFile.open('${docPath.path}/patients/$fileName');
   }
 }
