@@ -1,3 +1,4 @@
+#include "FS.h"
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -5,7 +6,25 @@
 Adafruit_SSD1306 TV = Adafruit_SSD1306(128,64,&Wire);
 
 void setup(){
+  Serial.begin(9600);
   
+    bool success = SPIFFS.begin();
+ 
+  if (!success) {
+    Serial.println("Error mounting the file system");
+    return;
+  }
+  File p = SPIFFS.open("/abc.txt","r");
+  if (!p) {
+    Serial.println("Failed to open file for reading");
+    return;
+  }else{
+    Serial.println("Successful");
+  }
+  while(p.available()){
+    Serial.print(p.read());  
+  }
+  p.close();  
   TV.begin(SSD1306_SWITCHCAPVCC,0x3C);
     
 }
