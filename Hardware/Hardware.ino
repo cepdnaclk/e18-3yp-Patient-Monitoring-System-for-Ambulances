@@ -820,7 +820,7 @@ void loop() {
       }else{
         pulse_rate = heart_rate + random(-5,5);
       }
-      snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lattitude\": %f, \"longitude\": %f, \"altitude\": %f}",temperature,heart_rate,value3,spo2,lattitude,longitude,Altitude);
+      snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lat\": %f, \"long\": %f}",temperature,heart_rate,pulse_rate,spo2,lattitude,longitude);
       if(canShow==0){
         showParameters(temperature,heart_rate,spo2);
         tone(buzzer,10000,150);
