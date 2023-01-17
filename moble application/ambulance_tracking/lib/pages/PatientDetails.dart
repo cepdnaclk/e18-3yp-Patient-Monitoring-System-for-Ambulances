@@ -201,6 +201,7 @@ class _ViewDetailsState extends State<ViewDetails> {
             ),
             const SizedBox(height: 20.0),
             Text(double.parse((parameterValue).toStringAsFixed(3)).toString(),
+                key: ValueKey('initialParameterValue'),
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 20.0))
           ],
@@ -307,6 +308,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                           ),
                           const SizedBox(height: 30.0),
                           TextFormField(
+                            key: ValueKey('nameFinder'),
                             controller: nameController,
                             validator: (value) {
                               setState(() {
@@ -332,6 +334,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                           ),
                           const SizedBox(height: 30.0),
                           TextFormField(
+                            key: ValueKey('ageFinder'),
                             decoration: InputDecoration(
                                 fillColor: Colors.blue[100],
                                 filled: true,
@@ -358,6 +361,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                           ),
                           const SizedBox(height: 30.0),
                           TextFormField(
+                            key: ValueKey('conditionFinder'),
                             // autofocus: false,
                             // initialValue: 'test',
                             controller: conditionController,
@@ -390,6 +394,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                             alignment: Alignment.topCenter,
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton2(
+                                  key: ValueKey('hospitalFinder'),
                                   selectedItemHighlightColor:
                                       const Color.fromARGB(255, 115, 186, 233),
                                   buttonHeight: 40,
@@ -411,6 +416,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                   value: selectedVal,
                                   items: widget.hospitals
                                       .map((e) => DropdownMenuItem(
+                                            key: ValueKey('hospitalScroller'),
                                             value: e,
                                             child: Text(
                                               e.name,
@@ -499,6 +505,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                               padding: const EdgeInsets.only(left: 10),
                               child: Row(children: <Widget>[
                                 const Text('Device Status:  ',
+                                    key: ValueKey('status'),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15.0)),
@@ -511,6 +518,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                                         BorderRadius.all(Radius.circular(20.0)),
                                   ),
                                   child: Text(deviceStatus,
+                                      key: ValueKey('realstatus'),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15.0,
@@ -672,11 +680,17 @@ class _ViewDetailsState extends State<ViewDetails> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text('Stop Device'),
+                                              title: const Text(
+                                                'Stop Device',
+                                                key: ValueKey('stopMsg'),
+                                              ),
                                               content: Text(
-                                                  'Stopped Device: $deviceID'),
+                                                'Stopped Device: $deviceID',
+                                                key: ValueKey('stopMsg2'),
+                                              ),
                                               actions: <Widget>[
                                                 TextButton(
+                                                  key: ValueKey('stopOk'),
                                                   onPressed: () =>
                                                       Navigator.pop(
                                                           context, 'OK'),

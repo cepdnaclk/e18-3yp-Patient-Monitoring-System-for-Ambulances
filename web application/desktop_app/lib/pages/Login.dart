@@ -81,6 +81,7 @@ class _LoginState extends State<Login> {
                           key: _formKey1,
                           child: Column(children: <Widget>[
                             TextFormField(
+                              key: ValueKey('userFinder'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter Hospital ID';
@@ -101,6 +102,7 @@ class _LoginState extends State<Login> {
                             ),
                             const SizedBox(height: 30.0),
                             TextFormField(
+                              key: ValueKey('passwordFinder'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter Password';
@@ -137,6 +139,7 @@ class _LoginState extends State<Login> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
+                                key: ValueKey('loginBtnFinder'),
                                 onPressed: () async {
                                   if (_formKey1.currentState!.validate()) {
                                     String response = await httpLoader.httpGET(
@@ -159,8 +162,9 @@ class _LoginState extends State<Login> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title:
-                                                  const Text('Invalid Login'),
+                                              title: const Text('Invalid Login',
+                                                  key: ValueKey(
+                                                      'wrongLoginText')),
                                               content: response == '"False"'
                                                   ? const Text(
                                                       'Incorrect Password')
@@ -168,6 +172,7 @@ class _LoginState extends State<Login> {
                                                       'Invalid User ID'),
                                               actions: <Widget>[
                                                 TextButton(
+                                                  key: ValueKey('OKBtn'),
                                                   onPressed: () {
                                                     Navigator.pop(
                                                         context, 'OK');
