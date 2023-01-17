@@ -111,17 +111,17 @@ void calcMAX30100(){  //Calculated the average values
 const char* ssid1 = "Dialog 4G 517";
 const char* password1 = "576E5Fc3";
 
-const char* ssid2 = "HUAWEI";
-const char* password2 = "abcdefgh";
+//const char* ssid2 = "HUAWEI";
+//const char* password2 = "abcdefgh";
 
 int ssidNo = 2;
-/*
-char* ssid2 = "Dialog 4G 769";
-char* password2 = "583BbFe3";
 
-const char* ssid = "Eng-Student";
-const char* password = "3nG5tuDt";
-*/
+//const char* ssid1 = "Dialog 4G 769";
+//const char* password1 = "583BbFe3";
+
+const char* ssid2 = "Eng-Student";
+const char* password2 = "3nG5tuDt";
+
 /*
 const char* ssid = "ACES_Coders";
 const char* password = "Coders@2022";
