@@ -687,6 +687,7 @@ class _HomeState extends State<Home> {
               SizedBox(
                 width: 110,
                 child: ElevatedButton(
+                  key: ValueKey('connectBtn'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
@@ -716,6 +717,7 @@ class _HomeState extends State<Home> {
               SizedBox(
                 width: 110,
                 child: ElevatedButton(
+                  key: ValueKey('disconnectBtn'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
@@ -736,6 +738,7 @@ class _HomeState extends State<Home> {
               SizedBox(
                 width: 110,
                 child: ElevatedButton(
+                  key: ValueKey('logoutFinder'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
@@ -755,6 +758,7 @@ class _HomeState extends State<Home> {
                                 child: const Text('Cancel'),
                               ),
                               TextButton(
+                                key: ValueKey('logoutOKBtn'),
                                 onPressed: () {
                                   mqttConnection.disconnect();
                                   // dispose();
@@ -985,6 +989,7 @@ class _HomeState extends State<Home> {
             child: isConnected
                 ? const Text(
                     'Connected to AWS',
+                    key: ValueKey('AWSconnect'),
                     style: TextStyle(
                         fontSize: 10,
                         color: Colors.green,
@@ -992,6 +997,7 @@ class _HomeState extends State<Home> {
                   )
                 : const Text(
                     'Not Connected',
+                    key: ValueKey('AWSdisconnect'),
                     style: TextStyle(
                         fontSize: 10,
                         color: Colors.red,
