@@ -6,7 +6,7 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 
 ## Solution Architecture
-![new solution arc](https://user-images.githubusercontent.com/73444543/208265720-25ee0ba3-8126-4050-be56-db9e08c26552.png)
+![final sol arc](https://user-images.githubusercontent.com/99112218/213085622-72fd36c1-2d53-48e8-b2cc-1e2b76bfbe86.png)
 
 ## Hardware and Software Designs
 ### Hardware Components
