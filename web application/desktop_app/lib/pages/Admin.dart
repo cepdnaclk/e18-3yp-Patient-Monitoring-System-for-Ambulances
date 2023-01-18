@@ -203,6 +203,7 @@ class _AdminState extends State<Admin> {
                             key: _formKey1,
                             child: Column(children: <Widget>[
                               TextFormField(
+                                key: ValueKey('hospitalIDField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Hospital ID';
@@ -224,6 +225,7 @@ class _AdminState extends State<Admin> {
                               ),
                               const SizedBox(height: 20.0),
                               TextFormField(
+                                key: ValueKey('hospitalNameField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Hospital Name';
@@ -244,6 +246,7 @@ class _AdminState extends State<Admin> {
                               ),
                               const SizedBox(height: 20.0),
                               TextFormField(
+                                key: ValueKey('hospitalContactField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Contact No';
@@ -264,6 +267,7 @@ class _AdminState extends State<Admin> {
                               ),
                               const SizedBox(height: 20.0),
                               TextFormField(
+                                key: ValueKey('hospitalLattField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Lattitude';
@@ -284,6 +288,7 @@ class _AdminState extends State<Admin> {
                               ),
                               const SizedBox(height: 20.0),
                               TextFormField(
+                                key: ValueKey('hospitalLongField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Longitude';
@@ -307,6 +312,7 @@ class _AdminState extends State<Admin> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 16.0),
                                 child: ElevatedButton(
+                                  key: ValueKey('addHospitalBtn'),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(
                                           192, 76, 175, 79)),
@@ -335,11 +341,15 @@ class _AdminState extends State<Admin> {
                                           builder: (BuildContext context) {
                                             return AlertDialog(
                                               title: const Text(
-                                                  'New Hospital Added'),
+                                                  'New Hospital Added',
+                                                  key: ValueKey(
+                                                      'newHospitalPopup')),
                                               content: Text(
                                                   'Succeccfully added ${hospitalIDController.text}-${hospitalNameController.text} to the System'),
                                               actions: <Widget>[
                                                 TextButton(
+                                                  key: ValueKey(
+                                                      'hospitaladdedOK'),
                                                   onPressed: () {
                                                     hospitalIDController
                                                         .clear();
@@ -419,6 +429,7 @@ class _AdminState extends State<Admin> {
                             key: _formKey3,
                             child: Column(children: <Widget>[
                               TextFormField(
+                                key: ValueKey('hospitalRemoveField'),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Hospital ID';
@@ -443,6 +454,7 @@ class _AdminState extends State<Admin> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 16.0),
                                 child: ElevatedButton(
+                                  key: ValueKey('hospitalRemoveBtn'),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color.fromARGB(
                                         228, 243, 110, 100),
@@ -456,9 +468,13 @@ class _AdminState extends State<Admin> {
                                               title:
                                                   const Text('Remove Hospital'),
                                               content: Text(
-                                                  'Are you sure you want to remove ${removeHospitalIDController.text} from the System'),
+                                                  'Are you sure you want to remove ${removeHospitalIDController.text} from the System',
+                                                  key: ValueKey(
+                                                      'hospitalRemovingConf')),
                                               actions: <Widget>[
                                                 TextButton(
+                                                  key:
+                                                      ValueKey('hRemoveCancel'),
                                                   onPressed: () {
                                                     Navigator.pop(
                                                         context, 'Cancel');
@@ -468,6 +484,7 @@ class _AdminState extends State<Admin> {
                                                   child: const Text('No'),
                                                 ),
                                                 TextButton(
+                                                  key: ValueKey('hRemoveOK'),
                                                   onPressed: () async {
                                                     Navigator.pop(
                                                         context, 'OK');
@@ -557,6 +574,7 @@ class _AdminState extends State<Admin> {
                               key: _formKey2,
                               child: Column(children: <Widget>[
                                 TextFormField(
+                                  key: ValueKey('userIDField'),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter User ID';
@@ -580,6 +598,7 @@ class _AdminState extends State<Admin> {
                                 ),
                                 const SizedBox(height: 30.0),
                                 TextFormField(
+                                  key: ValueKey('userPasswordField'),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter Password';
@@ -603,6 +622,7 @@ class _AdminState extends State<Admin> {
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 16.0),
                                   child: ElevatedButton(
+                                    key: ValueKey('userAddingBtn'),
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green),
                                     onPressed: () async {
@@ -615,11 +635,15 @@ class _AdminState extends State<Admin> {
                                             builder: (BuildContext context) {
                                               return AlertDialog(
                                                 title: const Text(
-                                                    'New User Added'),
+                                                  'New User Added',
+                                                  key: ValueKey('newUserPopup'),
+                                                ),
                                                 content: Text(
                                                     'Succeccfully added ${userIDController.text} to the System'),
                                                 actions: <Widget>[
                                                   TextButton(
+                                                    key:
+                                                        ValueKey('UseraddedOK'),
                                                     onPressed: () {
                                                       userIDController.clear();
                                                       userPasswordController
@@ -691,6 +715,7 @@ class _AdminState extends State<Admin> {
                               key: _formKey4,
                               child: Column(children: <Widget>[
                                 TextFormField(
+                                  key: ValueKey('userRemoveField'),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter User ID';
@@ -715,6 +740,7 @@ class _AdminState extends State<Admin> {
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 16.0),
                                   child: ElevatedButton(
+                                    key: ValueKey('userRemoveBtn'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(
                                           228, 243, 110, 100),
@@ -728,9 +754,14 @@ class _AdminState extends State<Admin> {
                                                 title:
                                                     const Text('Remove User'),
                                                 content: Text(
-                                                    'Are you sure you want to remove ${removeUserIDController.text} from the System'),
+                                                  'Are you sure you want to remove ${removeUserIDController.text} from the System',
+                                                  key: ValueKey(
+                                                      'userRemovingConf'),
+                                                ),
                                                 actions: <Widget>[
                                                   TextButton(
+                                                    key: ValueKey(
+                                                        'uRemoveCancel'),
                                                     onPressed: () {
                                                       Navigator.pop(
                                                           context, 'Cancel');
@@ -740,6 +771,7 @@ class _AdminState extends State<Admin> {
                                                     child: const Text('No'),
                                                   ),
                                                   TextButton(
+                                                    key: ValueKey('uRemoveOK'),
                                                     onPressed: () async {
                                                       Navigator.pop(
                                                           context, 'OK');
@@ -835,6 +867,7 @@ class _AdminState extends State<Admin> {
                     ),
                     height: MediaQuery.of(context).size.height * 0.9,
                     child: SingleChildScrollView(
+                      key: ValueKey('desktopHomeScroller'),
                       child: Column(
                         children: [
                           Container(
