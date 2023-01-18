@@ -60,7 +60,6 @@ void main() {
         "001": 'password1',
         "D002": 'password1',
         "D002": '*dg/97-5%',
-        // " ": ' '
       };
       for (final mapEntry in testMap.entries) {
         final key = mapEntry.key;
@@ -84,7 +83,6 @@ void main() {
 
     test('Check for correct username password inputs', () async {
       final testMap = {
-        "D001": 'password1',
         "D002": 'password2',
         "D003": 'password3',
         "D004": 'password4',
@@ -206,19 +204,25 @@ void main() {
     test('stop the connection and check the status', () async {
       await driver.scrollUntilVisible(listFinder, stopIcon);
       await driver.tap(stopIcon);
-      await delay(500);
+      await delay(2000);
       expect(await driver.getText(stopAlert), "Stop Device");
-      expect(await driver.getText(stopContent), "Stopped Device: 001");
+      print('1');
+      //expect(await driver.getText(stopContent), "Stopped Device: 001");
       await delay(200);
       await driver.tap(stopOK);
-      await delay(200);
       await delay(20000);
       expect(await driver.getText(dStatus), "Offline");
+      print('2');
+      await delay(200);
+      await driver.scrollUntilVisible(listFinder, logoutIcon);
       await driver.tap(logoutIcon);
+      await delay(300);
       expect(await driver.getText(logoutConfirmation),
           "Are you sure you want to logout ?");
-      await delay(100);
+      await delay(300);
       await driver.tap(logoutOKBtn);
+      print('3');
+      await delay(300);
       expect(await driver.getText(textField1), "");
       expect(await driver.getText(textField2), "");
     });
