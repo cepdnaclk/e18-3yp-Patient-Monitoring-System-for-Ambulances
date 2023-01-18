@@ -6,7 +6,8 @@ These problems can be addressed separately by a real-time monitoring device for 
 
 
 ## Solution Architecture
-![final sol arc](https://user-images.githubusercontent.com/99112218/213085622-72fd36c1-2d53-48e8-b2cc-1e2b76bfbe86.png)
+![final sol arc](https://user-images.githubusercontent.com/99112218/213088203-3f11ba14-f29a-42f8-93ad-609ec4bc50ac.png)
+
 
 ## Hardware and Software Designs
 ### Hardware Components
@@ -20,11 +21,6 @@ Microcontroller is like brain of the system because it communicates with inputs 
 
 Main function of GPS modem is provide longitude and latitude of the ambulance to the Microcontroller. It receives data from satellite and transfer them into Microcontroller through serial communication. As ambulance moves along the way from patient’s home to hospital, the co- ordinates of ambulance location will change and these variations are given to Microcontroller.
 
-**GSM Module SIM800L**\
-![GSM](https://user-images.githubusercontent.com/73444543/208266015-cd79e4e7-68e1-4424-9f42-155554595a0f.jpg)
-
-The SIM800L GSM/GPRS module is a miniature GSM modem can be used for normal cell phones to send SMS messages, make phone calls, connect to the Internet via GPRS etc.
-
 **Heart Rate Oxygen Pulse Sensor Module MAX30100**\
 ![bpm](https://user-images.githubusercontent.com/73444543/204417296-e6cda821-8f3d-4506-a4fd-d3d5342bab45.jpg)
 
@@ -36,9 +32,8 @@ MAX30100 is a multipurpose sensor used for multiple applications. It is a heart 
 DS18B20 digital temperature sensor works on a single bus and it has 64-bit ROM to store the serial number of component. It can get quite a few DS18B20 sensors connected to a single bus in parallel. With a microcontroller, you can control so many DS18B20 sensors that are distributed around a wide range.
 
 ## Circuit Diagram & Pin Configuration
-
-![nodehardware](https://user-images.githubusercontent.com/73444543/209473448-e7469116-dbe8-4de1-8981-c7ba8d541b30.png) &nbsp;&nbsp;![PinConfiguration](https://user-images.githubusercontent.com/73444543/209473461-0ecd1355-b535-4284-9ab2-4b0c47750924.png)
-
+![circuitdiagramNEW](https://user-images.githubusercontent.com/99112218/213085829-2b523805-998f-4f3f-ac11-d4a6c315d63f.png)
+![PINCONFIGURATION_new](https://user-images.githubusercontent.com/99112218/213085870-5b0343ae-50dc-461d-8995-a96f0e7309f4.png)
 
 ## Technology Stack
 The technologies we used for build up our system is as follows.
@@ -73,6 +68,25 @@ Mainly 3 AWS services are useful in the data retrieving & storing process in the
 ![lambda](https://user-images.githubusercontent.com/73444543/208267083-d9dab665-57b0-40a7-b8e2-d419366a0e64.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![db](https://user-images.githubusercontent.com/73444543/208336664-b201ac26-5692-4275-b22a-7baaf43c4f17.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![gateway](https://user-images.githubusercontent.com/73444543/208334345-2bbf3fb7-1fe6-446e-89a5-0c800eb428da.png)
 
 ## UI Design 
+## Mobile Application
+![1](https://user-images.githubusercontent.com/99112218/213088470-128a50bf-4ff5-4d0b-b656-fcf2cb2b44b0.jpg)
+![2](https://user-images.githubusercontent.com/99112218/213088474-ace8193d-6c55-4f9f-b0fd-54aefebcfe41.jpg)
+![3](https://user-images.githubusercontent.com/99112218/213088476-50be8315-964d-4592-a849-ba169eb2fd53.jpg)
+![4](https://user-images.githubusercontent.com/99112218/213088479-03c007b3-3432-44fc-bfbe-a32b308095fe.jpg)
+![5](https://user-images.githubusercontent.com/99112218/213088483-ed9695f2-ba86-449e-a14d-51d5c0537e89.jpg)
+![6](https://user-images.githubusercontent.com/99112218/213088485-60761ae6-adbe-4c4b-b416-353712c09fb8.jpg)
+
+### Web Site
+![1](https://user-images.githubusercontent.com/99112218/213088548-7db9c35f-f8cb-4bde-b9a0-71243a4ec2bd.png)
+![2](https://user-images.githubusercontent.com/99112218/213088551-a2472ef1-f2d5-488e-811e-75785bad175a.png)
+![3](https://user-images.githubusercontent.com/99112218/213088554-cc4652c0-beee-4d09-a8c9-99e343e0b3c3.png)
+![4](https://user-images.githubusercontent.com/99112218/213088556-e30cc3de-ec19-4bca-ad93-060a0dc471e1.png)
+![5](https://user-images.githubusercontent.com/99112218/213088560-f5f91245-16da-4988-b252-3c0a56570d7c.png)
+![6](https://user-images.githubusercontent.com/99112218/213088562-4f577ad0-4cd8-4062-afd5-1aad500dc916.png)
+![pdf](https://user-images.githubusercontent.com/99112218/213088566-8726d919-0612-486f-b482-5b26c718f57f.png)
+
+
+## Wire frames
 ### Mobile Application
 ![1](https://user-images.githubusercontent.com/73444543/204421741-097ead06-a8a0-42b7-9909-e57f2a42749c.jpeg) ![2](https://user-images.githubusercontent.com/73444543/204421756-5044ca8f-5539-4fd2-b548-d2fb9653f210.jpeg) ![3](https://user-images.githubusercontent.com/73444543/204421865-6246a490-6792-408c-a3ea-ab60dfa75b5d.jpeg) ![4](https://user-images.githubusercontent.com/73444543/204421896-f72edcda-189b-4d0e-97a7-b8929cb37fd3.jpeg) ![5](https://user-images.githubusercontent.com/73444543/204421907-ea42e1c7-7321-4937-9499-7467ccd4c7ee.jpeg) ![6](https://user-images.githubusercontent.com/73444543/204422174-d54a3402-d738-479d-ab6f-304f281294c5.jpeg)
 
@@ -81,14 +95,20 @@ Mainly 3 AWS services are useful in the data retrieving & storing process in the
  ![12](https://user-images.githubusercontent.com/73444543/204422309-84cb99e1-f864-49a1-9c4f-e5c02b12adcd.jpeg) \
 ![13](https://user-images.githubusercontent.com/73444543/204422321-a20edf16-2f6c-4c07-8dac-eb6b77541fa5.jpeg)
  ![14](https://user-images.githubusercontent.com/73444543/204422332-05087242-e46a-4c22-b2f7-2df2d15c888b.jpeg)
- 
+
+
+
+
+
+
+
 ## Testing
 
 |**Testing Type** | **Functionlities to be checked** | **Software used** |
 |-------------|------------------------------|--------------|
 |[Hardware Testing | Input data from sensors | Platform.io ![platformio](https://user-images.githubusercontent.com/73444543/208268165-b5c0ded8-0424-4fca-b804-30b91765a0a7.png)|
-|Web-Application Testing|Login validation | Selenium ![selenium](https://user-images.githubusercontent.com/73444543/208268252-3481923c-5e93-462f-8007-66c98a183359.png) |
-|Mobile Application Testing | Login validation | Appium ![appium](https://user-images.githubusercontent.com/73444543/208268362-b6bc9f2e-da5e-4784-b59e-ba37290f0b22.png) |
+|Web-Application Testing|Login validation | Flutter driver ![driver](https://user-images.githubusercontent.com/99112218/213087920-c6e654e2-c6c0-4275-9beb-3933d4cca2af.png) |
+|Mobile Application Testing | Login validation | Flutter driver ![driver](https://user-images.githubusercontent.com/99112218/213087920-c6e654e2-c6c0-4275-9beb-3933d4cca2af.png) |
 |API Testing | GET ,DELETE ,PUT requests about users and hospitals| Postman ![postman](https://user-images.githubusercontent.com/73444543/208268493-e550219f-5ca8-47c0-a08b-8120ec53b8fa.png) |
 
 ## Security Aspects
