@@ -925,7 +925,10 @@ class _HomeState extends State<Home> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: const Text(
-                                                                  'Invalid Login'),
+                                                                'Invalid Login',
+                                                                key: ValueKey(
+                                                                    'loginErr'),
+                                                              ),
                                                               content: response ==
                                                                       '"False"'
                                                                   ? const Text(

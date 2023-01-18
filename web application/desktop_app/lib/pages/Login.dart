@@ -209,6 +209,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     width: 110,
                     child: ElevatedButton(
+                      key: ValueKey('AdminBtn'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                       ),
@@ -242,6 +243,7 @@ class _LoginState extends State<Login> {
                                               key: _formKey2,
                                               child: Column(children: <Widget>[
                                                 TextFormField(
+                                                  key: ValueKey('adminID'),
                                                   validator: (value) {
                                                     if (value == null ||
                                                         value.isEmpty) {
@@ -272,6 +274,7 @@ class _LoginState extends State<Login> {
                                                 ),
                                                 const SizedBox(height: 30.0),
                                                 TextFormField(
+                                                  key: ValueKey('adminPwd'),
                                                   validator: (value) {
                                                     if (value == null ||
                                                         value.isEmpty) {
@@ -318,6 +321,8 @@ class _LoginState extends State<Login> {
                                                           .symmetric(
                                                       vertical: 16.0),
                                                   child: ElevatedButton(
+                                                    key: ValueKey(
+                                                        'adminLoginBtn'),
                                                     onPressed: () async {
                                                       if (_formKey2
                                                           .currentState!
