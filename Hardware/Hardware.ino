@@ -108,16 +108,16 @@ void calcMAX30100(){  //Calculated the average values
     beatCount=0;
 }
 
-const char* ssid1 = "Dialog 4G 517";
-const char* password1 = "576E5Fc3";
+//const char* ssid1 = "Dialog 4G 517";
+//const char* password1 = "576E5Fc3";
 
 //const char* ssid2 = "HUAWEI";
 //const char* password2 = "abcdefgh";
 
 int ssidNo = 2;
 
-//const char* ssid1 = "Dialog 4G 769";
-//const char* password1 = "583BbFe3";
+const char* ssid1 = "Dialog 4G 769";
+const char* password1 = "583BbFe3";
 
 const char* ssid2 = "Eng-Student";
 const char* password2 = "3nG5tuDt";
@@ -820,7 +820,7 @@ void loop() {
       }else{
         pulse_rate = heart_rate + random(-5,5);
       }
-      snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lat\": %f, \"long\": %f}",temperature,heart_rate,pulse_rate,spo2,lattitude,longitude);
+      snprintf(msg,300,"{\"temperature\": %f, \"heart rate\": %f, \"pulse rate\": %f, \"oxygen saturation\": %f, \"lat\": %f, \"long\": %f}",temperature,heart_rate,pulse_rate,spo2,7.2537466,80.5920696);
       if(canShow==0){
         showParameters(temperature,heart_rate,spo2);
         tone(buzzer,10000,150);
