@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/web application/desktop_app/windows/runner",
+    "liveServer.settings.port": 5501
+}
