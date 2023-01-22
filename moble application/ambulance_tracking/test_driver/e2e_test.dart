@@ -130,9 +130,7 @@ void main() {
       expect(await driver.getText(pCondition), '');
     });
 
-    test(
-        'Check for entering details to initialize the connection with the hospital',
-        () async {
+    test( 'Check for entering details to initialize the connection with the hospital', () async {
       await driver.scrollUntilVisible(listFinder, hospitalID);
       await driver.tap(hospitalID);
       await driver.enterText('001');
